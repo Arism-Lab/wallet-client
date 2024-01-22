@@ -1,5 +1,5 @@
 import Script from "next/script";
-import VA from "@vercel/analytics/react";
+import * as VA from "@vercel/analytics/react";
 
 // https://developers.google.com/analytics/devguides/collection/gtagjs/events
 export const logEvent = (
