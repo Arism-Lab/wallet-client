@@ -6,6 +6,11 @@ import { signIn, useSession } from 'next-auth/react'
 const Home = (): JSX.Element => {
   const { data: session } = useSession()
 
+  const handleSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    signIn('google', { callbackUrl: '/login' })
+  }
+
   return (
     <>
       <HomeSEO />
@@ -25,12 +30,7 @@ const Home = (): JSX.Element => {
                 </Card>
               </Link>
             ) : (
-              <button
-                onClick={(e) => {
-                  e.preventDefault()
-                  signIn('google', { callbackUrl: '/dashboard' })
-                }}
-              >
+              <button onClick={(e) => handleSignIn(e)}>
                 <Card className="relative py-6 px-8 text-xl group-hover:text-primary-800">
                   <p>Get Started</p>
                 </Card>

@@ -1,5 +1,5 @@
 export const URLS: Record<string, string> = {
-  1: process.env.NODE1_URL ?? '',
-  2: process.env.NODE2_URL ?? '',
-  3: process.env.NODE3_URL ?? '',
+  1: process.env.NEXT_PUBLIC_NODE1_URL ?? 'http://dead',
+  2: process.env.NEXT_PUBLIC_NODE2_URL ?? 'http://dead',
+  3: process.env.NEXT_PUBLIC_NODE3_URL ?? 'http://dead',
 }

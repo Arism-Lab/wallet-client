@@ -48,8 +48,8 @@ export const kCombinations = (s: number | number[], k: number): number[][] => {
 }
 
 export const lagrangeInterpolation = (
-  values: BN[],
   indices: BN[],
+  values: BN[],
   xPoint: BN
 ): BN | null => {
   if (values.length !== indices.length) {

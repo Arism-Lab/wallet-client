@@ -14,7 +14,7 @@ export type GetAddressResponse = {
 
 export type GetPrivateKeyRequest = {
   owner: string
-  tokenId: string
+  idToken: string
   verifier: string
 }
 
@@ -39,7 +39,7 @@ export type ShareRequest = {
   signatures: CommitmentResponse[]
   owner: string
   verifier: string
-  tokenId: string
+  idToken: string
   tempPublicKey?: string
 }
 

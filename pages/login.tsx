@@ -1,21 +1,43 @@
+import { GetStaticProps } from 'next'
+import { getSession, signIn, useSession } from 'next-auth/react'
+import { useEffect, useState } from 'react'
+import * as P2P from '@/types/p2p'
 import Card from '@/components/Card'
 import Link from '@/components/Link'
 import { HomeSEO } from '@/components/PageSEO'
-import { GetStaticProps } from 'next'
-import { getSession, signIn, useSession } from 'next-auth/react'
-
-export const getStaticProps: GetStaticProps = async () => {
-  const session = await getSession()
-
-  return {
-    props: {
-      session,
-    },
-  }
-}
+import { constructPrivateKey } from '@/helpers/masterKey'
+import TransitionWrapper from '@/components/TransitionWrapper'
+import { useRouter } from 'next/router'
+import Loading from '@/components/Loading'
 
 const Login = (): JSX.Element => {
-  const { data: session } = useSession()
+  const [loading, setLoading] = useState<boolean>(true)
+  const router = useRouter()
+
+  useEffect(() => {
+    ;(async () => {
+      const session = await getSession()
+      console.log(session)
+
+      const input: P2P.GetPrivateKeyRequest = {
+        idToken: session!.token.idToken,
+        owner: session!.user!.email!,
+        verifier: 'google',
+      }
+      const privateKey = await constructPrivateKey(input)
+      console.log(privateKey)
+
+      setLoading(false)
+    })()
+  }, [])
+
+  if (loading) {
+    return (
+      <TransitionWrapper router={router}>
+        <Loading />
+      </TransitionWrapper>
+    )
+  }
 
   return (
     <>
@@ -29,24 +51,6 @@ const Login = (): JSX.Element => {
                 Zero Knowledge
               </span>
             </h1>
-            {session ? (
-              <Link href="/dashboard">
-                <Card className="relative py-6 px-8 text-xl group-hover:text-primary-800">
-                  <p>Get Started</p>
-                </Card>
-              </Link>
-            ) : (
-              <button
-                onClick={(e) => {
-                  e.preventDefault()
-                  signIn('google', { callbackUrl: '/dashboard' })
-                }}
-              >
-                <Card className="relative py-6 px-8 text-xl group-hover:text-primary-800">
-                  <p>Get Started</p>
-                </Card>
-              </button>
-            )}
           </div>
         </main>
       </div>
