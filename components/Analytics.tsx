@@ -20,7 +20,7 @@ const GoogleScript = (): JSX.Element => {
 		<>
 			<Script
 				async
-				src={`https://www.googletagmanager.com/gtag/js?id=${process.env.GOOGLE_ANALYTICS_ID}`}
+				src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}`}
 			/>
 
 			<Script strategy="lazyOnload" id="ga-script">
@@ -42,7 +42,7 @@ const UmamiScript = (): JSX.Element => {
 			<Script
 				async
 				defer
-				data-website-id={process.env.UMAMI_WEBSITE_ID}
+				data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
 				src="https://analytics.umami.is/script.js"
 			/>
 		</>
@@ -62,8 +62,8 @@ const isProduction = process.env.NODE_ENV === "production";
 const Analytics = (): JSX.Element => {
 	return (
 		<>
-			{isProduction && process.env.GOOGLE_ANALYTICS_ID && <GoogleScript />}
-			{isProduction && process.env.UMAMI_WEBSITE_ID && <UmamiScript />}
+			{isProduction && <GoogleScript />}
+			{isProduction && <UmamiScript />}
 			{isProduction && <VercelScript />}
 		</>
 	);

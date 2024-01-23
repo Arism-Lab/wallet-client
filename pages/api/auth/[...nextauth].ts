@@ -1,14 +1,10 @@
-import NextAuth, { Account, Session, User } from "next-auth";
+import NextAuth, { Account, User } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { JWT } from "next-auth/jwt";
 import { AdapterUser } from "next-auth/adapters";
 
 const authOptions = {
 	providers: [
-		// GithubProvider({
-		// 	clientId: process.env.GITHUB_ID || "",
-		// 	clientSecret: process.env.GITHUB_SECRET || "",
-		// }),
 		GoogleProvider({
 			clientId: process.env.GOOGLE_CLIENT_ID || "",
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
@@ -17,6 +13,7 @@ const authOptions = {
 	session: {
 		strategy: "jwt" as const,
 	},
+	secret: process.env.SECRET,
 	callbacks: {
 		async jwt({ token, account }: { token: JWT; account: Account | null }) {
 			if (account) {
