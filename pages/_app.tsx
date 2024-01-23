@@ -28,9 +28,6 @@ const MyApp = ({
   Component,
   pageProps: { session, ...pageProps },
 }: AppProps): JSX.Element => {
-  const router = useRouter()
-  const isHome = router.pathname === '/' || router.pathname === '/login'
-
   return (
     <>
       <SessionProvider session={session}>
@@ -43,13 +40,9 @@ const MyApp = ({
           />
         </Head>
         <Analytics />
-        {isHome ? (
+        <LayoutWrapper>
           <Component {...pageProps} />
-        ) : (
-          <LayoutWrapper>
-            <Component {...pageProps} />
-          </LayoutWrapper>
-        )}
+        </LayoutWrapper>
       </SessionProvider>
     </>
   )
