@@ -1,13 +1,13 @@
-export {};
+export {}
 
 declare global {
-	type PageSEOProps = {
-		title: string;
-		description: string;
-	};
+  type PageSEOProps = {
+    title: string
+    description: string
+  }
 
-	type Wrapper = {
-		children: React.ReactNode;
-		className?: string;
-	};
+  type Wrapper = {
+    children: React.ReactNode
+    className?: string
+  }
 }

@@ -24,6 +24,7 @@ const authOptions = {
     },
     async session({ session, token }: { session: any; token: JWT }) {
       session.token = token
+      session.key = null
 
       return session
     },

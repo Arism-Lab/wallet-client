@@ -39,7 +39,7 @@ export const generateMetadata = async ({
         {
           id: uuidv4(),
           deviceIndex: enableMFA ? deviceIndex.toString('hex') : undefined,
-          deviceValue: enableMFA ? deviceValue.toString('hex') : undefined,
+          deviceValue: enableMFA ? deviceValue?.toString('hex') : undefined,
           deviceInfo,
         },
       ],
@@ -58,7 +58,7 @@ export const reconstructMasterKey = async ({
   const masterPrivateKey = lagrangeInterpolation(indices, values, BN.ZERO)
 
   return {
-    masterKey: masterPrivateKey,
+    masterKey: masterPrivateKey!,
   }
 }
 
@@ -95,7 +95,7 @@ export const enableMFA = async ({
 
   const newDevice = {
     id: uuidv4(),
-    deviceValue: newDeviceValue.toString('hex'),
+    deviceValue: newDeviceValue!.toString('hex'),
     deviceInfo,
   }
 
@@ -109,8 +109,8 @@ export const enableMFA = async ({
   // Generate passphrase-index
   const { masterKey } = await reconstructMasterKey({
     shareA: {
-      index: newDeviceIndex,
-      value: newDeviceValue,
+      index: newDeviceIndex!,
+      value: newDeviceValue!,
     },
     shareB: {
       index: nodeIndex,
@@ -152,7 +152,7 @@ export const enableMFA = async ({
   return {
     metadata: newMetadata,
     device: newDevice,
-    recovery: { value: newRecoveryValue },
+    recovery: { value: newRecoveryValue! },
   }
 }
 
@@ -231,7 +231,7 @@ export const updateMetadataRecoveryMFA = async (
     },
   }
 
-  return { metadata: newMetadata, recovery: { value: newRecoveryValue } }
+  return { metadata: newMetadata, recovery: { value: newRecoveryValue! } }
 }
 
 export const addNewDeviceInMetadata = async ({
@@ -257,7 +257,7 @@ export const addNewDeviceInMetadata = async ({
 
     const newDevice: P2P.DeviceKey = {
       id: uuidv4(),
-      deviceValue: newDeviceValue.toString('hex'),
+      deviceValue: newDeviceValue!.toString('hex'),
       deviceInfo,
     }
     devices.push({
@@ -295,7 +295,7 @@ export const addNewDeviceInMetadata = async ({
 
     const newDevice: P2P.DeviceKey = {
       id: uuidv4(),
-      deviceValue: newDeviceValue.toString('hex'),
+      deviceValue: newDeviceValue!.toString('hex'),
       deviceInfo,
     }
 

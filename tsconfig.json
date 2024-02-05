@@ -10,6 +10,7 @@
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "node",
+    "noImplicitAny": false,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
@@ -39,5 +40,6 @@
     ".next/types/**/*.ts",
     "contexts/auth.jsx"
   ],
+  "typeRoots": ["../node_modules/@types", "../@types"],
   "exclude": ["node_modules"]
 }

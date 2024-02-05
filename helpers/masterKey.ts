@@ -3,6 +3,7 @@ import type * as P2P from '@/types/p2p'
 import { kCombinations, thresholdSame } from '@/libs/arithmetic'
 import { BN, N, H, C } from '@/common/index'
 import { lagrangeInterpolation } from '@/libs/arithmetic'
+import { Dispatch, SetStateAction } from 'react'
 
 const ping = async (url: string) => {
   const response = await axios.get(url)
@@ -47,8 +48,6 @@ const fetchNodes = async () => {
     }
   })
 
-  console.log({ urls, publicKeys, indices })
-
   if (urls.length < 2) throw new Error('Not enough nodes')
 
   return { urls, publicKeys, indices }
@@ -81,11 +80,10 @@ export const getAddress = async (
   return { data: undefined, error: errorApi }
 }
 
-export const constructPrivateKey = async ({
-  idToken,
-  owner,
-  verifier,
-}: P2P.GetPrivateKeyRequest): Promise<{
+export const constructPrivateKey = async (
+  { idToken, owner, verifier }: P2P.GetPrivateKeyRequest,
+  setStatus: Dispatch<SetStateAction<number>>
+): Promise<{
   data?: P2P.GetPrivateKeyResponse
   error?: P2P.ErrorApi
 }> => {
@@ -97,7 +95,10 @@ export const constructPrivateKey = async ({
     const commitment = H.keccak256(idToken)
 
     const { urls, indices } = await fetchNodes()
-    const signatures = []
+    const signatures: P2P.CommitmentResponse[] = []
+
+    await new Promise((resolve) => setTimeout(resolve, 3000))
+    setStatus(1) // step 2
 
     for (const url of urls) {
       try {
@@ -113,14 +114,15 @@ export const constructPrivateKey = async ({
       } catch {}
     }
 
-    console.log({ signatures })
-
     if (signatures.length <= ~~(urls.length / 4) * 3 + 1) {
       return {
         data: undefined,
         error: { statusCode: '400', errorMessage: 'Invalid signature' },
       }
     }
+
+    await new Promise((resolve) => setTimeout(resolve, 3000))
+    setStatus(2) // step 3
 
     const shares: P2P.ShareResponse[] = []
     for (const url of urls) {
@@ -142,12 +144,16 @@ export const constructPrivateKey = async ({
       ~~(urls.length / 2) + 1
     )
 
+    await new Promise((resolve) => setTimeout(resolve, 3000))
+    setStatus(3) // step 4
+
     if (completedRequests.length >= ~~(urls.length / 2) + 1) {
       const sharePromises: Promise<undefined | Buffer>[] = []
       const shareIndices: BN[] = []
 
       for (let i = 0; i < shares.length; i += 1) {
         const key = shares[i]
+
         if (key) {
           if (key.metadata) {
             const metadata = {
@@ -155,6 +161,7 @@ export const constructPrivateKey = async ({
               iv: Buffer.from(key.metadata.iv, 'hex'),
               mac: Buffer.from(key.metadata.mac, 'hex'),
             }
+
             const shareDecrypt = C.decrypt(tempPrivateKey, {
               ...metadata,
               ciphertext: Buffer.from(key.share, 'hex'),
@@ -163,10 +170,11 @@ export const constructPrivateKey = async ({
           }
         } else {
           sharePromises.push(
-            Promise.resolve(Buffer.from(key.share.padStart(66, '0'), 'hex'))
+            // Promise.resolve(Buffer.from(key.share.padStart(66, '0'), 'hex'))
+            Promise.resolve(undefined)
           )
         }
-        shareIndices.push(BN.from(indices[i], 16))
+        shareIndices.push(BN.from(indices[i], 'hex'))
       }
 
       const sharesResolved: (undefined | Buffer)[] = await Promise.all(
@@ -177,10 +185,13 @@ export const constructPrivateKey = async ({
         if (curr)
           acc.push({
             index: shareIndices[index],
-            value: BN.from(curr, 'hex'),
+            value: BN.from(curr.toString(), 'hex'),
           })
         return acc
       }, [] as { index: BN; value: BN }[])
+
+      await new Promise((resolve) => setTimeout(resolve, 3000))
+      setStatus(4) // step 5
 
       const allCombis = kCombinations(
         decryptedShares.length,
@@ -226,6 +237,10 @@ export const constructPrivateKey = async ({
       }
 
       const address = C.privateKeyToAddress(privateKey)
+
+      await new Promise((resolve) => setTimeout(resolve, 3000))
+      setStatus(5) // step 6
+
       return {
         data: {
           address,
