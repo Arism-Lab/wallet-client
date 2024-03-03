@@ -14,10 +14,10 @@ const Home = (): JSX.Element => {
   return (
     <>
       <HomeSEO />
-      <div className="h-screen w-screen flex bg-global">
+      <div className="bg-global flex h-screen w-screen">
         <main>
-          <div className="flex flex-col items-center justify-center h-full w-5/6 mx-auto text-center space-y-10">
-            <h1 className="text-6xl font-extralight text-gray-800 leading-snug">
+          <div className="mx-auto flex h-full w-5/6 flex-col items-center justify-center space-y-10 text-center">
+            <h1 className="text-6xl font-extralight leading-snug text-gray-800">
               A Distributed Key and Identifier Management Protocol powered by{' '}
               <span className="bg-primary-800 px-3 text-white">
                 Zero Knowledge
@@ -25,13 +25,13 @@ const Home = (): JSX.Element => {
             </h1>
             {session ? (
               <Link href="/dashboard">
-                <Card className="relative py-6 px-8 text-xl group-hover:text-primary-800">
+                <Card className="relative px-8 py-6 text-xl group-hover:text-primary-800">
                   <p>Get Started</p>
                 </Card>
               </Link>
             ) : (
               <button onClick={(e) => handleSignIn(e)}>
-                <Card className="relative py-6 px-8 text-xl group-hover:text-primary-800">
+                <Card className="relative px-8 py-6 text-xl group-hover:text-primary-800">
                   <p>Get Started</p>
                 </Card>
               </button>

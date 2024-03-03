@@ -45,10 +45,10 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
   return (
     <>
       <TransitionWrapper router={router}>
-        <div className="h-screen w-screen flex bg-global">
-          <div className="flex flex-col w-1/5 text-gray-800">
+        <div className="bg-global flex h-screen w-screen">
+          <div className="flex w-1/5 flex-col text-gray-800">
             <Link
-              className="flex items-center place-items-center py-10 mx-auto"
+              className="mx-auto flex place-items-center items-center py-10"
               href="/"
             >
               <Image
@@ -64,14 +64,14 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
                 </p>
               </div>
             </Link>
-            <div className="flex flex-col items-center justify-center transition duration-150 ease-in-out space-y-2">
+            <div className="flex flex-col items-center justify-center space-y-2 transition duration-150 ease-in-out">
               {sideNavigation.map((item, index) => (
                 <Link
                   href={item.path}
                   key={index}
                   className={`${
                     currPath === item.path ? 'text-black' : 'text-gray-500'
-                  } flex items-center justify-items-start w-5/6 h-14 mx-auto py-3 hover:rounded-full hover:bg-black hover:bg-opacity-10 transition-all duration-200 ease-in-out`}
+                  } mx-auto flex h-14 w-5/6 items-center justify-items-start py-3 transition-all duration-200 ease-in-out hover:rounded-full hover:bg-black hover:bg-opacity-10`}
                 >
                   {item.icon({
                     active: currPath === item.path,
@@ -81,27 +81,27 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
                 </Link>
               ))}
             </div>
-            <div className="mt-auto mb-10 flex flex-col ml-[20%] space-y-5">
+            <div className="mb-10 ml-[20%] mt-auto flex flex-col space-y-5">
               {siteMetadata.externalLinks.map((item) => (
                 <Link
                   href={item.url}
                   key={item.name}
-                  className="flex items-start text-base text-gray-500 hover:text-black transition-all duration-200 ease-in-out"
+                  className="flex items-start text-base text-gray-500 transition-all duration-200 ease-in-out hover:text-black"
                 >
                   {item.name}
                 </Link>
               ))}
             </div>
           </div>
-          <hr className="w-[0.75px] h-full self-center bg-black bg-opacity-10" />
+          <hr className="h-full w-[0.75px] self-center bg-black bg-opacity-10" />
           <main className="w-full">
-            <div className="p-12 flex flex-col">
-              <div className="flex justify-between w-full">
+            <div className="flex flex-col p-12">
+              <div className="flex w-full justify-between">
                 <p className="text-5xl font-extrabold">{pageTitle}</p>
-                <div className="flex gap-5 place-items-center">
+                <div className="flex place-items-center gap-5">
                   <div className="flex items-center space-x-2 ">
-                    <button className="flex place-items-center text-sm bg-white py-2 pl-3 pr-2 hover:bg-yellow-600 rounded-full transition-all duration-200 ease-in-out h-12 group">
-                      <IoIosWarning className="w-5 h-5 text-yellow-600 group-hover:text-white " />
+                    <button className="group flex h-12 place-items-center rounded-full bg-white py-2 pl-3 pr-2 text-sm transition-all duration-200 ease-in-out hover:bg-yellow-600">
+                      <IoIosWarning className="h-5 w-5 text-yellow-600 group-hover:text-white " />
                       <p className="px-2 text-black group-hover:text-white">
                         Turn on MFA
                       </p>
@@ -109,7 +109,7 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
                   </div>
                   <hr className="h-full w-[0.75px] bg-black bg-opacity-10" />
                   <div className="flex items-center space-x-2 ">
-                    <button className="flex place-items-center text-sm bg-white py-2 pl-3 pr-2 hover:text-white hover:bg-primary-600 rounded-full transition-all duration-200 ease-in-out">
+                    <button className="flex place-items-center rounded-full bg-white py-2 pl-3 pr-2 text-sm transition-all duration-200 ease-in-out hover:bg-primary-600 hover:text-white">
                       <Image
                         alt="User avatar"
                         src={session?.user?.image ?? '/images/avatar.png'}
@@ -121,9 +121,9 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
                     </button>
                     <button
                       onClick={() => signOut({ callbackUrl: '/' })}
-                      className="rounded-full p-2 bg-white text-red-600 hover:bg-red-600 hover:text-white transition-all duration-200 ease-in-out"
+                      className="rounded-full bg-white p-2 text-red-600 transition-all duration-200 ease-in-out hover:bg-red-600 hover:text-white"
                     >
-                      <AiOutlineLogout className="w-7 h-7" />
+                      <AiOutlineLogout className="h-7 w-7" />
                     </button>
                   </div>
                 </div>

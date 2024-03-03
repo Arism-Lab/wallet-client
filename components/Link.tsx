@@ -25,7 +25,7 @@ const Link: FC<LinkProps & HTMLProps<HTMLAnchorElement>> = ({
 
   return (
     <a
-      className="flex group w-min magic-link-no-underline"
+      className="magic-link-no-underline group flex w-min"
       target="_blank"
       rel="noopener noreferrer"
       href={href}

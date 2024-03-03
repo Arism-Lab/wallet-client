@@ -62,14 +62,14 @@ const Login = (): JSX.Element => {
   return (
     <>
       <HomeSEO />
-      <main className="relative h-screen w-screen flex bg-global">
-        <div className="grid place-items-center my-auto w-full mx-auto gap-20">
+      <main className="bg-global relative flex h-screen w-screen">
+        <div className="mx-auto my-auto grid w-full place-items-center gap-20">
           {status === loginSteps.length - 1 ? (
-            <h1 className="text-6xl font-extralight text-primary-800 leading-snug">
+            <h1 className="text-6xl font-extralight leading-snug text-primary-800">
               You are all set!
             </h1>
           ) : (
-            <h1 className="text-6xl font-extralight text-gray-800 leading-snug">
+            <h1 className="text-6xl font-extralight leading-snug text-gray-800">
               Logging in...
             </h1>
           )}
@@ -81,12 +81,12 @@ const Login = (): JSX.Element => {
         </div>
         {status === loginSteps.length - 1 && (
           <button
-            className="flex z-10 absolute inset-y-0 right-0 w-1/3 h-full bg-opacity-0 hover:bg-gradient-to-r hover:from-transparent hover:to-primary-200 group"
+            className="group absolute inset-y-0 right-0 z-10 flex h-full w-1/3 bg-opacity-0 hover:bg-gradient-to-r hover:from-transparent hover:to-primary-200"
             onClick={navigateToDashboard}
           >
-            <p className="w-full my-auto mr-5 text-right font-light hidden group-hover:block text-white text-3xl">
+            <p className="my-auto mr-5 hidden w-full text-right text-3xl font-light text-white group-hover:block">
               Dashboard
-              <MdOutlineKeyboardDoubleArrowRight className="inline-block ml-2 w-8 h-8 font-light" />
+              <MdOutlineKeyboardDoubleArrowRight className="ml-2 inline-block h-8 w-8 font-light" />
             </p>
           </button>
         )}

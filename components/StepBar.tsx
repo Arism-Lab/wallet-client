@@ -4,7 +4,7 @@ import { MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md'
 const Loading = (): JSX.Element => {
   return (
     <svg
-      className="animate-spin text-white p-1"
+      className="animate-spin p-1 text-white"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
@@ -38,14 +38,14 @@ const PreviousStep = ({
   return (
     <>
       {index != 0 && (
-        <div className="z-0 absolute w-1/2 h-1 left-0 mt-[8%] inset-y-0 bg-gray-800"></div>
+        <div className="absolute inset-y-0 left-0 z-0 mt-[8%] h-1 w-1/2 bg-gray-800"></div>
       )}
       {index + 1 == currentStep ? (
-        <div className="z-0 absolute w-1/2 h-1 right-0 mt-[8%] inset-y-0 bg-gradient-to-r from-gray-800 to-secondary-800"></div>
+        <div className="absolute inset-y-0 right-0 z-0 mt-[8%] h-1 w-1/2 bg-gradient-to-r from-gray-800 to-secondary-800"></div>
       ) : (
-        <div className="z-0 absolute w-1/2 h-1 right-0 mt-[8%] inset-y-0 bg-gray-800"></div>
+        <div className="absolute inset-y-0 right-0 z-0 mt-[8%] h-1 w-1/2 bg-gray-800"></div>
       )}
-      <div className="z-10 flex items-center justify-center w-8 h-8 rounded-full bg-gray-800">
+      <div className="z-10 flex h-8 w-8 items-center justify-center rounded-full bg-gray-800">
         <FaCheck className="text-white" />
       </div>
       <span className="text-gray-800">{stepName}</span>
@@ -69,12 +69,12 @@ const CurrentStep = ({
   if (index == stepLength - 1) {
     return (
       <>
-        <div className="z-10 absolute w-[42%] h-1 left-0 mt-[8%] inset-y-0 bg-gradient-to-r from-blue-800 to-primary-800"></div>
+        <div className="absolute inset-y-0 left-0 z-10 mt-[8%] h-1 w-[42%] bg-gradient-to-r from-blue-800 to-primary-800"></div>
         <button
-          className="z-20 flex items-center justify-center w-8 h-8 rounded-full border-2 border-primary-800 hover:bg-primary-800 transition-all duration-300 text-primary-800 hover:text-white"
+          className="z-20 flex h-8 w-8 items-center justify-center rounded-full border-2 border-primary-800 text-primary-800 transition-all duration-300 hover:bg-primary-800 hover:text-white"
           onClick={trigger}
         >
-          <MdOutlineKeyboardDoubleArrowRight className="w-4 h-4" />
+          <MdOutlineKeyboardDoubleArrowRight className="h-4 w-4" />
         </button>
         <span className="text-primary-800">Dashboard</span>
       </>
@@ -83,10 +83,10 @@ const CurrentStep = ({
     return (
       <>
         {index != 0 && (
-          <div className="z-0 absolute w-1/2 h-1 left-0 mt-[8%] inset-y-0 bg-gradient-to-r from-secondary-800 to-primary-800"></div>
+          <div className="absolute inset-y-0 left-0 z-0 mt-[8%] h-1 w-1/2 bg-gradient-to-r from-secondary-800 to-primary-800"></div>
         )}
-        <div className="z-10 absolute w-[42%] h-1 right-0 mt-[8%] inset-y-0 bg-gradient-to-r from-primary-800 to-primary-500"></div>
-        <div className="z-0 flex items-center justify-center w-8 h-8 rounded-full bg-primary-800">
+        <div className="absolute inset-y-0 right-0 z-10 mt-[8%] h-1 w-[42%] bg-gradient-to-r from-primary-800 to-primary-500"></div>
+        <div className="z-0 flex h-8 w-8 items-center justify-center rounded-full bg-primary-800">
           <Loading />
         </div>
         <span className="text-primary-800">{stepName}</span>
@@ -109,12 +109,12 @@ const NextStep = ({
   if (index == stepLength - 1) {
     return (
       <>
-        <div className="z-0 absolute w-[42%] h-1 left-0 mt-[8%] inset-y-0 bg-gray-500"></div>
+        <div className="absolute inset-y-0 left-0 z-0 mt-[8%] h-1 w-[42%] bg-gray-500"></div>
         <button
-          className="z-10 flex items-center justify-center w-8 h-8 rounded-full border-2 border-gray-500 text-gray-500"
+          className="z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-500 text-gray-500"
           disabled
         >
-          <MdOutlineKeyboardDoubleArrowRight className="w-4 h-4" />
+          <MdOutlineKeyboardDoubleArrowRight className="h-4 w-4" />
         </button>
         <span className="text-gray-500">Dashboard</span>
       </>
@@ -124,14 +124,14 @@ const NextStep = ({
   return (
     <>
       {index - 1 == currentStep ? (
-        <div className="z-0 absolute w-1/2 h-1 left-0 mt-[8%] inset-y-0 bg-gradient-to-r from-primary-500 to-gray-500"></div>
+        <div className="absolute inset-y-0 left-0 z-0 mt-[8%] h-1 w-1/2 bg-gradient-to-r from-primary-500 to-gray-500"></div>
       ) : (
-        <div className="z-0 absolute w-1/2 h-1 left-0 mt-[8%] inset-y-0 bg-gray-500"></div>
+        <div className="absolute inset-y-0 left-0 z-0 mt-[8%] h-1 w-1/2 bg-gray-500"></div>
       )}
       {index != stepLength - 1 && (
-        <div className="z-0 absolute w-1/2 h-1 right-0 mt-[8%] inset-y-0 bg-gray-500"></div>
+        <div className="absolute inset-y-0 right-0 z-0 mt-[8%] h-1 w-1/2 bg-gray-500"></div>
       )}
-      <div className="z-0 flex items-center justify-center w-8 h-8 rounded-full bg-gray-500">
+      <div className="z-0 flex h-8 w-8 items-center justify-center rounded-full bg-gray-500">
         <span className="text-white">{index + 1}</span>
       </div>
       <span className="text-gray-500">{stepName}</span>
@@ -155,7 +155,7 @@ const StepBar = ({
     <div className={className}>
       {totalSteps.map((stepName, index) => (
         <div className="block" key={index}>
-          <div className="relative grid justify-items-center gap-3 grid-cols">
+          <div className="grid-cols relative grid justify-items-center gap-3">
             {index < currentStep ? (
               <PreviousStep
                 stepName={stepName}

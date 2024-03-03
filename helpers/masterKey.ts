@@ -177,18 +177,20 @@ export const constructPrivateKey = async (
         shareIndices.push(BN.from(indices[i], 'hex'))
       }
 
-      const sharesResolved: (undefined | Buffer)[] = await Promise.all(
-        sharePromises
-      )
+      const sharesResolved: (undefined | Buffer)[] =
+        await Promise.all(sharePromises)
 
-      const decryptedShares = sharesResolved.reduce((acc, curr, index) => {
-        if (curr)
-          acc.push({
-            index: shareIndices[index],
-            value: BN.from(curr.toString(), 'hex'),
-          })
-        return acc
-      }, [] as { index: BN; value: BN }[])
+      const decryptedShares = sharesResolved.reduce(
+        (acc, curr, index) => {
+          if (curr)
+            acc.push({
+              index: shareIndices[index],
+              value: BN.from(curr.toString(), 'hex'),
+            })
+          return acc
+        },
+        [] as { index: BN; value: BN }[]
+      )
 
       await new Promise((resolve) => setTimeout(resolve, 3000))
       setStatus(4) // step 5
