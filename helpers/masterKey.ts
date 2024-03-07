@@ -7,7 +7,7 @@ import { Dispatch, SetStateAction } from 'react'
 
 const ping = async (url: string) => {
   const response = await axios.get(url)
-  return response?.data === 'Node is running'
+  return response?.data === 'pong!'
 }
 
 const fetchNodes = async () => {
@@ -67,7 +67,7 @@ export const getAddress = async (
     try {
       const { owner } = input
       const { data } = await axios.post<P2P.GetAddressResponse>(
-        `${url}/wallets`,
+        `${url}/wallet`,
         { owner }
       )
       return { data, error: undefined }
@@ -95,7 +95,7 @@ export const constructPrivateKey = async (
     const commitment = H.keccak256(idToken)
 
     const { urls, indices } = await fetchNodes()
-    const signatures: P2P.CommitmentResponse[] = []
+    const commitments: P2P.CommitmentResponse[] = []
 
     await new Promise((resolve) => setTimeout(resolve, 3000))
     setStatus(1) // step 2
@@ -107,14 +107,13 @@ export const constructPrivateKey = async (
           {
             commitment,
             tempPublicKey,
-            timestamp: (Date.now() + 60).toString(),
           }
         )
-        signatures.push(p.data)
+        commitments.push(p.data)
       } catch {}
     }
 
-    if (signatures.length <= ~~(urls.length / 4) * 3 + 1) {
+    if (commitments.length <= ~~(urls.length / 4) * 3 + 1) {
       return {
         data: undefined,
         error: { statusCode: '400', errorMessage: 'Invalid signature' },
@@ -127,9 +126,8 @@ export const constructPrivateKey = async (
     const shares: P2P.ShareResponse[] = []
     for (const url of urls) {
       try {
-        const p = await axios.post<P2P.ShareResponse>(`${url}/shared-keys`, {
-          signatures,
-          verifier,
+        const p = await axios.post<P2P.ShareResponse>(`${url}/secret`, {
+          commitments,
           owner,
           idToken,
           tempPublicKey,
