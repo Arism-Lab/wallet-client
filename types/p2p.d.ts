@@ -3,7 +3,6 @@ import BN from 'bn.js'
 
 export type GetAddressRequest = {
   owner: string
-  verifier: string
 }
 
 export type GetAddressResponse = {
@@ -15,7 +14,6 @@ export type GetAddressResponse = {
 export type GetPrivateKeyRequest = {
   owner: string
   idToken: string
-  verifier: string
 }
 
 export type GetPrivateKeyResponse = {
@@ -43,12 +41,14 @@ export type ShareRequest = {
   tempPublicKey?: string
 }
 
-export type ShareResponse = {
-  share: string
+export type SecretResponse = {
+  masterShare: string
   threshold: number
   publicKey: string
   metadata: {
-    [key in keyof Ecies]: string
+    iv: string
+    ephemPublicKey: string
+    mac: string
   }
 }
 

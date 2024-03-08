@@ -4,11 +4,11 @@ import Router from 'next/router'
 import ProgressBar from 'react-scroll-progress-bar'
 import NProgress from 'nprogress'
 import { useRouter } from 'next/router'
-import LayoutWrapper from '@/components/LayoutWrapper'
-import '@/styles/tailwind.css'
-import '@/styles/extra.css'
+import LayoutWrapper from '@components/LayoutWrapper'
+import '@styles/tailwind.css'
+import '@styles/extra.css'
 import { SessionProvider } from 'next-auth/react'
-import Analytics from '@/components/Analytics'
+import Analytics from '@components/Analytics'
 
 // NProgress.configure({ showSpinner: false });
 

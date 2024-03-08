@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { AiOutlineLogout } from 'react-icons/ai'
 import { IoIosWarning } from 'react-icons/io'
-import sideNavigation from '@/data/sideNavigation'
-import Link from '@/components/Link'
-import { siteMetadata } from '@/data/siteMetadata'
-import Loading from '@/components/Loading'
-import TransitionWrapper from '@/components/TransitionWrapper'
+import sideNavigation from '@data/sideNavigation'
+import Link from '@components/Link'
+import { siteMetadata } from '@data/siteMetadata'
+import Loading from '@components/Loading'
+import TransitionWrapper from '@components/TransitionWrapper'
 
 const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
   const [session, setSession] = useState<any | null>(null)

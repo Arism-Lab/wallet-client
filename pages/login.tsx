@@ -1,16 +1,16 @@
 import { getSession, useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md'
-import * as P2P from '@/types/p2p'
-import { HomeSEO } from '@/components/PageSEO'
-import { constructPrivateKey } from '@/helpers/masterKey'
-import TransitionWrapper from '@/components/TransitionWrapper'
+import * as P2P from '@types/p2p'
+import { HomeSEO } from '@components/PageSEO'
+import { constructPrivateKey } from '@helpers/networkKey'
+import TransitionWrapper from '@components/TransitionWrapper'
 import { useRouter } from 'next/router'
-import Loading from '@/components/Loading'
-import StepBar from '@/components/StepBar'
+import Loading from '@components/Loading'
+import StepBar from '@components/StepBar'
 import { Session } from 'next-auth'
 
-const loginSteps = [
+const STEPS = [
   'Checking',
   'Making commitments',
   'Making share proofs',
@@ -18,10 +18,11 @@ const loginSteps = [
   'Reconstructing private key',
   'Finished',
 ]
+const FINAL_STEP = STEPS.length - 1
 
 const Login = (): JSX.Element => {
   const [loading, setLoading] = useState<boolean>(true)
-  const [status, setStatus] = useState<number>(0)
+  const [step, setStep] = useState<number>(0)
   const router = useRouter()
   const { update } = useSession()
 
@@ -30,20 +31,20 @@ const Login = (): JSX.Element => {
       const session: Session | null = await getSession()
 
       if (session!.key) {
-        setStatus(loginSteps.length - 1)
+        setStep(FINAL_STEP)
         return
       }
+
       const input: P2P.GetPrivateKeyRequest = {
         idToken: session!.token.idToken,
         owner: session!.user!.email!,
-        verifier: 'google',
       }
       setLoading(false)
 
-      const key = await constructPrivateKey(input, setStatus)
-      console.log({ key: key.data })
-      await update({ ...session, key: key.data })
-      const updatedSession = await getSession()
+      const key = await constructPrivateKey(input, setStep)
+      console.log({ key })
+      // await update({ ...session, key: key.data })
+      // const updatedSession = await getSession()
     })()
   }, [])
 
@@ -64,7 +65,7 @@ const Login = (): JSX.Element => {
       <HomeSEO />
       <main className="bg-global relative flex h-screen w-screen">
         <div className="mx-auto my-auto grid w-full place-items-center gap-20">
-          {status === loginSteps.length - 1 ? (
+          {step === FINAL_STEP ? (
             <h1 className="text-6xl font-extralight leading-snug text-primary-800">
               You are all set!
             </h1>
@@ -74,12 +75,12 @@ const Login = (): JSX.Element => {
             </h1>
           )}
           <StepBar
-            currentStep={status}
-            totalSteps={loginSteps}
+            currentStep={step}
+            totalSteps={STEPS}
             trigger={navigateToDashboard}
           />
         </div>
-        {status === loginSteps.length - 1 && (
+        {step === FINAL_STEP && (
           <button
             className="group absolute inset-y-0 right-0 z-10 flex h-full w-1/3 bg-opacity-0 hover:bg-gradient-to-r hover:from-transparent hover:to-primary-200"
             onClick={navigateToDashboard}

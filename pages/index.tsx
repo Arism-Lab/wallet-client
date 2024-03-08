@@ -1,6 +1,6 @@
-import Card from '@/components/Card'
-import Link from '@/components/Link'
-import { HomeSEO } from '@/components/PageSEO'
+import Card from '@components/Card'
+import Link from '@components/Link'
+import { HomeSEO } from '@components/PageSEO'
 import { signIn, useSession } from 'next-auth/react'
 
 const Home = (): JSX.Element => {

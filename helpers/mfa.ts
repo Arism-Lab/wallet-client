@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from 'uuid'
 import moment from 'moment'
-import type * as P2P from '@/types/p2p'
-import { BN, EC } from '@/common/index'
-import { lagrangeInterpolation } from '@/libs/arithmetic'
+import type * as P2P from '@types/p2p'
+import { BN, EC } from '@common/index'
+import { lagrangeInterpolation } from '@libs/arithmetic'
 
 export const generateMetadata = async ({
   owner,

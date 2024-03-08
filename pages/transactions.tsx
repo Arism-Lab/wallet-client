@@ -1,5 +1,5 @@
-import { PageSEO } from '@/components/PageSEO'
-import sideNavigation from '@/data/sideNavigation'
+import { PageSEO } from '@components/PageSEO'
+import sideNavigation from '@data/sideNavigation'
 import { GetStaticProps } from 'next'
 
 export const getStaticProps: GetStaticProps = async (a) => {

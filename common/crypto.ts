@@ -1,5 +1,5 @@
 import { toChecksumAddress } from 'web3-utils'
-import { BN, EC, H } from '@/common/index'
+import { BN, EC, H } from '@common'
 import * as Crypto from 'eccrypto'
 
 export const decrypt = (

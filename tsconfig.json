@@ -22,15 +22,7 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/components/*": ["components/*"],
-      "@/pages/*": ["pages/*"],
-      "@/styles/*": ["styles/*"],
-      "@/contexts/*": ["contexts/*"],
-      "@/data/*": ["data/*"],
-      "@/libs/*": ["libs/*"],
-      "@/types/*": ["types/*"],
-      "@/common/*": ["common/*"],
-      "@/helpers/*": ["helpers/*"]
+      "@*": ["./*"]
     }
   },
   "include": [

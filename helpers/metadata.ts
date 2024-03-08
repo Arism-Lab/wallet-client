@@ -1,4 +1,4 @@
-import type * as P2P from '@/types/p2p'
+import type * as P2P from '@types/p2p'
 import { getPublic, encrypt, decrypt } from 'eccrypto'
 import axios from 'axios'
 import {
@@ -8,13 +8,13 @@ import {
   enableMFA,
   updateMetadataPasswordMFA,
   updateMetadataRecoveryMFA,
-} from '@/helpers/mfa'
-import { deviceInfo } from '@/helpers/device'
-import { BN, EC } from '@/common/index'
+} from '@helpers/mfa'
+import { deviceInfo } from '@helpers/device'
+import { BN, EC } from '@common/index'
 import { findIndex, isEmpty } from 'lodash'
 import { keccak256 } from 'web3-utils'
-import { hexToMnemonic, mnemonicToHex } from '@/libs/mnemonic'
-import { privateKeyToAddress } from '@/common/crypto'
+import { hexToMnemonic, mnemonicToHex } from '@libs/mnemonic'
+import { privateKeyToAddress } from '@common/crypto'
 
 export const updateMetadata = async (
   owner: string,

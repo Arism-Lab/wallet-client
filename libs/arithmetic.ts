@@ -1,5 +1,5 @@
 import JsonStringify from 'json-stable-stringify'
-import { BN, EC } from '@/common/index'
+import { BN, EC } from '@common/index'
 
 export const thresholdSame = <T>(arr: T[], t: number): T | null => {
   const hashMap: Record<string, number> = {}
