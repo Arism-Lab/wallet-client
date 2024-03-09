@@ -1,5 +1,6 @@
 import JsonStringify from 'json-stable-stringify'
-import { BN, EC, T } from '@common'
+import { BN, EC } from '@common'
+import { TA } from '@types'
 
 export const thresholdSame = <T>(arr: T[], t: number): T | null => {
     const hashMap: Record<string, number> = {}
@@ -47,10 +48,7 @@ export const kCombinations = (s: number | number[], k: number): number[][] => {
     return combs
 }
 
-export const lagrangeInterpolation = (
-    points: T.Point[],
-    xPoint: BN
-): BN | null => {
+export const lagrangeInterpolation = (points: TA.Point[], x: BN): BN => {
     let result = BN.ZERO
     for (const { x: currentX, y: currentY } of points) {
         let upper = BN.ONE
@@ -58,7 +56,7 @@ export const lagrangeInterpolation = (
 
         for (const { x: otherX } of points) {
             if (!currentX.eq(otherX)) {
-                upper = upper.mul(xPoint.sub(otherX)).umod(EC.ORDER)
+                upper = upper.mul(x.sub(otherX)).umod(EC.ORDER)
 
                 let diff = currentX.sub(otherX)
 

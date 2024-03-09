@@ -1,14 +1,14 @@
 import { getSession, useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md'
-import * as P2P from '@types/p2p'
-import { HomeSEO } from '@components/PageSEO'
-import { constructPrivateKey } from '@helpers/networkKey'
-import TransitionWrapper from '@components/TransitionWrapper'
 import { useRouter } from 'next/router'
+import { Session } from 'next-auth'
+import { HomeSEO } from '@components/PageSEO'
+import TransitionWrapper from '@components/TransitionWrapper'
 import Loading from '@components/Loading'
 import StepBar from '@components/StepBar'
-import { Session } from 'next-auth'
+import { deriveNetworkFactor } from '@helpers/networkFactor'
+import { TA } from '@types'
 
 const STEPS = [
 	'Checking',
@@ -35,13 +35,16 @@ const Login = (): JSX.Element => {
 				return
 			}
 
-			const input: P2P.GetPrivateKeyRequest = {
+			const input: TA.DeriveNetworkFactorRequest = {
 				idToken: session!.token.idToken,
 				owner: session!.user!.email!,
 			}
 			setLoading(false)
 
-			const key = await constructPrivateKey(input, setStep)
+			const key: TA.DeriveNetworkFactorResponse = await deriveNetworkFactor(
+				input,
+				setStep
+			)
 			console.log({ key })
 			// await update({ ...session, key: key.data })
 			// const updatedSession = await getSession()

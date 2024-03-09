@@ -1,10 +1,4 @@
-const getWindow = (): Window | undefined => {
-    if (typeof window !== 'undefined') {
-        return window
-    }
-}
-
-const getBrowserName = (userAgent: string) => {
+const getBrowserName = (userAgent: string): string => {
     const browsers = {
         Chrome: /Chrome\/(\d+)/,
         Firefox: /Firefox\/(\d+)/,
@@ -69,17 +63,11 @@ const getOsName = (userAgent: string) => {
     return 'Unknown'
 }
 
-export const deviceInfo = () => {
-    const win = getWindow()
+export const getDeviceInfo = () => {
+    const userAgent = window?.navigator.userAgent || 'Unknown'
+    const browserName = getBrowserName(userAgent)
+    const browserVersion = getBrowserVersion(userAgent)
+    const osName = getOsName(userAgent)
 
-    try {
-        const userAgent = win!.navigator.userAgent
-        const browserName = getBrowserName(userAgent)
-        const browserVersion = getBrowserVersion(userAgent)
-        const osName = getOsName(userAgent)
-
-        return `${browserName}-${browserVersion}-${osName}`
-    } catch (error) {
-        return ''
-    }
+    return `${browserName}-${browserVersion}-${osName}`
 }

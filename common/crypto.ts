@@ -9,11 +9,15 @@ export const decrypt = (
     return Crypto.decrypt(privateKey, opts)
 }
 
+export const generatePrivateKey = (): Buffer => {
+    return Crypto.generatePrivate()
+}
+
 export const getPublicKey = (privateKey: Buffer): Buffer => {
     return Crypto.getPublic(privateKey)
 }
 
-export const privateKeyToAddress = (privateKey: BN): string => {
+export const getAddressFromPrivateKey = (privateKey: BN): string => {
     const key = EC.secp256k1.keyFromPrivate(
         privateKey.toString('hex', 64),
         'hex'
@@ -23,8 +27,4 @@ export const privateKeyToAddress = (privateKey: BN): string => {
         Buffer.from(publicKey, 'hex')
     ).slice(64 - 38)}`
     return toChecksumAddress(lowercaseAddress)
-}
-
-export const generatePrivateKey = (): Buffer => {
-    return Crypto.generatePrivate()
 }
