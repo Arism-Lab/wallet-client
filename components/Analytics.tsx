@@ -3,69 +3,69 @@ import * as VA from '@vercel/analytics/react'
 
 // https://developers.google.com/analytics/devguides/collection/gtagjs/events
 export const logEvent = (
-  action: any,
-  category: any,
-  label: any,
-  value: any
+	action: any,
+	category: any,
+	label: any,
+	value: any
 ) => {
-  ;(window as any)?.gtag('event', action, {
-    event_category: category,
-    event_label: label,
-    value: value,
-  })
+	;(window as any)?.gtag('event', action, {
+		event_category: category,
+		event_label: label,
+		value: value,
+	})
 }
 
 const GoogleScript = (): JSX.Element => {
-  return (
-    <>
-      <Script
-        async
-        src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}`}
-      />
+	return (
+		<>
+			<Script
+				async
+				src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}`}
+			/>
 
-      <Script strategy="lazyOnload" id="ga-script">
-        {`
+			<Script strategy="lazyOnload" id="ga-script">
+				{`
                     window.dataLayer = window.dataLayer || [];
                     function gtag(){dataLayer.push(arguments);}
                     gtag('js', new Date());
                     gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}');
                 `}
-      </Script>
-    </>
-  )
+			</Script>
+		</>
+	)
 }
 
 const UmamiScript = (): JSX.Element => {
-  return (
-    <>
-      <Script
-        async
-        defer
-        data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
-        src="https://analytics.umami.is/script.js"
-      />
-    </>
-  )
+	return (
+		<>
+			<Script
+				async
+				defer
+				data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
+				src="https://analytics.umami.is/script.js"
+			/>
+		</>
+	)
 }
 
 const VercelScript = (): JSX.Element => {
-  return (
-    <>
-      <VA.Analytics />
-    </>
-  )
+	return (
+		<>
+			<VA.Analytics />
+		</>
+	)
 }
 
 const isProduction = process.env.NODE_ENV === 'production'
 
 const Analytics = (): JSX.Element => {
-  return (
-    <>
-      {isProduction && <GoogleScript />}
-      {isProduction && <UmamiScript />}
-      {isProduction && <VercelScript />}
-    </>
-  )
+	return (
+		<>
+			{isProduction && <GoogleScript />}
+			{isProduction && <UmamiScript />}
+			{isProduction && <VercelScript />}
+		</>
+	)
 }
 
 export default Analytics

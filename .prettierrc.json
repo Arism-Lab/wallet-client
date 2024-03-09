@@ -1,8 +1,17 @@
 {
-  "semi": false,
-  "trailingComma": "es5",
-  "singleQuote": true,
-  "tabWidth": 2,
-  "useTabs": false,
-  "plugins": ["prettier-plugin-tailwindcss"]
+    "semi": false,
+    "trailingComma": "es5",
+    "singleQuote": true,
+    "tabWidth": 4,
+    "useTabs": false,
+    "overrides": [
+        {
+            "files": "*.tsx",
+            "options": {
+                "tabWidth": 2,
+                "useTabs": true
+            }
+        }
+    ],
+    "plugins": ["prettier-plugin-tailwindcss"]
 }
