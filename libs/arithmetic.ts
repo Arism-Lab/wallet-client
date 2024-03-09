@@ -1,5 +1,5 @@
 import JsonStringify from 'json-stable-stringify'
-import { BN, EC } from '@common/index'
+import { BN, EC, T } from '@common'
 
 export const thresholdSame = <T>(arr: T[], t: number): T | null => {
     const hashMap: Record<string, number> = {}
@@ -48,38 +48,38 @@ export const kCombinations = (s: number | number[], k: number): number[][] => {
 }
 
 export const lagrangeInterpolation = (
-    indices: BN[],
-    values: BN[],
+    points: T.Point[],
     xPoint: BN
 ): BN | null => {
-    if (values.length !== indices.length) {
-        return null
-    }
-
-    let secret = BN.ZERO
-    for (let i = 0; i < values.length; i += 1) {
-        const iBN = indices[i]
-
+    let result = BN.ZERO
+    for (const { x: currentX, y: currentY } of points) {
         let upper = BN.ONE
         let lower = BN.ONE
 
-        for (let j = 0; j < values.length; j += 1) {
-            if (i !== j) {
-                const jBN = indices[j]
+        for (const { x: otherX } of points) {
+            if (!currentX.eq(otherX)) {
+                upper = upper.mul(xPoint.sub(otherX)).umod(EC.ORDER)
 
-                upper = upper.mul(xPoint.sub(jBN))
-                upper = upper.umod(EC.ORDER)
+                let diff = currentX.sub(otherX)
 
-                let temp = iBN.sub(jBN)
-                temp = temp.umod(EC.ORDER)
-                lower = lower.mul(temp).umod(EC.ORDER)
+                diff = diff.umod(EC.ORDER)
+                lower = lower.mul(diff).umod(EC.ORDER)
             }
         }
 
         let delta = upper.mul(lower.invm(EC.ORDER)).umod(EC.ORDER)
-        delta = delta.mul(values[i]).umod(EC.ORDER)
-        secret = secret.add(delta)
+        delta = delta.mul(currentY).umod(EC.ORDER)
+        result = result.add(delta).umod(EC.ORDER)
     }
 
-    return secret.umod(EC.ORDER)
+    return result
+}
+
+export const sumMod = (arr: string[], modulo: BN): string => {
+    return arr
+        .reduce(
+            (acc, current) => acc.add(BN.from(current, 'hex')).umod(modulo),
+            BN.ZERO
+        )
+        .toString('hex')
 }

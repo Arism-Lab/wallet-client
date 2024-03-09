@@ -6,15 +6,9 @@ import {
     thresholdSame,
     lagrangeInterpolation,
 } from '@libs/arithmetic'
-import { BN, H, C, N } from '@common'
+import { BN, H, C, N, T } from '@common'
 
-type Node = {
-    id: number
-    url: string
-    publicKey: { X: string; Y: string }
-}
-
-const NODES = [
+const NODES: T.Node[] = [
     {
         id: 1,
         url: 'http://127.0.0.1:3001',
@@ -46,8 +40,8 @@ const ping = async (url: string) => {
     return response?.data === 'pong!'
 }
 
-const fetchNodes = async (): Promise<Node[]> => {
-    const nodes: Node[] = []
+const fetchNodes = async (): Promise<T.Node[]> => {
+    const nodes: T.Node[] = []
 
     for (let i = 0; i < NODES.length; i += 1) {
         await ping(NODES[i].url).then((alive) => {
@@ -57,7 +51,7 @@ const fetchNodes = async (): Promise<Node[]> => {
         })
     }
 
-    if (NODES.length < 2) throw new Error('Not enough nodes')
+    if (NODES.length < 2) throw new Error('Not enough Nodes')
 
     return nodes
 }
@@ -130,7 +124,8 @@ export const constructPrivateKey = async (
 
     setStep(2)
 
-    const masterShares: { value: P2P.SecretResponse; id: number }[] = []
+    const encryptedMasterShares: { value: P2P.SecretResponse; id: number }[] =
+        []
 
     for (const { url, id } of nodes) {
         try {
@@ -143,18 +138,18 @@ export const constructPrivateKey = async (
                     tempPublicKey,
                 }
             )
-            masterShares.push({ value, id })
+            encryptedMasterShares.push({ value, id })
         } catch {}
     }
 
     const thresholdPublicKey = thresholdSame(
-        masterShares.map((masterShare) => masterShare.value.publicKey),
+        encryptedMasterShares.map((e) => e.value.publicKey),
         N.DERIVATION_THRESHOLD
     )
 
     setStep(3)
 
-    if (masterShares.length < N.DERIVATION_THRESHOLD) {
+    if (encryptedMasterShares.length < N.DERIVATION_THRESHOLD) {
         return {
             data: undefined,
             error: {
@@ -166,14 +161,12 @@ export const constructPrivateKey = async (
 
     const decryptedMasterShares: (undefined | Buffer)[] = []
 
-    for (const masterShare of masterShares) {
-        const {
-            value: {
-                metadata: { ephemPublicKey, iv, mac },
-                ciphertext,
-            },
-        } = masterShare
-
+    for (const {
+        value: {
+            metadata: { ephemPublicKey, iv, mac },
+            ciphertext,
+        },
+    } of encryptedMasterShares) {
         const decryptedMasterShare = await C.decrypt(tempPrivateKey, {
             ephemPublicKey: Buffer.from(ephemPublicKey, 'hex'),
             iv: Buffer.from(iv, 'hex'),
@@ -183,35 +176,26 @@ export const constructPrivateKey = async (
         decryptedMasterShares.push(decryptedMasterShare)
     }
 
-    const masterSharePoints: { xValue: BN; yValue: BN }[] =
-        decryptedMasterShares.reduce(
-            (acc, curr, index) => {
-                if (curr)
-                    acc.push({
-                        xValue: BN.from(masterShares[index].id),
-                        yValue: BN.from(curr.toString(), 'hex'),
-                    })
-                return acc
-            },
-            [] as { xValue: BN; yValue: BN }[]
-        )
+    const masterShares: T.Point[] = decryptedMasterShares.reduce(
+        (acc, curr, index) => {
+            if (curr)
+                acc.push({
+                    x: BN.from(encryptedMasterShares[index].id),
+                    y: BN.from(curr.toString(), 'hex'),
+                })
+            return acc
+        },
+        [] as T.Point[]
+    )
 
     setStep(4)
 
-    const allCombis = kCombinations(
-        masterSharePoints.length,
-        N.DERIVATION_THRESHOLD
-    )
     let privateKey: BN | undefined = undefined
+    const allCombis = kCombinations(masterShares.length, N.DERIVATION_THRESHOLD)
 
     for (const combi of allCombis) {
-        const combiMasterShares = masterSharePoints.filter((_, index) =>
-            combi.includes(index)
-        )
-
         const derivedPrivateKey = lagrangeInterpolation(
-            combiMasterShares.map((x) => x.xValue),
-            combiMasterShares.map((x) => x.yValue),
+            masterShares.filter((_, index) => combi.includes(index)),
             BN.ZERO
         )
 
