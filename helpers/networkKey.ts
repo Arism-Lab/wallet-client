@@ -109,7 +109,7 @@ export const constructPrivateKey = async (
                     tempPublicKey,
                 })
             commitments.push(commitment)
-        } catch {}
+        } catch { }
     }
 
     if (commitments.length < N.GENERATION_THRESHOLD) {
@@ -139,10 +139,10 @@ export const constructPrivateKey = async (
                 }
             )
             encryptedMasterShares.push({ value, id })
-        } catch {}
+        } catch { }
     }
 
-    const thresholdPublicKey = thresholdSame(
+    const thresholdAddress = thresholdSame(
         encryptedMasterShares.map((e) => e.value.publicKey),
         N.DERIVATION_THRESHOLD
     )
@@ -203,11 +203,15 @@ export const constructPrivateKey = async (
             continue
         }
 
-        const decryptedPublicKey = C.getPublicKey(
-            Buffer.from(derivedPrivateKey.toString(16, 64), 'hex')
-        ).toString('hex')
+        // const decryptedPublicKey = C.getPublicKey(
+        //     Buffer.from(derivedPrivateKey.toString(16, 64), 'hex')
+        // ).toString('hex')
 
-        if (thresholdPublicKey === decryptedPublicKey) {
+        const addressDecrypted = C.privateKeyToAddress(derivedPrivateKey)
+
+
+
+        if (thresholdAddress === addressDecrypted) {
             privateKey = derivedPrivateKey
         }
     }
