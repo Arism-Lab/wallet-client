@@ -6,7 +6,7 @@ import { AiOutlineLogout } from 'react-icons/ai'
 import { IoIosWarning } from 'react-icons/io'
 import sideNavigation from '@data/sideNavigation'
 import Link from '@components/Link'
-import { siteMetadata } from '@data/siteMetadata'
+import siteMetadata from '@data/siteMetadata.json'
 import Loading from '@components/Loading'
 import TransitionWrapper from '@components/TransitionWrapper'
 

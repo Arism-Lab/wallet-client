@@ -1,0 +1,34 @@
+{
+    "title": "Arism Wallet",
+    "headerTitle": "Arism Wallet - The Hyper Wallet Protocol",
+    "description": "A Distributed Key and Identifier Management Protocol powered by Zero Knowledge",
+    "language": "en-us",
+    "theme": "system",
+    "siteUrl": "https://app.arism.org",
+    "siteRepo": "https://github.com/Arism-Lab/arism-application",
+    "siteLogo": "/static/logo.png",
+    "socialBanner": "/static/banner.png",
+    "externalLinks": [
+        {
+            "name": "Blog",
+            "url": "https://blog.arism.org"
+        },
+        {
+            "name": "Homepage",
+            "url": "https://arism.org"
+        },
+        {
+            "name": "Github",
+            "url": "https://github.com/ArismLab/"
+        },
+        {
+            "name": "Twitter",
+            "url": "https://twitter.com/ArismLab"
+        }
+    ],
+    "locale": "en-US",
+    "analytics": {
+        "umamiWebsiteId": "b018c634-3134-4965-ac2f-8b3a89c32e40",
+        "googleAnalyticsId": "G-V2EES3R603"
+    }
+}

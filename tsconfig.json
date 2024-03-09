@@ -30,7 +30,8 @@
         "**/*.ts",
         "**/*.tsx",
         ".next/types/**/*.ts",
-        "contexts/auth.jsx"
+        "contexts/auth.jsx",
+        "data/siteMetadata.js"
     ],
     "typeRoots": ["../node_modules/@types", "../@types"],
     "exclude": ["node_modules"]
