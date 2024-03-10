@@ -1,17 +1,16 @@
 import Web3 from 'web3'
-import * as BigNumber from 'bn.js'
+import BN from 'bn.js'
 
-export type BN = BigNumber
-
-export const ZERO = new BigNumber.BN(0)
-export const ONE = new BigNumber.BN(1)
+export const ZERO = new BN(0)
+export const ONE = new BN(1)
+export const TWO = new BN(2)
 
 export const from = (
     value: number | string | number[] | Uint8Array | Buffer | BN,
     base?: number | 'hex',
-    endian?: BigNumber.Endianness
+    endian?: BN.Endianness
 ): BN => {
-    return new BigNumber.BN(value, base, endian)
+    return new BN(value, base, endian)
 }
 
 export const to = (value: BN): string => {

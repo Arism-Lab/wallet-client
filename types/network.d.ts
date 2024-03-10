@@ -12,7 +12,7 @@ export type CommitmentResponse = {
 
 export type SecretRequest = {
     commitments: CommitmentResponse[]
-    owner: string
+    user: string
     idToken: string
     tempPublicKey?: string
 }

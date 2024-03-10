@@ -7,7 +7,7 @@ const ping = async (url: string) => {
     return response?.data === 'pong!'
 }
 
-export const fetchNodes = async (): Promise<TA.Node[]> => {
+export const getNodes = async (): Promise<TA.Node[]> => {
     const nodes: TA.Node[] = []
 
     for (let i = 0; i < N.NODES.length; i += 1) {
@@ -24,17 +24,12 @@ export const fetchNodes = async (): Promise<TA.Node[]> => {
     return nodes
 }
 
-export const getAddress = async ({
-    owner,
-}: TA.GetAddressRequest): Promise<TA.GetAddressResponse | undefined> => {
-    const nodes = await fetchNodes()
+export const getAddress = async (user: string): Promise<string | undefined> => {
+    const nodes = await getNodes()
 
     for (const { url } of nodes) {
         try {
-            const { data } = await axios.post<TA.GetAddressResponse>(
-                `${url}/wallet`,
-                { owner }
-            )
+            const { data } = await axios.post<string>(`${url}/wallet`, { user })
             return data
         } catch {}
     }

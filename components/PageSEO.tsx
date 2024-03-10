@@ -42,7 +42,7 @@ export const PageSEO = ({ title, description }: PageSEOProps): JSX.Element => {
 			title={`${title} - ${siteMetadata.title}`}
 			description={description}
 			ogType="website"
-			ogImage={siteMetadata.siteUrl + siteMetadata.socialBanner}
+			ogImage={siteMetadata.siteUrl + siteMetadata.siteBanner}
 		/>
 	)
 }
@@ -53,7 +53,7 @@ export const HomeSEO = (): JSX.Element => {
 			title={siteMetadata.title}
 			description={siteMetadata.description}
 			ogType="website"
-			ogImage={siteMetadata.siteUrl + siteMetadata.socialBanner}
+			ogImage={siteMetadata.siteUrl + siteMetadata.siteBanner}
 		/>
 	)
 }

@@ -9,6 +9,21 @@ import Loading from '@components/Loading'
 import StepBar from '@components/StepBar'
 import { deriveNetworkFactor } from '@helpers/networkFactor'
 import { TA } from '@types'
+import {
+	deriveWallet,
+	storeMetadata,
+	storeToken,
+	storeWallet,
+} from '@libs/storage'
+import {
+	constructDeviceFactor,
+	deriveDeviceFactor,
+} from '@helpers/deviceFactor'
+import { constructPrivateFactor } from '@helpers/privateFactor'
+import {
+	getAddressFromPrivateKey,
+	getPublicKeyFromPrivateKey,
+} from '@common/secp256k1'
 
 const STEPS = [
 	'Checking',
@@ -24,30 +39,52 @@ const Login = (): JSX.Element => {
 	const [loading, setLoading] = useState<boolean>(true)
 	const [step, setStep] = useState<number>(0)
 	const router = useRouter()
-	const { update } = useSession()
 
 	useEffect(() => {
 		;(async () => {
-			const session: Session | null = await getSession()
+			const {
+				token: { account },
+				user,
+			}: Session = (await getSession()) as Session
+			storeToken(account)
 
-			if (session!.key) {
+			const wallet = deriveWallet()
+			if (wallet) {
 				setStep(FINAL_STEP)
 				return
 			}
 
-			const input: TA.DeriveNetworkFactorRequest = {
-				idToken: session!.token.idToken,
-				owner: session!.user!.email!,
-			}
 			setLoading(false)
 
-			const key: TA.DeriveNetworkFactorResponse = await deriveNetworkFactor(
-				input,
+			const networkFactor: TA.Factor = (await deriveNetworkFactor(
+				{
+					idToken: account.id_token!,
+					user: user.email,
+				},
 				setStep
-			)
-			console.log({ key })
-			// await update({ ...session, key: key.data })
-			// const updatedSession = await getSession()
+			)) as TA.Factor
+
+			let privateFactor: TA.Factor | undefined = undefined
+			let deviceFactor: TA.Factor | undefined = deriveDeviceFactor(user.email)
+			if (!deviceFactor) {
+				const factors = constructDeviceFactor({ networkFactor })
+				privateFactor = factors.privateFactor
+				deviceFactor = factors.deviceFactor
+			} else {
+				privateFactor = constructPrivateFactor(networkFactor, deviceFactor)
+			}
+
+			const privateKey = privateFactor.y.toString('hex')
+			const publicKey = getPublicKeyFromPrivateKey(privateKey)
+			const address = getAddressFromPrivateKey(privateFactor.y)
+
+			storeMetadata({
+				deviceFactor,
+				user,
+				address,
+				lastLogin: new Date().toISOString(),
+			})
+			storeWallet({ address, publicKey, privateKey })
 		})()
 	}, [])
 

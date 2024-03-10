@@ -12,6 +12,16 @@ const nextConfig = {
                 hostname: 'lh3.googleusercontent.com',
                 port: '',
             },
+            {
+                protocol: 'https',
+                hostname: 'uxwing.com',
+                port: '',
+            },
+            {
+                protocol: 'https',
+                hostname: 'static.vecteezy.com',
+                port: '',
+            },
         ],
     },
 }

@@ -1,5 +1,6 @@
 import elliptic from 'elliptic'
-import { BN } from '@common'
+import { toChecksumAddress } from 'web3-utils'
+import { BN, H } from '@common'
 import { TA } from '@types'
 
 export const secp256k1 = new elliptic.ec('secp256k1')
@@ -23,6 +24,24 @@ export const decodePublicKey = (publicKey: string): TA.Point => {
 
 export const encodePublicKey = (point: TA.Point): string => {
     return `04${point.x.toString(16, 64)}${point.y.toString(16, 64)}`
+}
+
+export const getPublicKeyFromPrivateKey = (privateKey: string): string => {
+    const key = secp256k1.keyFromPrivate(privateKey, 'hex')
+
+    return encodePublicKey({
+        x: key.getPublic().getX(),
+        y: key.getPublic().getY(),
+    })
+}
+
+export const getAddressFromPrivateKey = (privateKey: BN): string => {
+    const key = secp256k1.keyFromPrivate(privateKey.toString('hex', 64), 'hex')
+    const publicKey = key.getPublic().encode('hex', false).slice(2)
+    const lowercaseAddress = `0x${H.keccak256(
+        Buffer.from(publicKey, 'hex')
+    ).slice(64 - 38)}`
+    return toChecksumAddress(lowercaseAddress)
 }
 
 export const ellipticAddition = (p1: TA.Point, p2: TA.Point): TA.Point => {

@@ -9,6 +9,13 @@ import Link from '@components/Link'
 import siteMetadata from '@data/siteMetadata.json'
 import Loading from '@components/Loading'
 import TransitionWrapper from '@components/TransitionWrapper'
+import { wipeToken, wipeWallet } from '@libs/storage'
+
+const logout = async () => {
+	await signOut({ callbackUrl: '/' })
+	wipeToken()
+	wipeWallet()
+}
 
 const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 	const [session, setSession] = useState<any | null>(null)
@@ -120,7 +127,7 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 											<p className="px-2">{session?.user?.name ?? 'User'}</p>
 										</button>
 										<button
-											onClick={() => signOut({ callbackUrl: '/' })}
+											onClick={() => logout()}
 											className="rounded-full bg-white p-2 text-red-600 transition-all duration-200 ease-in-out hover:bg-red-600 hover:text-white"
 										>
 											<AiOutlineLogout className="h-7 w-7" />

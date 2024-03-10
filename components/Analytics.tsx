@@ -1,5 +1,6 @@
 import Script from 'next/script'
 import * as VA from '@vercel/analytics/react'
+import siteMetadata from '@/data/siteMetadata.json'
 
 // https://developers.google.com/analytics/devguides/collection/gtagjs/events
 export const logEvent = (
@@ -20,16 +21,16 @@ const GoogleScript = (): JSX.Element => {
 		<>
 			<Script
 				async
-				src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}`}
+				src={`https://www.googletagmanager.com/gtag/js?id=${siteMetadata.analytics.googleAnalyticsId}`}
 			/>
 
 			<Script strategy="lazyOnload" id="ga-script">
 				{`
-                    window.dataLayer = window.dataLayer || [];
-                    function gtag(){dataLayer.push(arguments);}
-                    gtag('js', new Date());
-                    gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}');
-                `}
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '${siteMetadata.analytics.googleAnalyticsId}');
+        `}
 			</Script>
 		</>
 	)
@@ -41,7 +42,7 @@ const UmamiScript = (): JSX.Element => {
 			<Script
 				async
 				defer
-				data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
+				data-website-id={siteMetadata.analytics.umamiWebsiteId}
 				src="https://analytics.umami.is/script.js"
 			/>
 		</>

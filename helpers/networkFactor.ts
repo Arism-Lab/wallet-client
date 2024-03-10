@@ -5,21 +5,21 @@ import {
     thresholdSame,
     lagrangeInterpolation,
 } from '@libs/arithmetic'
-import { BN, H, C, N, F } from '@common'
+import { BN, H, C, N, F, EC } from '@common'
 import type { TA, TN } from '@types'
-import { fetchNodes, getAddress } from '@helpers/wallet'
+import { getNodes, getAddress } from '@helpers/wallet'
 
 export const deriveNetworkFactor = async (
-    { idToken, owner }: TA.DeriveNetworkFactorRequest,
+    { idToken, user }: TA.DeriveNetworkFactorRequest,
     setStep: Dispatch<SetStateAction<number>>
 ): Promise<TA.DeriveNetworkFactorResponse> => {
-    await getAddress({ owner })
+    await getAddress(user)
 
     const tempPrivateKey = C.generatePrivateKey()
     const tempPublicKey = C.getPublicKey(tempPrivateKey).toString('hex')
     const tempCommitment = H.keccak256(idToken)
 
-    const nodes = await fetchNodes()
+    const nodes = await getNodes()
     const commitments: TN.CommitmentResponse[] = []
 
     setStep(1)
@@ -47,7 +47,7 @@ export const deriveNetworkFactor = async (
                 `${url}/secret`,
                 {
                     commitments,
-                    owner,
+                    user,
                     idToken,
                     tempPublicKey,
                 }
@@ -56,12 +56,12 @@ export const deriveNetworkFactor = async (
         } catch {}
     }
 
+    setStep(3)
+
     const thresholdAddress = thresholdSame(
         encryptedMasterShares.map((e) => e.value.publicKey),
         N.DERIVATION_THRESHOLD
     )
-
-    setStep(3)
 
     if (encryptedMasterShares.length < N.DERIVATION_THRESHOLD) return
 
@@ -105,7 +105,7 @@ export const deriveNetworkFactor = async (
             BN.ZERO
         )
 
-        const addressDecrypted = C.getAddressFromPrivateKey(derivedPrivateKey)
+        const addressDecrypted = EC.getAddressFromPrivateKey(derivedPrivateKey)
 
         if (thresholdAddress === addressDecrypted) {
             privateKey = derivedPrivateKey
@@ -117,7 +117,7 @@ export const deriveNetworkFactor = async (
     setStep(5)
 
     return {
-        x: F.NETWORK_FACTOR_X_VALUE,
+        x: F.NETWORK_FACTOR_X,
         y: privateKey,
     }
 }

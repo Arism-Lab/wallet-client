@@ -6,4 +6,4 @@ export * as EC from './secp256k1'
 export * as C from './crypto'
 export * as F from './factors'
 
-export type BN = BN.BN
+export type BN = import('bn.js')
