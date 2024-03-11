@@ -31,6 +31,8 @@ export type Wallet = {
     address: string
     publicKey: string
     privateKey: string
+    networkFactor?: Factor
+    user: User
 }
 
 /***************************************
@@ -49,6 +51,7 @@ export type DeriveDeviceFactorRequest = {
 export type DeriveDeviceFactorResponse = Factor | undefined
 
 export type ConstructDeviceFactorRequest = {
+    user: string
     networkFactor: Factor
 }
 export type ConstructDeviceFactorResponse = {

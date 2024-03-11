@@ -1,3 +1,3 @@
-export const displayKey = (key: string) => {
-    return key.slice(0, 10) + '...' + key.slice(-8)
+export const formatKey = (key: string) => {
+    return key.slice(0, 13) + '...' + key.slice(-10)
 }

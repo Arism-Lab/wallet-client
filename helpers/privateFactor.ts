@@ -17,6 +17,8 @@ export const constructPrivateFactor = (
         y: privateKey,
     }
 
+    console.log({ factor1, factor2, privateFactor })
+
     return privateFactor
 }
 
@@ -25,6 +27,6 @@ export const verifyPrivateKey = async (
     privateKey: BN
 ): Promise<boolean> => {
     const computedAddress: string = getAddressFromPrivateKey(privateKey)
-    const expectedAddress: string = (await getAddress({ user })) as string
+    const expectedAddress: string = (await getAddress(user)) as string
     return computedAddress === expectedAddress
 }

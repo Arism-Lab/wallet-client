@@ -26,8 +26,8 @@ export const encodePublicKey = (point: TA.Point): string => {
     return `04${point.x.toString(16, 64)}${point.y.toString(16, 64)}`
 }
 
-export const getPublicKeyFromPrivateKey = (privateKey: string): string => {
-    const key = secp256k1.keyFromPrivate(privateKey, 'hex')
+export const getPublicKeyFromPrivateKey = (privateKey: BN): string => {
+    const key = secp256k1.keyFromPrivate(privateKey.toString(16, 64), 'hex')
 
     return encodePublicKey({
         x: key.getPublic().getX(),
@@ -36,7 +36,7 @@ export const getPublicKeyFromPrivateKey = (privateKey: string): string => {
 }
 
 export const getAddressFromPrivateKey = (privateKey: BN): string => {
-    const key = secp256k1.keyFromPrivate(privateKey.toString('hex', 64), 'hex')
+    const key = secp256k1.keyFromPrivate(privateKey.toString(16, 64), 'hex')
     const publicKey = key.getPublic().encode('hex', false).slice(2)
     const lowercaseAddress = `0x${H.keccak256(
         Buffer.from(publicKey, 'hex')

@@ -76,7 +76,7 @@ export const lagrangeInterpolation = (points: TA.Point[], x: BN): BN => {
 export const sumMod = (arr: string[], modulo: BN): string => {
     return arr
         .reduce(
-            (acc, current) => acc.add(BN.from(current, 'hex')).umod(modulo),
+            (acc, current) => acc.add(BN.from(current, 16)).umod(modulo),
             BN.ZERO
         )
         .toString('hex')

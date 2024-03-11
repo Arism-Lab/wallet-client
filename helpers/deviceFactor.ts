@@ -2,23 +2,29 @@ import { v4 as uuidv4 } from 'uuid'
 import { BN, EC, F } from '@common'
 import { lagrangeInterpolation } from '@libs/arithmetic'
 import { TA } from '@types'
-import { deriveMetadatas, storeMetadata } from '@libs/storage'
+import { deriveMetadatas } from '@libs/storage'
 import { getDeviceInfo } from '@libs/device'
-import { addDevice } from '@helpers/metadata'
+import { addDevice, getDevices } from '@helpers/metadata'
 import { verifyPrivateKey } from '@helpers/privateFactor'
 
-export const deriveDeviceFactor = ({
-    user,
-}: TA.DeriveDeviceFactorRequest): TA.DeriveDeviceFactorResponse => {
-    const deviceFactors = deriveMetadatas()
-    const deviceFactor = deviceFactors.find((df) => df.user.email === user)
+export const deriveDeviceFactor = (user: string): TA.Factor | undefined => {
+    const deviceFactors: TA.MetadataStorage[] = deriveMetadatas()
+    const deviceFactor: TA.MetadataStorage | undefined = deviceFactors.find(
+        (e) => e.user.email === user
+    )
 
-    return deviceFactor?.deviceFactor
+    if (deviceFactor) {
+        return {
+            x: BN.from(deviceFactor.deviceFactor.x, 16),
+            y: BN.from(deviceFactor.deviceFactor.y, 16),
+        }
+    }
 }
 
-export const constructDeviceFactor = ({
+export const constructDeviceFactor = async ({
+    user,
     networkFactor,
-}: TA.ConstructDeviceFactorRequest): TA.ConstructDeviceFactorResponse => {
+}: TA.ConstructDeviceFactorRequest): Promise<TA.ConstructDeviceFactorResponse> => {
     const privateKey: BN = BN.from(EC.generatePrivateKey())
     const privateFactor: TA.Factor = {
         x: F.PRIVATE_FACTOR_X,
@@ -33,6 +39,8 @@ export const constructDeviceFactor = ({
         x: F.DEVICE_FACTOR_X,
         y: deviceKey,
     }
+
+    await storeDevice(user)
 
     return { privateFactor, deviceFactor }
 }
@@ -65,11 +73,20 @@ export const constructDeviceFactorNewDevice = async ({
     const verified = await verifyPrivateKey(user, privateKey)
     if (!verified) return
 
+    await storeDevice(user)
+
+    return { privateFactor, deviceFactor }
+}
+
+export const storeDevice = async (user: string) => {
     const device: TA.Device = {
         id: uuidv4(),
         info: getDeviceInfo(),
     }
-    await addDevice({ device, user })
 
-    return { privateFactor, deviceFactor }
+    const devices: TA.Device[] = await getDevices(user)
+
+    if (devices.find((e) => e.info === device.info)) return
+
+    await addDevice({ device, user })
 }

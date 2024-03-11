@@ -7,12 +7,12 @@ export const deriveRecoveryFactor = async (
     user: string,
     password: string
 ): Promise<TA.Factor> => {
-    const recoveryFactorX = BN.from(H.keccak256(password))
+    const recoveryFactorX = BN.from(H.keccak256(password), 16)
     const recoveryFactorKey = await getRecoveryKey(user)
 
     return {
         x: recoveryFactorX,
-        y: BN.from(recoveryFactorKey, 'hex'),
+        y: BN.from(recoveryFactorKey, 16),
     }
 }
 
@@ -21,13 +21,13 @@ export const constructRecoveryFactor = async ({
     networkFactor,
     password,
 }: TA.ConstructRecoveryFactorRequest): Promise<TA.ConstructRecoveryFactorResponse> => {
-    const privateKey: BN = BN.from(EC.generatePrivateKey())
+    const privateKey: BN = BN.from(EC.generatePrivateKey(), 16)
     const privateFactor: TA.Factor = {
         x: F.PRIVATE_FACTOR_X,
         y: privateKey,
     }
 
-    const recoveryFactorX = BN.from(H.keccak256(password))
+    const recoveryFactorX = BN.from(H.keccak256(password), 16)
     const recoveryKey: BN = lagrangeInterpolation(
         [networkFactor, privateFactor],
         recoveryFactorX
@@ -40,7 +40,7 @@ export const constructRecoveryFactor = async ({
 
     await addRecoveryKey({
         user,
-        recoveryKey: recoveryKey.toString('hex'),
+        recoveryKey: recoveryKey.toString(16),
     })
 
     return { privateFactor, recoveryFactor }

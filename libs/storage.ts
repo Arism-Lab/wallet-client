@@ -4,18 +4,37 @@ import { Account, TokenSet } from 'next-auth'
 export const storeMetadata = (
     data: TA.MetadataStorage | TA.MetadataStorage[]
 ) => {
-    if (Array.isArray(data)) {
-        window.localStorage.setItem('metadatas', JSON.stringify(data))
-        return
+    let metadatas: TA.MetadataStorage[] = deriveMetadatas()
+
+    if (!Array.isArray(data)) {
+        const index = metadatas.findIndex(
+            (e) => e.user.email === data.user.email
+        )
+        if (index !== -1) {
+            metadatas[index] = data
+        } else {
+            metadatas.push(data)
+        }
+    } else {
+        metadatas = data
     }
-    const metadatas: TA.MetadataStorage[] = deriveMetadatas()
-    window.localStorage.setItem(
-        'metadatas',
-        JSON.stringify([...metadatas, data])
-    )
+
+    window.localStorage.setItem('metadatas', JSON.stringify(metadatas))
 }
 export const deriveMetadatas = (): TA.MetadataStorage[] => {
-    return JSON.parse(window.localStorage.getItem('metadatas') || '[]')
+    const metadatas = JSON.parse(
+        window.localStorage.getItem('metadatas') || '[]'
+    ) as TA.MetadataStorage[]
+    if (!Array.isArray(metadatas)) {
+        return [metadatas]
+    }
+    return metadatas
+}
+export const removeMetadata = (user: string) => {
+    const metadatas = deriveMetadatas()
+    const index = metadatas.findIndex((m) => m.user.email === user)
+    metadatas.splice(index, 1)
+    storeMetadata(metadatas)
 }
 export const storeToken = (account: Account) => {
     const token: TokenSet = {

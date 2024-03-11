@@ -57,6 +57,6 @@ const config: Config = {
             },
         },
     },
-    plugins: [],
+    plugins: [require('tailwindcss/nesting'), require('postcss-nesting')],
 }
 export default config

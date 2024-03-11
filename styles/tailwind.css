@@ -62,44 +62,10 @@
 		  motion-safe:transition-all
 		  motion-safe:duration-300;
     }
-    .swipe-box {
-        box-shadow: inset 0 0 0 0 var(--primary-800);
-        color: var(--primary-800);
-        margin: 0 -0.25rem;
-        padding: 0 0.25rem;
-        transition:
-            color 0.3s ease-in-out,
-            box-shadow 0.3s ease-in-out;
-    }
-    .swipe-box:hover {
-        box-shadow: inset 400px 0 0 0 var(--primary-800);
-        color: white;
-    }
     .border-box {
         @apply transform overflow-hidden rounded-md border-2 border-solid border-gray-200 bg-transparent bg-opacity-20 transition duration-200 hover:scale-105 hover:rounded-md hover:border-tertiary-400 hover:bg-gray-200;
     }
-}
-
-html {
-    scroll-behavior: smooth;
-}
-
-input:-webkit-autofill,
-input:-webkit-autofill:focus {
-    transition:
-        background-color 600000s 0s,
-        color 600000s 0s;
-}
-
-::-moz-selection {
-    background: var(--primary-800);
-    color: white;
-}
-::-webkit-selection {
-    background: var(--primary-800);
-    color: white;
-}
-::selection {
-    background: var(--primary-800);
-    color: white;
+    .card {
+        @apply mx-auto flex w-full select-none place-items-center gap-5 rounded-2xl bg-white px-8 py-4 ring-primary-500 transition-all duration-200 ease-in-out hover:ring-2 focus:outline-none focus:ring-2 focus:ring-primary-500;
+    }
 }

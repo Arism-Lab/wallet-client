@@ -24,24 +24,24 @@ export const addRecoveryKey = async (
     }
 
     await axios.post(
-        `${process.env.NEXT_PUBLIC_METADATA_URL}/add-recovery-key`,
+        `${process.env.NEXT_PUBLIC_METADATA_URL}/set-recovery-key`,
         data,
         { headers }
     )
 }
 
 export const getDevices = async (user: string): Promise<TA.Device[]> => {
-    const { data } = await axios.get(
-        `${process.env.NEXT_PUBLIC_METADATA_URL}/${user}/devices`
-    )
+    const { data } = await axios
+        .get(`${process.env.NEXT_PUBLIC_METADATA_URL}/${user}/devices`)
+        .catch(() => ({ data: [] }))
 
     return data
 }
 
 export const getRecoveryKey = async (user: string): Promise<string> => {
-    const { data } = await axios.get(
-        `${process.env.NEXT_PUBLIC_METADATA_URL}/${user}/recovery-key`
-    )
+    const { data } = await axios
+        .get(`${process.env.NEXT_PUBLIC_METADATA_URL}/${user}/recovery-key`)
+        .catch(() => ({ data: '' }))
 
     return data
 }

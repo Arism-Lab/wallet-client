@@ -58,7 +58,7 @@ export const deriveNetworkFactor = async (
 
     setStep(3)
 
-    const thresholdAddress = thresholdSame(
+    const thresholdPublicKey = thresholdSame(
         encryptedMasterShares.map((e) => e.value.publicKey),
         N.DERIVATION_THRESHOLD
     )
@@ -86,8 +86,8 @@ export const deriveNetworkFactor = async (
         (acc, curr, index) => {
             if (curr)
                 acc.push({
-                    x: BN.from(encryptedMasterShares[index].id),
-                    y: BN.from(curr.toString(), 'hex'),
+                    x: BN.from(encryptedMasterShares[index].id, 16),
+                    y: BN.from(curr.toString(), 16),
                 })
             return acc
         },
@@ -105,9 +105,9 @@ export const deriveNetworkFactor = async (
             BN.ZERO
         )
 
-        const addressDecrypted = EC.getAddressFromPrivateKey(derivedPrivateKey)
+        const publicKey = EC.getPublicKeyFromPrivateKey(derivedPrivateKey)
 
-        if (thresholdAddress === addressDecrypted) {
+        if (thresholdPublicKey === publicKey) {
             privateKey = derivedPrivateKey
         }
     }

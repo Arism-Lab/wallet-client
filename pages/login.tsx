@@ -19,7 +19,10 @@ import {
 	constructDeviceFactor,
 	deriveDeviceFactor,
 } from '@helpers/deviceFactor'
-import { constructPrivateFactor } from '@helpers/privateFactor'
+import {
+	constructPrivateFactor,
+	verifyPrivateKey,
+} from '@helpers/privateFactor'
 import {
 	getAddressFromPrivateKey,
 	getPublicKeyFromPrivateKey,
@@ -67,24 +70,28 @@ const Login = (): JSX.Element => {
 			let privateFactor: TA.Factor | undefined = undefined
 			let deviceFactor: TA.Factor | undefined = deriveDeviceFactor(user.email)
 			if (!deviceFactor) {
-				const factors = constructDeviceFactor({ networkFactor })
+				const factors = await constructDeviceFactor({
+					networkFactor,
+					user: user.email,
+				})
 				privateFactor = factors.privateFactor
 				deviceFactor = factors.deviceFactor
 			} else {
 				privateFactor = constructPrivateFactor(networkFactor, deviceFactor)
 			}
 
-			const privateKey = privateFactor.y.toString('hex')
-			const publicKey = getPublicKeyFromPrivateKey(privateKey)
+			const publicKey = getPublicKeyFromPrivateKey(privateFactor.y)
 			const address = getAddressFromPrivateKey(privateFactor.y)
+			const privateKey = privateFactor.y.toString(16, 64)
+			const lastLogin = new Date().toISOString()
 
-			storeMetadata({
-				deviceFactor,
-				user,
-				address,
-				lastLogin: new Date().toISOString(),
+			const verify = verifyPrivateKey(user.email, privateFactor.y)
+			console.log({
+				networkFactor: networkFactor.y.toString(16, 64),
 			})
-			storeWallet({ address, publicKey, privateKey })
+
+			storeWallet({ address, publicKey, privateKey, networkFactor, user })
+			storeMetadata({ deviceFactor, user, address, lastLogin })
 		})()
 	}, [])
 
