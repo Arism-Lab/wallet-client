@@ -29,6 +29,7 @@
         "next-page-transitions": "^1.0.0-beta.2",
         "nprogress": "^0.2.0",
         "postcss-nesting": "^12.1.0",
+        "postcss-preset-env": "^9.5.0",
         "react": "^18",
         "react-dom": "^18",
         "react-icons": "^5.0.1",
