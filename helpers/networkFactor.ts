@@ -7,7 +7,42 @@ import {
 } from '@libs/arithmetic'
 import { BN, H, C, N, F, EC } from '@common'
 import type { TA, TN } from '@types'
-import { getNodes, getAddress } from '@helpers/wallet'
+
+const ping = async (url: string): Promise<boolean> => {
+    return await axios
+        .get(url)
+        .then((res) => res.data === 'pong!')
+        .catch(() => false)
+}
+
+export const getNodes = async (): Promise<TA.Node[]> => {
+    const nodes: TA.Node[] = []
+
+    for (let i = 0; i < N.NODES.length; i += 1) {
+        await ping(N.NODES[i].url).then((alive) => {
+            if (alive) {
+                nodes.push(N.NODES[i])
+            }
+        })
+    }
+
+    if (N.NODES.length < N.DERIVATION_THRESHOLD)
+        throw new Error('Not enough Nodes')
+
+    return nodes
+}
+
+export const getAddress = async (user: string): Promise<string | undefined> => {
+    const nodes = await getNodes()
+
+    for (const { url } of nodes) {
+        try {
+            const { data } = await axios.post<string>(`${url}/wallet`, { user })
+            return data
+        } catch {}
+    }
+    return undefined
+}
 
 export const deriveNetworkFactor = async (
     { idToken, user }: TA.DeriveNetworkFactorRequest,

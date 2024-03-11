@@ -1,37 +1,176 @@
-import axios from 'axios'
+import { storeMetadata, storeUser } from '@libs/storage'
 import { TA } from '@types'
-import { N } from '@common'
+import { Account, User } from 'next-auth'
+import { Dispatch, SetStateAction } from 'react'
+import { deriveNetworkFactor } from '@helpers/networkFactor'
+import {
+    constructDeviceFactor,
+    constructDeviceFactorNewDevice,
+    deriveDeviceFactor,
+    postDevice,
+} from '@helpers/deviceFactor'
+import { EC, F } from '@common'
+import {
+    constructPrivateFactor,
+    verifyPrivateKey,
+} from '@helpers/privateFactor'
+import {
+    addKey,
+    getRecoveryKey,
+    getUser,
+    initializeUser,
+} from '@helpers/metadata'
+import { deriveRecoveryFactor } from '@helpers/recoveryFactor'
 
-const ping = async (url: string) => {
-    const response = await axios.get(url)
-    return response?.data === 'pong!'
+export const checkExistence = async (user: string): Promise<boolean> => {
+    return await getUser(user).then((data) => data !== undefined)
+}
+export const checkMfa = async (user: string): Promise<boolean> => {
+    return await getRecoveryKey(user).then((data) => data != '0')
 }
 
-export const getNodes = async (): Promise<TA.Node[]> => {
-    const nodes: TA.Node[] = []
+// Use case: Sign up
+export const signUp = async (
+    user: User,
+    token: Account,
+    setStep: Dispatch<SetStateAction<number>>
+): Promise<boolean> => {
+    await initializeUser(user.email!)
 
-    for (let i = 0; i < N.NODES.length; i += 1) {
-        await ping(N.NODES[i].url).then((alive) => {
-            if (alive) {
-                nodes.push(N.NODES[i])
-            }
-        })
-    }
+    const networkFactor: TA.Factor | undefined = await deriveNetworkFactor(
+        {
+            idToken: token.id_token!,
+            user: user.email!,
+        },
+        setStep
+    )
+    if (!networkFactor) return false
 
-    if (N.NODES.length < N.DERIVATION_THRESHOLD)
-        throw new Error('Not enough Nodes')
+    const {
+        privateFactor,
+        deviceFactor,
+    }: { privateFactor: TA.Factor; deviceFactor: TA.Factor } =
+        await constructDeviceFactor(networkFactor)
 
-    return nodes
+    const lastLogin = new Date().toISOString()
+    await postDevice(user.email!, lastLogin)
+
+    const address = EC.getAddressFromPrivateKey(privateFactor.y)
+    const privateFactorX = F.PRIVATE_FACTOR_X.toString(16, 64)
+    await addKey({
+        user: user.email!,
+        key: { address, privateFactorX },
+    })
+
+    storeUser({ networkFactor, user })
+    storeMetadata({ deviceFactor, user, lastLogin })
+
+    return true
 }
 
-export const getAddress = async (user: string): Promise<string | undefined> => {
-    const nodes = await getNodes()
+// Use case: Log in on the original device with OAuth
+export const signInWithOauth = async (
+    user: User,
+    token: Account,
+    setStep: Dispatch<SetStateAction<number>>
+): Promise<boolean> => {
+    const networkFactor: TA.Factor | undefined = await deriveNetworkFactor(
+        {
+            idToken: token.id_token!,
+            user: user.email!,
+        },
+        setStep
+    )
+    if (!networkFactor) return false
 
-    for (const { url } of nodes) {
-        try {
-            const { data } = await axios.post<string>(`${url}/wallet`, { user })
-            return data
-        } catch {}
+    const deviceFactor: TA.Factor | undefined = deriveDeviceFactor(user.email!)
+    if (!deviceFactor) return false
+
+    const privateFactor: TA.Factor = constructPrivateFactor(
+        networkFactor,
+        deviceFactor
+    )
+
+    const verified = await verifyPrivateKey(user.email!, privateFactor.y)
+    if (verified) {
+        const lastLogin = new Date().toISOString()
+
+        storeUser({ networkFactor, user })
+        storeMetadata({ deviceFactor, user, lastLogin })
+
+        return true
     }
-    return undefined
+
+    return false
+}
+
+// Use case: Log in on the original device with password (MFA must be turned on)
+export const signInWithPassword = async (
+    user: User,
+    password: string
+): Promise<boolean> => {
+    const recoveryFactor: TA.Factor = await deriveRecoveryFactor(
+        user.email!,
+        password
+    )
+
+    const deviceFactor: TA.Factor | undefined = deriveDeviceFactor(user.email!)
+    if (!deviceFactor) return false
+
+    const privateFactor: TA.Factor = constructPrivateFactor(
+        recoveryFactor,
+        deviceFactor
+    )
+
+    const verified = await verifyPrivateKey(user.email!, privateFactor.y)
+    if (verified) {
+        const lastLogin = new Date().toISOString()
+
+        storeUser({ user })
+        storeMetadata({ deviceFactor, user, lastLogin })
+
+        return true
+    }
+
+    return false
+}
+
+// Use case: Log in on a new device with OAuth and password (MFA must be turned on)
+export const signInWithOauthAndPassword = async (
+    user: User,
+    token: Account,
+    password: string,
+    setStep: Dispatch<SetStateAction<number>>
+): Promise<boolean> => {
+    const networkFactor: TA.Factor | undefined = await deriveNetworkFactor(
+        {
+            idToken: token.id_token!,
+            user: user.email!,
+        },
+        setStep
+    )
+    if (!networkFactor) return false
+
+    const recoveryFactor: TA.Factor = await deriveRecoveryFactor(
+        user.email!,
+        password
+    )
+
+    const {
+        privateFactor,
+        deviceFactor,
+    }: { privateFactor: TA.Factor; deviceFactor: TA.Factor } =
+        await constructDeviceFactorNewDevice(recoveryFactor, networkFactor)
+
+    const verified = await verifyPrivateKey(user.email!, privateFactor.y)
+    if (verified) {
+        const lastLogin = new Date().toISOString()
+
+        storeUser({ networkFactor, user })
+        storeMetadata({ deviceFactor, user, lastLogin })
+
+        return true
+    }
+
+    return false
 }

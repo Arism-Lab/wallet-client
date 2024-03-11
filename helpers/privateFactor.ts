@@ -1,23 +1,18 @@
-import { BN, F } from '@common'
+import { BN, EC, F } from '@common'
 import { lagrangeInterpolation } from '@libs/arithmetic'
 import { TA } from '@types'
-import { getAddress } from '@helpers/wallet'
-import { getAddressFromPrivateKey } from '@common/secp256k1'
+import { getKeys } from '@helpers/metadata'
 
 export const constructPrivateFactor = (
     factor1: TA.Factor,
-    factor2: TA.Factor
+    factor2: TA.Factor,
+    privateFactorX: BN = F.PRIVATE_FACTOR_X
 ): TA.Factor => {
-    const privateKey = lagrangeInterpolation(
-        [factor1, factor2],
-        F.PRIVATE_FACTOR_X
-    )
+    const privateKey = lagrangeInterpolation([factor1, factor2], privateFactorX)
     const privateFactor: TA.Factor = {
-        x: F.PRIVATE_FACTOR_X,
+        x: privateFactorX,
         y: privateKey,
     }
-
-    console.log({ factor1, factor2, privateFactor })
 
     return privateFactor
 }
@@ -26,7 +21,25 @@ export const verifyPrivateKey = async (
     user: string,
     privateKey: BN
 ): Promise<boolean> => {
-    const computedAddress: string = getAddressFromPrivateKey(privateKey)
-    const expectedAddress: string = (await getAddress(user)) as string
-    return computedAddress === expectedAddress
+    const computedAddress: string = EC.getAddressFromPrivateKey(privateKey)
+
+    const keys: TA.Key[] = await getKeys(user)
+
+    return keys.some((key) => key.address === computedAddress)
+}
+
+export const derivePrivateFactors = async (
+    user: string,
+    factor1: TA.Factor,
+    factor2: TA.Factor
+): Promise<TA.Factor[]> => {
+    const keys: TA.Key[] = await getKeys(user)
+
+    return keys.map((key) =>
+        constructPrivateFactor(
+            factor1,
+            factor2,
+            BN.from(key.privateFactorX, 16)
+        )
+    )
 }

@@ -2,7 +2,7 @@ import React from 'react'
 import Image from './Image'
 import { TA } from '@types'
 
-const NodeCard = ({ node }: { node: TA.Node }) => {
+const NodeCard = ({ node }: { node: { node: TA.Node; alive: boolean } }) => {
 	return (
 		<div className="flex select-none place-items-center rounded-2xl">
 			<Image
@@ -11,11 +11,18 @@ const NodeCard = ({ node }: { node: TA.Node }) => {
 				height={48}
 				width={48}
 			/>
-			<p className="ml-5 font-medium">{node.url}</p>
-			<div className="relative mb-14">
-				<div className="live-animated"></div>
-				<div className="dot"></div>
-			</div>
+			<p className="ml-5 font-medium">{node.node.url}</p>
+			{node.alive ? (
+				<div className="relative mb-14">
+					<div className="live-animated"></div>
+					<div className="live-dot"></div>
+				</div>
+			) : (
+				<div className="relative mb-14">
+					<div className="dead-animated"></div>
+					<div className="dead-dot"></div>
+				</div>
+			)}
 		</div>
 	)
 }

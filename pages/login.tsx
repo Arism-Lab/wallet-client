@@ -2,31 +2,19 @@ import { getSession, useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md'
 import { useRouter } from 'next/router'
-import { Session } from 'next-auth'
 import { HomeSEO } from '@components/PageSEO'
 import TransitionWrapper from '@components/TransitionWrapper'
 import Loading from '@components/Loading'
 import StepBar from '@components/StepBar'
-import { deriveNetworkFactor } from '@helpers/networkFactor'
-import { TA } from '@types'
+import { Session } from 'next-auth'
+import { deriveUser, storeToken } from '@libs/storage'
 import {
-	deriveWallet,
-	storeMetadata,
-	storeToken,
-	storeWallet,
-} from '@libs/storage'
-import {
-	constructDeviceFactor,
-	deriveDeviceFactor,
-} from '@helpers/deviceFactor'
-import {
-	constructPrivateFactor,
-	verifyPrivateKey,
-} from '@helpers/privateFactor'
-import {
-	getAddressFromPrivateKey,
-	getPublicKeyFromPrivateKey,
-} from '@common/secp256k1'
+	signInWithOauth,
+	signInWithOauthAndPassword,
+	signUp,
+} from '@helpers/wallet'
+import { verifyDevice } from '@helpers/deviceFactor'
+import { getUser } from '@helpers/metadata'
 
 const STEPS = [
 	'Checking',
@@ -39,9 +27,9 @@ const STEPS = [
 const FINAL_STEP = STEPS.length - 1
 
 const Login = (): JSX.Element => {
-	const [loading, setLoading] = useState<boolean>(true)
 	const [step, setStep] = useState<number>(0)
 	const router = useRouter()
+	const [password, setPassword] = useState('')
 
 	useEffect(() => {
 		;(async () => {
@@ -49,62 +37,38 @@ const Login = (): JSX.Element => {
 				token: { account },
 				user,
 			}: Session = (await getSession()) as Session
+
 			storeToken(account)
 
-			const wallet = deriveWallet()
+			const wallet = deriveUser()
 			if (wallet) {
 				setStep(FINAL_STEP)
 				return
 			}
 
-			setLoading(false)
+			let success: boolean | undefined = undefined
 
-			const networkFactor: TA.Factor = (await deriveNetworkFactor(
-				{
-					idToken: account.id_token!,
-					user: user.email,
-				},
-				setStep
-			)) as TA.Factor
+			const existed = await getUser(user.email)
+			if (existed) {
+				const { verified }: { verified: boolean } = await verifyDevice(
+					user.email
+				)
 
-			let privateFactor: TA.Factor | undefined = undefined
-			let deviceFactor: TA.Factor | undefined = deriveDeviceFactor(user.email)
-			if (!deviceFactor) {
-				const factors = await constructDeviceFactor({
-					networkFactor,
-					user: user.email,
-				})
-				privateFactor = factors.privateFactor
-				deviceFactor = factors.deviceFactor
+				success = verified
+					? await signInWithOauth(user, account, setStep)
+					: await signInWithOauthAndPassword(user, account, password, setStep)
 			} else {
-				privateFactor = constructPrivateFactor(networkFactor, deviceFactor)
+				success = await signUp(user, account, setStep)
 			}
 
-			const publicKey = getPublicKeyFromPrivateKey(privateFactor.y)
-			const address = getAddressFromPrivateKey(privateFactor.y)
-			const privateKey = privateFactor.y.toString(16, 64)
-			const lastLogin = new Date().toISOString()
-
-			const verify = verifyPrivateKey(user.email, privateFactor.y)
-			console.log({
-				networkFactor: networkFactor.y.toString(16, 64),
-			})
-
-			storeWallet({ address, publicKey, privateKey, networkFactor, user })
-			storeMetadata({ deviceFactor, user, address, lastLogin })
+			if (!success) {
+				alert('Failed to sign in')
+			}
 		})()
 	}, [])
 
 	const navigateToDashboard = () => {
 		router.push('/dashboard')
-	}
-
-	if (loading) {
-		return (
-			<TransitionWrapper router={router}>
-				<Loading />
-			</TransitionWrapper>
-		)
 	}
 
 	return (

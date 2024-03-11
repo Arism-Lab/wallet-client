@@ -1,11 +1,32 @@
-import { v4 as uuidv4 } from 'uuid'
 import { BN, EC, F } from '@common'
 import { lagrangeInterpolation } from '@libs/arithmetic'
 import { TA } from '@types'
 import { deriveMetadatas } from '@libs/storage'
 import { getDeviceInfo } from '@libs/device'
 import { addDevice, getDevices } from '@helpers/metadata'
-import { verifyPrivateKey } from '@helpers/privateFactor'
+
+export const verifyDevice = async (
+    user: string,
+    lastLogin?: string
+): Promise<{ device: TA.Device; verified: boolean }> => {
+    const device: TA.Device = getDeviceInfo(lastLogin)
+    const devices: TA.Device[] = await getDevices(user)
+    const verified: boolean = devices.some((e) => e.id === device.id)
+
+    return { device, verified }
+}
+
+export const postDevice = async (
+    user: string,
+    lastLogin: string
+): Promise<void> => {
+    const { device, verified }: { device: TA.Device; verified: boolean } =
+        await verifyDevice(user, lastLogin)
+
+    if (!verified) {
+        await addDevice({ device, user })
+    }
+}
 
 export const deriveDeviceFactor = (user: string): TA.Factor | undefined => {
     const deviceFactors: TA.MetadataStorage[] = deriveMetadatas()
@@ -21,10 +42,9 @@ export const deriveDeviceFactor = (user: string): TA.Factor | undefined => {
     }
 }
 
-export const constructDeviceFactor = async ({
-    user,
-    networkFactor,
-}: TA.ConstructDeviceFactorRequest): Promise<TA.ConstructDeviceFactorResponse> => {
+export const constructDeviceFactor = async (
+    networkFactor: TA.Factor
+): Promise<{ privateFactor: TA.Factor; deviceFactor: TA.Factor }> => {
     const privateKey: BN = BN.from(EC.generatePrivateKey())
     const privateFactor: TA.Factor = {
         x: F.PRIVATE_FACTOR_X,
@@ -40,18 +60,13 @@ export const constructDeviceFactor = async ({
         y: deviceKey,
     }
 
-    await storeDevice(user)
-
     return { privateFactor, deviceFactor }
 }
 
-export const constructDeviceFactorNewDevice = async ({
-    user,
-    networkFactor,
-    recoveryFactor,
-}: TA.ConstructDeviceFactorNewDeviceRequest): Promise<
-    TA.ConstructDeviceFactorNewDeviceResponse | undefined
-> => {
+export const constructDeviceFactorNewDevice = async (
+    networkFactor: TA.Factor,
+    recoveryFactor: TA.Factor
+): Promise<{ privateFactor: TA.Factor; deviceFactor: TA.Factor }> => {
     const deviceKey: BN = lagrangeInterpolation(
         [networkFactor, recoveryFactor],
         F.DEVICE_FACTOR_X
@@ -70,23 +85,5 @@ export const constructDeviceFactorNewDevice = async ({
         y: privateKey,
     }
 
-    const verified = await verifyPrivateKey(user, privateKey)
-    if (!verified) return
-
-    await storeDevice(user)
-
     return { privateFactor, deviceFactor }
-}
-
-export const storeDevice = async (user: string) => {
-    const device: TA.Device = {
-        id: uuidv4(),
-        info: getDeviceInfo(),
-    }
-
-    const devices: TA.Device[] = await getDevices(user)
-
-    if (devices.find((e) => e.info === device.info)) return
-
-    await addDevice({ device, user })
 }

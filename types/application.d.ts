@@ -20,19 +20,32 @@ export type Factor = {
 export type MetadataStorage = {
     user: User
     deviceFactor: Factor
-    address: string
     lastLogin: string
+}
+export type Detection = {
+    name: string
+    version: string | undefined
 }
 export type Device = {
     id: string
-    info: string
+    lastLogin: string | undefined
+    browser: Detection | undefined
+    os: Detection | undefined
 }
-export type Wallet = {
-    address: string
-    publicKey: string
-    privateKey: string
+export type User = {
     networkFactor?: Factor
     user: User
+}
+export type Key = {
+    address: string
+    privateFactorX: string
+}
+export type Metadata = {
+    user: string
+    masterAddress: string
+    devices: Device[]
+    recoveryKey: string
+    keys: Key[]
 }
 
 /***************************************
@@ -51,7 +64,6 @@ export type DeriveDeviceFactorRequest = {
 export type DeriveDeviceFactorResponse = Factor | undefined
 
 export type ConstructDeviceFactorRequest = {
-    user: string
     networkFactor: Factor
 }
 export type ConstructDeviceFactorResponse = {

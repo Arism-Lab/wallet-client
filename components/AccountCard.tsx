@@ -7,7 +7,7 @@ import { signIn } from 'next-auth/react'
 import { getRecoveryKey } from '@helpers/metadata'
 import { formatKey } from '@libs/blockchain'
 import { BsTrash3 } from 'react-icons/bs'
-import { removeMetadata, storeMetadata, storeWallet } from '@libs/storage'
+import { removeMetadata, storeMetadata, storeUser } from '@libs/storage'
 import { useRouter } from 'next/navigation'
 import { deriveRecoveryFactor } from '@helpers/recoveryFactor'
 import { deriveDeviceFactor } from '@helpers/deviceFactor'
@@ -16,31 +16,41 @@ import {
 	verifyPrivateKey,
 } from '@helpers/privateFactor'
 import { getPublicKeyFromPrivateKey } from '@common/secp256k1'
+import { AiOutlineClose } from 'react-icons/ai'
+import { checkMfa, signInWithPassword } from '@helpers/wallet'
+
+type AccountCardProps = {
+	metadata: TA.MetadataStorage
+	click: () => void
+	hidden: boolean
+	focus: boolean
+}
 
 const AccountCard = ({
 	metadata,
 	click,
 	hidden,
 	focus,
-}: {
-	metadata: TA.MetadataStorage
-	click: () => void
-	hidden: boolean
-	focus: boolean
-}): JSX.Element => {
+}: AccountCardProps): JSX.Element => {
 	const [removeConfirm, setRemoveConfirm] = useState(false)
 	const [password, setPassword] = useState('')
 	const [enabledMfa, setEnabledMfa] = useState(false)
 
 	useEffect(() => {
 		;(async () => {
-			const mfa = await getRecoveryKey(metadata.user.email!)
-			console.log({ mfa })
-			setEnabledMfa(mfa != '0')
+			const enabledMfa = await checkMfa(metadata.user.email!)
+			setEnabledMfa(enabledMfa)
 		})()
-	}, [])
+	})
+
+	const expanded = focus && !hidden
+
+	useEffect(() => {
+		setRemoveConfirm(false), [expanded]
+	}, [expanded])
 
 	const router = useRouter()
+
 	const removeAccount = () => {
 		removeMetadata(metadata.user.email!)
 		router.refresh()
@@ -56,33 +66,8 @@ const AccountCard = ({
 	}
 
 	const handlePasswordSignIn = async () => {
-		const recoveryFactor = await deriveRecoveryFactor(
-			metadata.user.email!,
-			password
-		)
-		const deviceFactor: TA.Factor = deriveDeviceFactor(
-			metadata.user.email!
-		) as TA.Factor
-		const privateFactor: TA.Factor = constructPrivateFactor(
-			recoveryFactor,
-			deviceFactor
-		)
-		const verify = await verifyPrivateKey(metadata.user.email!, privateFactor.y)
-
-		if (verify) {
-			storeWallet({
-				address: metadata.address,
-				publicKey: getPublicKeyFromPrivateKey(privateFactor.y),
-				privateKey: privateFactor.y.toString(16, 64),
-				user: metadata.user,
-			})
-			storeMetadata({
-				deviceFactor,
-				user: metadata.user,
-				address: metadata.address,
-				lastLogin: new Date().toISOString(),
-			})
-
+		const success = await signInWithPassword(metadata.user, password)
+		if (success) {
 			router.push('/dashboard')
 		} else {
 			alert('Invalid password')
@@ -91,38 +76,35 @@ const AccountCard = ({
 
 	return (
 		<>
-			{removeConfirm && (
-				<div className="absolute inset-x-0 -top-28 z-10 grid h-max w-full items-center justify-center gap-2 rounded-2xl border-2 border-primary-600 bg-white px-5 pb-3 pt-2 text-lg">
-					<p className="font-light">
-						Are you sure to remove{' '}
-						<span className="font-medium">{metadata.user.name}</span> account?
-						You can manually log in via Google again next time.
-					</p>
-					<div className="text-medium mx-auto flex w-1/2 gap-5">
-						<button
-							className="border-red w-full rounded-lg border-2 border-primary-500 px-4 pb-1 text-primary-500 hover:bg-primary-100"
-							onClick={() => setRemoveConfirm(false)}
-						>
-							cancel
-						</button>
-						<button
-							className="w-full rounded-lg border-2 border-red-600  bg-red-600 px-4 pb-1 text-white hover:border-red-800 hover:bg-red-800"
-							onClick={() => removeAccount()}
-						>
-							remove
-						</button>
-					</div>
-				</div>
-			)}
-			<button
-				className="card relative w-fit cursor-default disabled:hidden"
-				disabled={hidden}
+			<div
+				className="absolute inset-x-0 -top-0 z-10 h-0 w-full transform select-none items-center justify-center gap-2 truncate rounded-2xl border-2 border-red-600 bg-white px-5 pb-3 pt-2 text-lg opacity-0 duration-300 ease-in-out aria-expanded:grid aria-expanded:h-max aria-expanded:-translate-y-28 aria-expanded:opacity-100"
+				aria-expanded={removeConfirm}
 			>
-				{!hidden && focus ? (
-					<LuChevronLeft
-						className="h-12 w-12 cursor-pointer rounded-full border-2 border-primary-600 p-2 text-xl text-primary-600 hover:bg-primary-100"
+				<p className="font-light">
+					Are you sure to remove{' '}
+					<span className="font-medium">{metadata.user.name}</span> account?
+					Since you have turned on MFA, you will need to enter your password
+					manually when logging in via Google next time.
+				</p>
+				<button
+					className="text-medium mx-auto flex w-min gap-5 rounded-lg border-2 border-red-600  bg-red-600 px-20 pb-1 text-white hover:border-red-800 hover:bg-red-800"
+					onClick={() => removeAccount()}
+				>
+					remove
+				</button>
+			</div>
+			<button
+				className="card mx-auto flex w-full cursor-default justify-between overflow-hidden truncate transition-all duration-300 ease-in-out disabled:w-[0px] disabled:p-0 disabled:opacity-0 aria-expanded:w-[90vw]"
+				disabled={hidden}
+				aria-expanded={expanded}
+			>
+				{expanded ? (
+					<button
+						className="grid h-12 w-12 place-items-center justify-items-center rounded-full border-2 border-primary-600 p-2 text-2xl text-primary-600 hover:bg-primary-100"
 						onClick={click}
-					/>
+					>
+						<LuChevronLeft />
+					</button>
 				) : (
 					<Image
 						src={metadata.user.image!}
@@ -132,13 +114,15 @@ const AccountCard = ({
 						className="rounded-full"
 					/>
 				)}
-				<div className="flex flex-col text-left">
-					<p className="font-medium">
+				<div className="grid  text-left">
+					<p className="truncate-1 w-min overflow-hidden truncate text-ellipsis font-medium">
 						{metadata.user.name} ({formatDate(metadata.lastLogin, true)})
 					</p>
-					<p className="font-light text-gray-500">{metadata.user.email}</p>
+					<p className="truncate-1 w-min overflow-hidden truncate text-ellipsis font-light text-gray-500">
+						{metadata.user.email}
+					</p>
 				</div>
-				{!hidden && focus ? (
+				{expanded ? (
 					<>
 						<hr className="h-full w-[0.5px] bg-gray-300" />
 						<div className="flex flex-col text-center">
@@ -148,11 +132,11 @@ const AccountCard = ({
 							</p>
 						</div>
 						<button
-							className="rounded-full border-2 border-red-600 text-red-600 hover:bg-red-100 disabled:pointer-events-none disabled:border-2 disabled:border-red-600 disabled:bg-red-100 disabled:text-red-600"
-							disabled={removeConfirm}
-							onClick={() => setRemoveConfirm(true)}
+							className="grid h-12 w-12 transform place-items-center justify-items-center rounded-full border-2 border-red-600 p-2 text-xl text-red-600 transition-all duration-300 ease-in-out hover:bg-red-100 aria-disabled:rotate-180 aria-disabled:border-primary-600 aria-disabled:text-primary-600 aria-disabled:hover:bg-primary-100"
+							onClick={() => setRemoveConfirm(!removeConfirm)}
+							aria-disabled={removeConfirm}
 						>
-							<BsTrash3 className="h-12 w-12 p-[12px] " />
+							{removeConfirm ? <AiOutlineClose /> : <BsTrash3 />}
 						</button>
 						<hr className="h-full w-[0.5px] bg-gray-300" />
 						<button onClick={(e) => handleGoogleSignIn(e)} className="">

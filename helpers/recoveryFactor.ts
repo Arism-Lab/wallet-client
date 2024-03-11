@@ -1,7 +1,7 @@
 import { BN, EC, F, H } from '@common'
 import { lagrangeInterpolation } from '@libs/arithmetic'
 import { TA } from '@types'
-import { addRecoveryKey, getRecoveryKey } from '@helpers/metadata'
+import { setRecoveryKey, getRecoveryKey } from '@helpers/metadata'
 
 export const deriveRecoveryFactor = async (
     user: string,
@@ -38,7 +38,7 @@ export const constructRecoveryFactor = async ({
         y: recoveryKey,
     }
 
-    await addRecoveryKey({
+    await setRecoveryKey({
         user,
         recoveryKey: recoveryKey.toString(16),
     })

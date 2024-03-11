@@ -18,7 +18,10 @@ const AccountCardSlider = ({
 	}
 
 	return (
-		<div className="grid transform grid-flow-col place-content-stretch content-stretch justify-stretch justify-items-stretch gap-5 text-base transition-all duration-300 ease-in-out">
+		<div
+			className="flex w-[90vw] gap-5 text-base transition-all duration-300 ease-in-out aria-expanded:gap-0"
+			aria-expanded={click !== null}
+		>
 			{metadatas.map((metadata, index) => (
 				<AccountCard
 					key={index}

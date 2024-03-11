@@ -4,8 +4,11 @@ export type AddDeviceRequest = {
     user: string
     device: TA.Device
 }
-
-export type AddRecoveryKeyRequest = {
+export type SetRecoveryKeyRequest = {
     user: string
     recoveryKey: string
+}
+export type AddKeyRequest = {
+    user: string
+    key: TA.Key
 }

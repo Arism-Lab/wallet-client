@@ -1,21 +1,21 @@
 import Card from '@components/Card'
 import Image from '@components/Image'
 import Link from '@components/Link'
-import AccountCard from '@components/AccountCard'
 import { HomeSEO } from '@components/PageSEO'
-import { getNodes } from '@helpers/wallet'
-import { deriveMetadatas } from '@libs/storage'
+import { deriveMetadatas, deriveUser } from '@libs/storage'
 import { TA } from '@types'
 import { signIn, useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { HiOutlinePlus } from 'react-icons/hi2'
 import NodeCard from '@components/NodeCard'
 import AccountCardSlider from '@components/AccountCardSlider'
+import { N } from '@common'
+import { getNodes } from '@helpers/networkFactor'
 
 const Home = (): JSX.Element => {
-	const { data: session } = useSession()
+	const [user, setWallet] = useState<TA.User | undefined>()
 	const [metadatas, setMetadatas] = useState<TA.MetadataStorage[]>([])
-	const [nodes, setNodes] = useState<TA.Node[]>([])
+	const [nodes, setNodes] = useState<{ node: TA.Node; alive: boolean }[]>([])
 
 	const handleSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault()
@@ -23,10 +23,22 @@ const Home = (): JSX.Element => {
 	}
 
 	useEffect(() => {
-		setMetadatas(deriveMetadatas())
 		;(async () => {
-			const nodes = await getNodes()
+			const metadatas: TA.MetadataStorage[] = deriveMetadatas().sort(
+				(a, b) =>
+					new Date(b.lastLogin).getTime() - new Date(a.lastLogin).getTime()
+			)
+			setMetadatas(metadatas)
+
+			const user: TA.User = deriveUser()
+			setWallet(user)
+
+			const nodes = N.NODES.map((node) => ({ node, alive: false }))
 			setNodes(nodes)
+
+			await getNodes().then((res) =>
+				setNodes(N.NODES.map((node) => ({ node, alive: res.includes(node) })))
+			)
 		})()
 	}, [])
 
@@ -51,7 +63,7 @@ const Home = (): JSX.Element => {
 							Zero Knowledge
 						</span>
 					</h1>
-					{session ? (
+					{user ? (
 						<Link href="/dashboard">
 							<Card className="relative px-8 py-6 text-xl group-hover:text-primary-800">
 								<p>Open dashboard</p>
@@ -60,9 +72,7 @@ const Home = (): JSX.Element => {
 					) : (
 						<div className="flex w-full flex-col gap-10 text-2xl">
 							<div className="mx-auto grid gap-5">
-								<p className="font-extralight">
-									add your accounts to the wallet
-								</p>
+								<p className="font-extralight">add your accounts to the user</p>
 								<div className="mx-auto grid w-fit grid-cols-2 gap-5 text-lg">
 									<button
 										onClick={(e) => handleSignIn(e)}

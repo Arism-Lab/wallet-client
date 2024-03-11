@@ -16,6 +16,7 @@
         "arism-sdk": "^1.0.15",
         "axios": "^1.6.5",
         "bip39": "^3.1.0",
+        "device-detector-js": "^3.0.3",
         "eccrypto": "^1.1.6",
         "framer-motion": "^10.18.0",
         "js-cookie": "^3.0.5",

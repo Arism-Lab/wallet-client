@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { getSession, signOut } from 'next-auth/react'
+import { signOut } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { AiOutlineLogout } from 'react-icons/ai'
@@ -9,16 +9,16 @@ import Link from '@components/Link'
 import siteMetadata from '@data/siteMetadata.json'
 import Loading from '@components/Loading'
 import TransitionWrapper from '@components/TransitionWrapper'
-import { wipeToken, wipeWallet } from '@libs/storage'
+import { deriveUser, wipeToken, wipeUser } from '@libs/storage'
 
 const logout = async () => {
 	await signOut({ callbackUrl: '/' })
 	wipeToken()
-	wipeWallet()
+	wipeUser()
 }
 
 const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
-	const [session, setSession] = useState<any | null>(null)
+	const [wallet, setWallet] = useState<any | null>(null)
 	const [loading, setLoading] = useState<boolean>(true)
 	const router = useRouter()
 	const currPath = router.pathname
@@ -26,10 +26,10 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 
 	useEffect(() => {
 		;(async () => {
-			const _session = await getSession()
-			setSession(_session)
+			const wallet = deriveUser()
+			setWallet(wallet)
 			setLoading(false)
-			if (!_session) {
+			if (!wallet) {
 				await router.push('/')
 			}
 		})()
@@ -119,12 +119,12 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 										<button className="flex place-items-center rounded-full bg-white py-2 pl-3 pr-2 text-sm transition-all duration-200 ease-in-out hover:bg-primary-600 hover:text-white">
 											<Image
 												alt="User avatar"
-												src={session?.user?.image ?? '/images/avatar.png'}
+												src={wallet?.user?.image ?? '/images/avatar.png'}
 												width={30}
 												height={30}
 												className="rounded-full"
 											/>
-											<p className="px-2">{session?.user?.name ?? 'User'}</p>
+											<p className="px-2">{wallet?.user?.name ?? 'User'}</p>
 										</button>
 										<button
 											onClick={() => logout()}

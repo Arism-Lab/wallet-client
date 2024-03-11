@@ -61,12 +61,12 @@ export const wipeToken = () => {
     window.localStorage.removeItem('token')
 }
 
-export const storeWallet = (wallet: TA.Wallet) => {
-    window.localStorage.setItem('wallet', JSON.stringify(wallet))
+export const storeUser = (user: TA.User) => {
+    window.localStorage.setItem('user', JSON.stringify(user))
 }
-export const deriveWallet = (): TA.Wallet => {
-    return JSON.parse(window.localStorage.getItem('wallet') || 'null')
+export const deriveUser = (): TA.User => {
+    return JSON.parse(window.localStorage.getItem('user') || 'null')
 }
-export const wipeWallet = () => {
-    window.localStorage.removeItem('wallet')
+export const wipeUser = () => {
+    window.localStorage.removeItem('user')
 }
