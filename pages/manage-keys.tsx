@@ -37,7 +37,10 @@ const ManageKeys = ({ title, description }: PageSEOProps) => {
 			const user = deriveUser()
 			setUser(user)
 
-			const deviceFactor = deriveDeviceFactor(user.user.email!)
+			const deviceFactor: TA.Factor = deriveDeviceFactor(
+				user.user.email!
+			) as TA.Factor
+
 			setDeviceFactor({
 				x: BN.from(deviceFactor.x, 16),
 				y: BN.from(deviceFactor.y, 16),
