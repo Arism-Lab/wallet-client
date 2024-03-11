@@ -34,11 +34,17 @@ export type Device = {
 }
 export type User = {
     networkFactor?: Factor
+    storageFactor?: Factor
     user: User
 }
 export type Key = {
     address: string
     privateFactorX: string
+}
+export type FullKey = {
+    address: string
+    publicKey: string
+    privateKey: string
 }
 export type Metadata = {
     user: string

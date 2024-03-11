@@ -18,7 +18,7 @@ const logout = async () => {
 }
 
 const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
-	const [wallet, setWallet] = useState<any | null>(null)
+	const [user, setUser] = useState<any | null>(null)
 	const [loading, setLoading] = useState<boolean>(true)
 	const router = useRouter()
 	const currPath = router.pathname
@@ -26,14 +26,14 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 
 	useEffect(() => {
 		;(async () => {
-			const wallet = deriveUser()
-			setWallet(wallet)
+			const user = deriveUser()
+			setUser(user)
 			setLoading(false)
-			if (!wallet) {
+			if (!user && !isHome) {
 				await router.push('/')
 			}
 		})()
-	}, [])
+	}, [router.pathname])
 
 	const pageTitle = sideNavigation.find((item) => item.path === currPath)?.title
 
@@ -119,12 +119,12 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 										<button className="flex place-items-center rounded-full bg-white py-2 pl-3 pr-2 text-sm transition-all duration-200 ease-in-out hover:bg-primary-600 hover:text-white">
 											<Image
 												alt="User avatar"
-												src={wallet?.user?.image ?? '/images/avatar.png'}
+												src={user?.user?.image ?? '/images/avatar.png'}
 												width={30}
 												height={30}
 												className="rounded-full"
 											/>
-											<p className="px-2">{wallet?.user?.name ?? 'User'}</p>
+											<p className="px-2">{user?.user?.name ?? 'User'}</p>
 										</button>
 										<button
 											onClick={() => logout()}

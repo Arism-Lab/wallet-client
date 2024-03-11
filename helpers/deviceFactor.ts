@@ -28,7 +28,7 @@ export const postDevice = async (
     }
 }
 
-export const deriveDeviceFactor = (user: string): TA.Factor | undefined => {
+export const deriveDeviceFactor = (user: string): TA.Factor => {
     const deviceFactors: TA.MetadataStorage[] = deriveMetadatas()
     const deviceFactor: TA.MetadataStorage | undefined = deviceFactors.find(
         (e) => e.user.email === user

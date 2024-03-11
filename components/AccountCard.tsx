@@ -4,20 +4,13 @@ import Image from './Image'
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu'
 import { formatDate } from '@libs/date'
 import { signIn } from 'next-auth/react'
-import { getRecoveryKey } from '@helpers/metadata'
 import { formatKey } from '@libs/blockchain'
 import { BsTrash3 } from 'react-icons/bs'
-import { removeMetadata, storeMetadata, storeUser } from '@libs/storage'
+import { removeMetadata } from '@libs/storage'
 import { useRouter } from 'next/navigation'
-import { deriveRecoveryFactor } from '@helpers/recoveryFactor'
-import { deriveDeviceFactor } from '@helpers/deviceFactor'
-import {
-	constructPrivateFactor,
-	verifyPrivateKey,
-} from '@helpers/privateFactor'
-import { getPublicKeyFromPrivateKey } from '@common/secp256k1'
 import { AiOutlineClose } from 'react-icons/ai'
 import { checkMfa, signInWithPassword } from '@helpers/wallet'
+import { getKeys } from '@helpers/metadata'
 
 type AccountCardProps = {
 	metadata: TA.MetadataStorage
@@ -35,13 +28,17 @@ const AccountCard = ({
 	const [removeConfirm, setRemoveConfirm] = useState(false)
 	const [password, setPassword] = useState('')
 	const [enabledMfa, setEnabledMfa] = useState(false)
+	const [keys, setKeys] = useState<TA.Key[]>([])
 
 	useEffect(() => {
 		;(async () => {
 			const enabledMfa = await checkMfa(metadata.user.email!)
 			setEnabledMfa(enabledMfa)
+
+			const keys = await getKeys(metadata.user.email!)
+			setKeys(keys)
 		})()
-	})
+	}, [])
 
 	const expanded = focus && !hidden
 
@@ -126,7 +123,10 @@ const AccountCard = ({
 					<>
 						<hr className="h-full w-[0.5px] bg-gray-300" />
 						<div className="flex flex-col text-center">
-							<p className="font-medium">{formatKey(metadata.address)}</p>
+							<p className="font-medium">
+								{keys.length} key{keys.length > 1 && 's'} associated to this
+								account
+							</p>
 							<p className="font-light text-gray-500">
 								last login since {formatDate(metadata.lastLogin)}
 							</p>

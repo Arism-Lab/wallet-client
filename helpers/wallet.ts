@@ -9,7 +9,7 @@ import {
     deriveDeviceFactor,
     postDevice,
 } from '@helpers/deviceFactor'
-import { EC, F } from '@common'
+import { BN, EC, F } from '@common'
 import {
     constructPrivateFactor,
     verifyPrivateKey,
@@ -27,6 +27,27 @@ export const checkExistence = async (user: string): Promise<boolean> => {
 }
 export const checkMfa = async (user: string): Promise<boolean> => {
     return await getRecoveryKey(user).then((data) => data != '0')
+}
+
+export const createNewKey = async (
+    user: string,
+    factor1: TA.Factor,
+    factor2: TA.Factor
+): Promise<boolean> => {
+    const privateFactorX: string = EC.generatePrivateKey()
+    const privateFactor = constructPrivateFactor(
+        factor1,
+        factor2,
+        BN.from(privateFactorX, 16)
+    )
+    const address = EC.getAddressFromPrivateKey(privateFactor.y)
+
+    return await addKey({
+        user,
+        key: { address, privateFactorX },
+    })
+        .then((data) => data !== undefined)
+        .catch(() => false)
 }
 
 // Use case: Sign up
