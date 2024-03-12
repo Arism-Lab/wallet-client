@@ -1,8 +1,8 @@
-import { BN } from '@common'
 import { PageSEO } from '@components/PageSEO'
 import sideNavigation from '@data/sideNavigation'
 import { constructRecoveryFactor } from '@helpers/recoveryFactor'
-import { deriveMetadatas, deriveUser } from '@libs/storage'
+import { deriveSession } from '@libs/storage'
+import { TA } from '@types'
 import { GetStaticProps } from 'next'
 import { useState } from 'react'
 
@@ -21,15 +21,8 @@ const Settings = ({ title, description }: PageSEOProps) => {
 	const [password, setPassword] = useState('')
 
 	const handleSubmit = async () => {
-		const { user, networkFactor } = deriveUser()
-		await constructRecoveryFactor({
-			user: user.email!,
-			networkFactor: {
-				x: BN.from(networkFactor!.x, 16),
-				y: BN.from(networkFactor!.y, 16),
-			},
-			password,
-		})
+		const session: TA.UserSession = deriveSession()
+		await constructRecoveryFactor(session, password)
 	}
 
 	return (

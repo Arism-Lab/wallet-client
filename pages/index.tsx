@@ -2,7 +2,7 @@ import Card from '@components/Card'
 import Image from '@components/Image'
 import Link from '@components/Link'
 import { HomeSEO } from '@components/PageSEO'
-import { deriveMetadatas, deriveUser } from '@libs/storage'
+import { deriveLocals, deriveSession } from '@libs/storage'
 import { TA } from '@types'
 import { signIn, useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
@@ -13,8 +13,8 @@ import { N } from '@common'
 import { getNodes } from '@helpers/networkFactor'
 
 const Home = (): JSX.Element => {
-	const [user, setWallet] = useState<TA.User | undefined>()
-	const [metadatas, setMetadatas] = useState<TA.MetadataStorage[]>([])
+	const [session, setSession] = useState<TA.UserSession | undefined>()
+	const [locals, setLocals] = useState<TA.UserLocal[]>([])
 	const [nodes, setNodes] = useState<{ node: TA.Node; alive: boolean }[]>([])
 
 	const handleSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -24,14 +24,14 @@ const Home = (): JSX.Element => {
 
 	useEffect(() => {
 		;(async () => {
-			const metadatas: TA.MetadataStorage[] = deriveMetadatas().sort(
+			const locals: TA.UserLocal[] = deriveLocals().sort(
 				(a, b) =>
 					new Date(b.lastLogin).getTime() - new Date(a.lastLogin).getTime()
 			)
-			setMetadatas(metadatas)
+			setLocals(locals)
 
-			const user: TA.User = deriveUser()
-			setWallet(user)
+			const session: TA.UserSession = deriveSession()
+			setSession(session)
 
 			const nodes = N.NODES.map((node) => ({ node, alive: false }))
 			setNodes(nodes)
@@ -63,7 +63,7 @@ const Home = (): JSX.Element => {
 							Zero Knowledge
 						</span>
 					</h1>
-					{user ? (
+					{session ? (
 						<Link href="/dashboard">
 							<Card className="relative px-8 py-6 text-xl group-hover:text-primary-800">
 								<p>Open dashboard</p>
@@ -72,7 +72,9 @@ const Home = (): JSX.Element => {
 					) : (
 						<div className="flex w-full flex-col gap-10 text-2xl">
 							<div className="mx-auto grid gap-5">
-								<p className="font-extralight">add your accounts to the user</p>
+								<p className="font-extralight">
+									add your accounts to the session
+								</p>
 								<div className="mx-auto grid w-fit grid-cols-2 gap-5 text-lg">
 									<button
 										onClick={(e) => handleSignIn(e)}
@@ -103,12 +105,12 @@ const Home = (): JSX.Element => {
 										</p>
 									</button>
 								</div>
-								{metadatas.length > 0 && (
+								{locals.length > 0 && (
 									<div className="mx-auto grid gap-5">
 										<p className="font-extralight">
 											or continue with existed accounts on this device
 										</p>
-										<AccountCardSlider metadatas={metadatas} />
+										<AccountCardSlider locals={locals} />
 									</div>
 								)}
 							</div>

@@ -1,7 +1,7 @@
 import { BN, EC, F } from '@common'
 import { lagrangeInterpolation } from '@libs/arithmetic'
 import { TA } from '@types'
-import { deriveMetadatas } from '@libs/storage'
+import { deriveLocals } from '@libs/storage'
 import { getDeviceInfo } from '@libs/device'
 import { addDevice, getDevices } from '@helpers/metadata'
 
@@ -29,17 +29,11 @@ export const postDevice = async (
 }
 
 export const deriveDeviceFactor = (user: string): TA.Factor | undefined => {
-    const deviceFactors: TA.MetadataStorage[] = deriveMetadatas()
-    const deviceFactor: TA.MetadataStorage | undefined = deviceFactors.find(
+    const local: TA.UserLocal | undefined = deriveLocals()?.find(
         (e) => e.user.email === user
     )
 
-    if (deviceFactor) {
-        return {
-            x: BN.from(deviceFactor.deviceFactor.x, 16),
-            y: BN.from(deviceFactor.deviceFactor.y, 16),
-        }
-    }
+    return local?.deviceFactor
 }
 
 export const constructDeviceFactor = async (

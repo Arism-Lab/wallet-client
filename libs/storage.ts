@@ -1,40 +1,41 @@
 import { TA } from '@types'
 import { Account, TokenSet } from 'next-auth'
+import { upCastingFactor } from '@libs/casting'
 
-export const storeMetadata = (
-    data: TA.MetadataStorage | TA.MetadataStorage[]
-) => {
-    let metadatas: TA.MetadataStorage[] = deriveMetadatas()
+export const storeLocals = (data: TA.UserLocal | TA.UserLocal[]) => {
+    let locals: TA.UserLocal[] = deriveLocals()
 
     if (!Array.isArray(data)) {
-        const index = metadatas.findIndex(
-            (e) => e.user.email === data.user.email
-        )
+        const index = locals.findIndex((e) => e.user.email === data.user.email)
         if (index !== -1) {
-            metadatas[index] = data
+            locals[index] = data
         } else {
-            metadatas.push(data)
+            locals.push(data)
         }
     } else {
-        metadatas = data
+        locals = data
     }
 
-    window.localStorage.setItem('metadatas', JSON.stringify(metadatas))
+    window.localStorage.setItem('locals', JSON.stringify(locals))
 }
-export const deriveMetadatas = (): TA.MetadataStorage[] => {
-    const metadatas = JSON.parse(
-        window.localStorage.getItem('metadatas') || '[]'
-    ) as TA.MetadataStorage[]
-    if (!Array.isArray(metadatas)) {
-        return [metadatas]
-    }
-    return metadatas
+export const deriveLocals = (): TA.UserLocal[] => {
+    const locals: TA.UserLocal[] = JSON.parse(
+        window.localStorage.getItem('locals') || '[]'
+    )
+
+    return locals.map((m) => {
+        return {
+            user: m.user,
+            deviceFactor: upCastingFactor(m.deviceFactor),
+            lastLogin: m.lastLogin,
+        }
+    })
 }
-export const removeMetadata = (user: string) => {
-    const metadatas = deriveMetadatas()
-    const index = metadatas.findIndex((m) => m.user.email === user)
-    metadatas.splice(index, 1)
-    storeMetadata(metadatas)
+export const removeLocals = (session: string) => {
+    const locals = deriveLocals()
+    const index = locals.findIndex((m) => m.user.email === session)
+    locals.splice(index, 1)
+    storeLocals(locals)
 }
 export const storeToken = (account: Account) => {
     const token: TokenSet = {
@@ -49,24 +50,27 @@ export const storeToken = (account: Account) => {
     window.localStorage.setItem('token', JSON.stringify(token))
 }
 export const deriveToken = (): TokenSet => {
-    const token: TokenSet = JSON.parse(
-        window.localStorage.getItem('token') || 'null'
-    )!
-
-    // TODO: Check if token is expired
-
-    return token
+    return JSON.parse(window.localStorage.getItem('token')!)
 }
 export const wipeToken = () => {
     window.localStorage.removeItem('token')
 }
 
-export const storeUser = (user: TA.User) => {
-    window.localStorage.setItem('user', JSON.stringify(user))
+export const storeSession = (session: TA.UserSession) => {
+    window.localStorage.setItem('session', JSON.stringify(session))
 }
-export const deriveUser = (): TA.User => {
-    return JSON.parse(window.localStorage.getItem('user') || 'null')
+export const deriveSession = (): TA.UserSession => {
+    const session: TA.UserSession = JSON.parse(
+        window.localStorage.getItem('session')!
+    )
+
+    return {
+        user: session.user,
+        factor1: upCastingFactor(session.factor1),
+        factor2: upCastingFactor(session.factor2),
+        factor3: session.factor3 ? upCastingFactor(session.factor3) : undefined,
+    }
 }
-export const wipeUser = () => {
-    window.localStorage.removeItem('user')
+export const wipeSession = () => {
+    window.localStorage.removeItem('session')
 }

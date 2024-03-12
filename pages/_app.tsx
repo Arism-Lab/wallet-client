@@ -3,12 +3,13 @@ import Head from 'next/head'
 import Router from 'next/router'
 import ProgressBar from 'react-scroll-progress-bar'
 import NProgress from 'nprogress'
-import { useRouter } from 'next/router'
+import { Provider as ReduxProvider } from 'react-redux'
 import LayoutWrapper from '@components/LayoutWrapper'
 import '@styles/tailwind.css'
 import '@styles/extra.css'
 import { SessionProvider } from 'next-auth/react'
 import Analytics from '@components/Analytics'
+import { store } from '@redux'
 
 // NProgress.configure({ showSpinner: false });
 
@@ -30,20 +31,22 @@ const MyApp = ({
 }: AppProps): JSX.Element => {
 	return (
 		<>
-			<SessionProvider session={session}>
-				<ProgressBar bgcolor="#5b21b6" />
-				<Head>
-					<title>Arism Wallet</title>
-					<meta
-						name="viewport"
-						content="initial-scale=1.0, width=device-width"
-					/>
-				</Head>
-				<Analytics />
-				<LayoutWrapper>
-					<Component {...pageProps} />
-				</LayoutWrapper>
-			</SessionProvider>
+			<ReduxProvider store={store}>
+				<SessionProvider session={session}>
+					<ProgressBar bgcolor="#5b21b6" />
+					<Head>
+						<title>Arism Wallet</title>
+						<meta
+							name="viewport"
+							content="initial-scale=1.0, width=device-width"
+						/>
+					</Head>
+					<Analytics />
+					<LayoutWrapper>
+						<Component {...pageProps} />
+					</LayoutWrapper>
+				</SessionProvider>
+			</ReduxProvider>
 		</>
 	)
 }

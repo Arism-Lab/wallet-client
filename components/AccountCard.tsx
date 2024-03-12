@@ -4,23 +4,22 @@ import Image from './Image'
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu'
 import { formatDate } from '@libs/date'
 import { signIn } from 'next-auth/react'
-import { formatKey } from '@libs/blockchain'
 import { BsTrash3 } from 'react-icons/bs'
-import { removeMetadata } from '@libs/storage'
+import { removeLocals } from '@libs/storage'
 import { useRouter } from 'next/navigation'
 import { AiOutlineClose } from 'react-icons/ai'
 import { checkMfa, signInWithPassword } from '@helpers/wallet'
 import { getKeys } from '@helpers/metadata'
 
 type AccountCardProps = {
-	metadata: TA.MetadataStorage
+	local: TA.UserLocal
 	click: () => void
 	hidden: boolean
 	focus: boolean
 }
 
 const AccountCard = ({
-	metadata,
+	local,
 	click,
 	hidden,
 	focus,
@@ -32,10 +31,10 @@ const AccountCard = ({
 
 	useEffect(() => {
 		;(async () => {
-			const enabledMfa = await checkMfa(metadata.user.email!)
+			const enabledMfa = await checkMfa(local.user.email)
 			setEnabledMfa(enabledMfa)
 
-			const keys = await getKeys(metadata.user.email!)
+			const keys = await getKeys(local.user.email)
 			setKeys(keys)
 		})()
 	}, [])
@@ -49,7 +48,7 @@ const AccountCard = ({
 	const router = useRouter()
 
 	const removeAccount = () => {
-		removeMetadata(metadata.user.email!)
+		removeLocals(local.user.email)
 		router.refresh()
 	}
 
@@ -57,13 +56,13 @@ const AccountCard = ({
 		e.preventDefault()
 		signIn('google', {
 			callbackUrl: '/login',
-			login_hint: metadata.user.email,
+			login_hint: local.user.email,
 			prompt: 'select_account+consent',
 		})
 	}
 
 	const handlePasswordSignIn = async () => {
-		const success = await signInWithPassword(metadata.user, password)
+		const success = await signInWithPassword(local.user, password)
 		if (success) {
 			router.push('/dashboard')
 		} else {
@@ -79,9 +78,9 @@ const AccountCard = ({
 			>
 				<p className="font-light">
 					Are you sure to remove{' '}
-					<span className="font-medium">{metadata.user.name}</span> account?
-					Since you have turned on MFA, you will need to enter your password
-					manually when logging in via Google next time.
+					<span className="font-medium">{local.user.name}</span> account? Since
+					you have turned on MFA, you will need to enter your password manually
+					when logging in via Google next time.
 				</p>
 				<button
 					className="text-medium mx-auto flex w-min gap-5 rounded-lg border-2 border-red-600  bg-red-600 px-20 pb-1 text-white hover:border-red-800 hover:bg-red-800"
@@ -104,8 +103,8 @@ const AccountCard = ({
 					</button>
 				) : (
 					<Image
-						src={metadata.user.image!}
-						alt={metadata.user.email!}
+						src={local.user.image!}
+						alt={local.user.email}
 						height={48}
 						width={48}
 						className="rounded-full"
@@ -113,10 +112,10 @@ const AccountCard = ({
 				)}
 				<div className="grid  text-left">
 					<p className="truncate-1 w-min overflow-hidden truncate text-ellipsis font-medium">
-						{metadata.user.name} ({formatDate(metadata.lastLogin, true)})
+						{local.user.name} ({formatDate(local.lastLogin, true)})
 					</p>
 					<p className="truncate-1 w-min overflow-hidden truncate text-ellipsis font-light text-gray-500">
-						{metadata.user.email}
+						{local.user.email}
 					</p>
 				</div>
 				{expanded ? (
@@ -128,7 +127,7 @@ const AccountCard = ({
 								account
 							</p>
 							<p className="font-light text-gray-500">
-								last login since {formatDate(metadata.lastLogin)}
+								last login since {formatDate(local.lastLogin)}
 							</p>
 						</div>
 						<button

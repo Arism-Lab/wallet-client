@@ -9,12 +9,12 @@ import Link from '@components/Link'
 import siteMetadata from '@data/siteMetadata.json'
 import Loading from '@components/Loading'
 import TransitionWrapper from '@components/TransitionWrapper'
-import { deriveUser, wipeToken, wipeUser } from '@libs/storage'
+import { deriveSession, wipeToken, wipeSession } from '@libs/storage'
 
 const logout = async () => {
 	await signOut({ callbackUrl: '/' })
 	wipeToken()
-	wipeUser()
+	wipeSession()
 }
 
 const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
@@ -26,7 +26,7 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 
 	useEffect(() => {
 		;(async () => {
-			const user = deriveUser()
+			const user = deriveSession()
 			setUser(user)
 			setLoading(false)
 			if (!user && !isHome) {

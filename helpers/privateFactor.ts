@@ -29,16 +29,14 @@ export const verifyPrivateKey = async (
 }
 
 export const derivePrivateFactors = async (
-    user: string,
-    factor1: TA.Factor,
-    factor2: TA.Factor
+    session: TA.UserSession
 ): Promise<TA.Factor[]> => {
-    const keys: TA.Key[] = await getKeys(user)
+    const keys: TA.Key[] = await getKeys(session.user.email)
 
     return keys.map((key) =>
         constructPrivateFactor(
-            factor1,
-            factor2,
+            session.factor1,
+            session.factor2,
             BN.from(key.privateFactorX, 16)
         )
     )

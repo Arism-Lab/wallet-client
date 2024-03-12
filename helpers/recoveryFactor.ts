@@ -1,14 +1,15 @@
-import { BN, EC, F, H } from '@common'
+import { BN, EC, H } from '@common'
 import { lagrangeInterpolation } from '@libs/arithmetic'
 import { TA } from '@types'
 import { setRecoveryKey, getRecoveryKey } from '@helpers/metadata'
-import { deriveDeviceFactor } from '@helpers/deviceFactor'
 
 export const deriveRecoveryFactor = async (
     user: string,
     password: string
 ): Promise<TA.Factor> => {
-    const recoveryFactorX = BN.from(H.keccak256(password).slice(2), 16).umod(EC.ORDER)
+    const recoveryFactorX = BN.from(H.keccak256(password).slice(2), 16).umod(
+        EC.ORDER
+    )
     const recoveryFactorKey = await getRecoveryKey(user)
 
     return {
@@ -17,22 +18,14 @@ export const deriveRecoveryFactor = async (
     }
 }
 
-export const constructRecoveryFactor = async ({
-    user,
-    networkFactor,
-    password,
-}: TA.ConstructRecoveryFactorRequest): Promise<TA.ConstructRecoveryFactorResponse> => {
-    const deviceFactor: TA.Factor = deriveDeviceFactor(user) as TA.Factor
-    const privateFactor: TA.Factor = {
-        x: deviceFactor.x,
-        y: deviceFactor.y,
-    }
-
-    const recoveryFactorX = BN.from(H.keccak256(password).slice(2), 16).umod(EC.ORDER)
-
+export const constructRecoveryFactor = async (
+    session: TA.UserSession,
+    password: string
+): Promise<TA.Factor> => {
+    const recoveryFactorX = BN.from(H.keccak256(password).slice(2), 16)
 
     const recoveryKey: BN = lagrangeInterpolation(
-        [networkFactor, privateFactor],
+        [session.factor1, session.factor2],
         recoveryFactorX
     )
 
@@ -42,9 +35,9 @@ export const constructRecoveryFactor = async ({
     }
 
     await setRecoveryKey({
-        user,
+        user: session.user.email,
         recoveryKey: recoveryKey.toString(16),
     })
 
-    return { privateFactor, recoveryFactor }
+    return recoveryFactor
 }

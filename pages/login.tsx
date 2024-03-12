@@ -1,13 +1,11 @@
-import { getSession, useSession } from 'next-auth/react'
+import { getSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md'
 import { useRouter } from 'next/router'
 import { HomeSEO } from '@components/PageSEO'
-import TransitionWrapper from '@components/TransitionWrapper'
-import Loading from '@components/Loading'
 import StepBar from '@components/StepBar'
 import { Session } from 'next-auth'
-import { deriveUser, storeToken } from '@libs/storage'
+import { deriveSession, storeToken } from '@libs/storage'
 import {
 	signInWithOauth,
 	signInWithOauthAndPassword,
@@ -40,7 +38,7 @@ const Login = (): JSX.Element => {
 
 			storeToken(account)
 
-			const wallet = deriveUser()
+			const wallet = deriveSession()
 			if (wallet) {
 				setStep(FINAL_STEP)
 				return

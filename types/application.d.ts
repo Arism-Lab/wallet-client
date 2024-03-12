@@ -1,5 +1,4 @@
 import { BN } from '@common'
-import { User } from 'next-auth'
 
 /**************************************
  *
@@ -17,7 +16,7 @@ export type Factor = {
     x: BN
     y: BN
 }
-export type MetadataStorage = {
+export type UserLocal = {
     user: User
     deviceFactor: Factor
     lastLogin: string
@@ -33,8 +32,14 @@ export type Device = {
     os: Detection | undefined
 }
 export type User = {
-    networkFactor?: Factor
-    storageFactor?: Factor
+    email: string
+    name: string
+    image: string
+}
+export type UserSession = {
+    factor1: Factor
+    factor2: Factor
+    factor3?: Factor | undefined
     user: User
 }
 export type Key = {

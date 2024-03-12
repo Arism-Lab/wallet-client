@@ -2,7 +2,7 @@ import NextAuth, { Account, User } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import { JWT } from 'next-auth/jwt'
 import { AdapterUser } from 'next-auth/adapters'
-import { storeToken, wipeToken, wipeUser } from '@libs/storage'
+import { storeToken, wipeToken, wipeSession } from '@libs/storage'
 
 const authOptions = {
     providers: [
