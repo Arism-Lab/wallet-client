@@ -1,4 +1,5 @@
 import type { AppProps } from 'next/app'
+import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Router from 'next/router'
 import { SessionProvider } from 'next-auth/react'
@@ -7,7 +8,6 @@ import { Provider as ReduxProvider } from 'react-redux'
 import ProgressBar from 'react-scroll-progress-bar'
 
 import Analytics from '@components/Analytics'
-import LayoutWrapper from '@components/LayoutWrapper'
 import '@styles/tailwind.css'
 import '@styles/extra.css'
 import { store } from '@store'
@@ -24,6 +24,10 @@ Router.events.on('routeChangeComplete', () => {
 
 Router.events.on('routeChangeError', () => {
 	NProgress.done()
+})
+
+const LayoutWrapper = dynamic(() => import('@components/LayoutWrapper'), {
+	ssr: false,
 })
 
 const MyApp = ({

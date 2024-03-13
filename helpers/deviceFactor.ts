@@ -2,7 +2,6 @@ import { BN, EC, F } from '@common'
 import { addDevice, getDevices } from '@helpers/metadata'
 import { lagrangeInterpolation } from '@libs/arithmetic'
 import { getDeviceInfo } from '@libs/device'
-import { useAppSelector } from '@store'
 import { TA } from '@types'
 
 export const verifyDevice = async (
@@ -26,14 +25,6 @@ export const postDevice = async (
     if (!verified) {
         await addDevice({ device, user })
     }
-}
-
-export const deriveDeviceFactor = (user: string): TA.Factor | undefined => {
-    const localUser: TA.LocalUser | undefined = useAppSelector(
-        (state) => state.localUsersReducer
-    ).data.find((e) => e.info.email === user)
-
-    return localUser?.deviceFactor
 }
 
 export const constructDeviceFactor = async (

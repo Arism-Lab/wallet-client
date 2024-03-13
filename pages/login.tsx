@@ -15,6 +15,7 @@ import {
 } from '@helpers/wallet'
 import { useAppDispatch, useAppSelector } from '@store'
 import { storeToken } from '@store/token/actions'
+import { TA } from '@types'
 
 const STEPS = [
 	'Checking',
@@ -34,13 +35,17 @@ const Login = (): JSX.Element => {
 	const [password, setPassword] = useState('')
 
 	const sessionUserReducer = useAppSelector((state) => state.sessionUserReducer)
+	const localUsersReducer = useAppSelector((state) => state.localUsersReducer)
 
-	if (sessionUserReducer.data) {
-		setStep(FINAL_STEP)
-	}
+	console.log({ sessionUserReducer, localUsersReducer })
 
 	useEffect(() => {
 		;(async () => {
+			if (sessionUserReducer.data) {
+				setStep(FINAL_STEP)
+				return
+			}
+
 			const {
 				token: { account },
 				user,
@@ -56,8 +61,12 @@ const Login = (): JSX.Element => {
 					user.email
 				)
 
+				const deviceFactor: TA.Factor = localUsersReducer.data.find(
+					(e) => e.info.email === user.email
+				)!.deviceFactor
+
 				success = verified
-					? await signInWithOauth(user, account, setStep)
+					? await signInWithOauth(user, account, deviceFactor, setStep)
 					: await signInWithOauthAndPassword(user, account, password, setStep)
 			} else {
 				success = await signUp(user, account, setStep)

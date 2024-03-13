@@ -5,7 +5,6 @@ import { BN, EC, F } from '@common'
 import {
     constructDeviceFactor,
     constructDeviceFactorNewDevice,
-    deriveDeviceFactor,
     postDevice,
 } from '@helpers/deviceFactor'
 import {
@@ -20,18 +19,23 @@ import {
     verifyPrivateKey,
 } from '@helpers/privateFactor'
 import { deriveRecoveryFactor } from '@helpers/recoveryFactor'
-import { useAppDispatch } from '@store'
+import { store, useAppDispatch } from '@store'
 import { storeLocalUser } from '@store/localUsers/actions'
 import { storeSessionUser } from '@store/sessionUser/actions'
 import { TA } from '@types'
-
-const dispatch = useAppDispatch()
 
 export const checkExistence = async (user: string): Promise<boolean> => {
     return await getUser(user).then((data) => data !== undefined)
 }
 export const checkMfa = async (user: string): Promise<boolean> => {
     return await getRecoveryKey(user).then((data) => data != '0')
+}
+
+const storeUser = (localUser: TA.LocalUser, sessionUser: TA.SessionUser) => {
+    const dispatch = store.dispatch
+
+    dispatch(storeLocalUser(localUser))
+    dispatch(storeSessionUser(sessionUser))
 }
 
 export const createNewKey = async (
@@ -86,14 +90,10 @@ export const signUp = async (
         key: { address, privateFactorX },
     })
 
-    dispatch(
-        storeSessionUser({
-            factor1: networkFactor,
-            factor2: deviceFactor,
-            info,
-        })
+    storeUser(
+        { deviceFactor, info, lastLogin },
+        { factor1: networkFactor, factor2: deviceFactor, info }
     )
-    dispatch(storeLocalUser({ deviceFactor, info, lastLogin }))
 
     return true
 }
@@ -102,6 +102,7 @@ export const signUp = async (
 export const signInWithOauth = async (
     info: TA.Info,
     token: Account,
+    deviceFactor: TA.Factor,
     setStep: Dispatch<SetStateAction<number>>
 ): Promise<boolean> => {
     const networkFactor: TA.Factor | undefined = await deriveNetworkFactor(
@@ -113,9 +114,6 @@ export const signInWithOauth = async (
     )
     if (!networkFactor) return false
 
-    const deviceFactor: TA.Factor | undefined = deriveDeviceFactor(info.email)
-    if (!deviceFactor) return false
-
     const privateFactor: TA.Factor = constructPrivateFactor(
         networkFactor,
         deviceFactor
@@ -125,14 +123,10 @@ export const signInWithOauth = async (
     if (verified) {
         const lastLogin = new Date().toISOString()
 
-        dispatch(
-            storeSessionUser({
-                factor1: networkFactor,
-                factor2: deviceFactor,
-                info,
-            })
+        storeUser(
+            { deviceFactor, info, lastLogin },
+            { factor1: networkFactor, factor2: deviceFactor, info }
         )
-        dispatch(storeLocalUser({ deviceFactor, info, lastLogin }))
 
         return true
     }
@@ -143,15 +137,13 @@ export const signInWithOauth = async (
 // Use case: Log in on the original device with password (MFA must be turned on)
 export const signInWithPassword = async (
     info: TA.Info,
-    password: string
+    password: string,
+    deviceFactor: TA.Factor
 ): Promise<boolean> => {
     const recoveryFactor: TA.Factor = await deriveRecoveryFactor(
         info.email,
         password
     )
-
-    const deviceFactor: TA.Factor | undefined = deriveDeviceFactor(info.email)
-    if (!deviceFactor) return false
 
     const privateFactor: TA.Factor = constructPrivateFactor(
         recoveryFactor,
@@ -162,14 +154,10 @@ export const signInWithPassword = async (
     if (verified) {
         const lastLogin = new Date().toISOString()
 
-        dispatch(
-            storeSessionUser({
-                factor1: deviceFactor,
-                factor2: recoveryFactor,
-                info,
-            })
+        storeUser(
+            { deviceFactor, info, lastLogin },
+            { factor1: deviceFactor, factor2: recoveryFactor, info }
         )
-        dispatch(storeLocalUser({ deviceFactor, info, lastLogin }))
 
         return true
     }
@@ -208,15 +196,15 @@ export const signInWithOauthAndPassword = async (
     if (verified) {
         const lastLogin = new Date().toISOString()
 
-        dispatch(
-            storeSessionUser({
+        storeUser(
+            { deviceFactor, info, lastLogin },
+            {
                 factor1: networkFactor,
                 factor2: deviceFactor,
                 factor3: recoveryFactor,
                 info,
-            })
+            }
         )
-        dispatch(storeLocalUser({ deviceFactor, info, lastLogin }))
 
         return true
     }

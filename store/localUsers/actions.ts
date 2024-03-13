@@ -3,34 +3,31 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 import { serializeFactor } from '@libs/serializer'
 import { TA } from '@types'
 
-export const deriveLocalUsers = createAsyncThunk<any, void>(
-    'derive/localUsers',
-    async (_, action) => {
-        try {
-            const localUsers: TA.LocalUser[] = JSON.parse(
-                window.localStorage.getItem('localUsers') || '[]'
-            ).map((e: any) => {
+export const deriveLocalUsers = (): TA.LocalUser[] => {
+    try {
+        return JSON.parse(window.localStorage.getItem('localUsers')!)
+            .map((e: any) => {
                 return {
                     info: e.info,
                     deviceFactor: serializeFactor(e.deviceFactor),
                     lastLogin: e.lastLogin,
                 }
             })
-
-            return action.fulfillWithValue(localUsers)
-        } catch (e) {
-            return action.rejectWithValue(e)
-        }
+            .sort(
+                (a: TA.LocalUser, b: TA.LocalUser) =>
+                    new Date(b.lastLogin).getTime() -
+                    new Date(a.lastLogin).getTime()
+            )
+    } catch {
+        return []
     }
-)
+}
 
 export const storeLocalUser = createAsyncThunk<any, TA.LocalUser>(
     'store/localUser',
     async (payload, action) => {
         try {
-            const localUsers: TA.LocalUser[] = JSON.parse(
-                window.localStorage.getItem('localUsers') || '[]'
-            )
+            const localUsers: TA.LocalUser[] = deriveLocalUsers()
 
             const index = localUsers.findIndex(
                 (e) => e.info.email === payload.info.email
@@ -71,9 +68,7 @@ export const removeLocalUser = createAsyncThunk<any, string>(
     'remove/localUser',
     async (payload, action) => {
         try {
-            const localUsers: TA.LocalUser[] = JSON.parse(
-                window.localStorage.getItem('localUsers') || '[]'
-            )
+            const localUsers: TA.LocalUser[] = deriveLocalUsers()
 
             const index = localUsers.findIndex((m) => m.info.email === payload)
 

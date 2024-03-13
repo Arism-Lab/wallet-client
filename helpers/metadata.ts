@@ -1,18 +1,22 @@
 import axios from 'axios'
 
-import { useAppSelector } from '@store'
+import { store } from '@store'
 import { TA, TM } from '@types'
 
-const token = useAppSelector((state) => state.tokenReducer)
+const getIdToken = (): string => {
+    const token = store.getState().tokenReducer
+
+    return token.data!.id_token!
+}
 
 export const initializeUser = async (user: string): Promise<void> => {
     await axios.post(`${process.env.NEXT_PUBLIC_METADATA_URL}`, { user })
 }
 
 export const addDevice = async (data: TM.AddDeviceRequest): Promise<void> => {
-    const { id_token } = token.data!
+    const idToken = getIdToken()
     const headers = {
-        Authorization: `Bearer ${id_token}`,
+        Authorization: `Bearer ${idToken}`,
     }
 
     await axios.post(
@@ -22,9 +26,9 @@ export const addDevice = async (data: TM.AddDeviceRequest): Promise<void> => {
     )
 }
 export const addKey = async (data: TM.AddKeyRequest): Promise<void> => {
-    const { id_token } = token.data!
+    const idToken = getIdToken()
     const headers = {
-        Authorization: `Bearer ${id_token}`,
+        Authorization: `Bearer ${idToken}`,
     }
 
     await axios.post(`${process.env.NEXT_PUBLIC_METADATA_URL}/add-key`, data, {
@@ -34,9 +38,9 @@ export const addKey = async (data: TM.AddKeyRequest): Promise<void> => {
 export const setRecoveryKey = async (
     data: TM.SetRecoveryKeyRequest
 ): Promise<void> => {
-    const { id_token } = token.data!
+    const idToken = getIdToken()
     const headers = {
-        Authorization: `Bearer ${id_token}`,
+        Authorization: `Bearer ${idToken}`,
     }
 
     await axios.post(

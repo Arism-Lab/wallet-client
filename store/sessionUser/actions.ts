@@ -3,27 +3,20 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 import { serializeFactor } from '@libs/serializer'
 import { TA } from '@types'
 
-export const deriveSessionUser = createAsyncThunk<any, void>(
-    'derive/sessionUsers',
-    async (_, action) => {
-        try {
-            const sessionUser: TA.SessionUser = JSON.parse(
-                window.localStorage.getItem('sessionUser') || '[]'
-            ).then((e: any) => {
-                return {
-                    user: e.user,
-                    factor1: serializeFactor(e.factor1),
-                    factor2: serializeFactor(e.factor2),
-                    factor3: e.factor3 ? serializeFactor(e.factor3) : undefined,
-                }
-            })
+export const deriveSessionUser = (): TA.SessionUser | undefined => {
+    try {
+        const res = JSON.parse(window.localStorage.getItem('sessionUser')!)!
 
-            return action.fulfillWithValue(sessionUser)
-        } catch {
-            return action.rejectWithValue(null)
+        return {
+            info: res.info,
+            factor1: serializeFactor(res.factor1),
+            factor2: serializeFactor(res.factor2),
+            factor3: res.factor3 ? serializeFactor(res.factor3) : undefined,
         }
+    } catch (e) {
+        return undefined
     }
-)
+}
 
 export const storeSessionUser = createAsyncThunk<any, TA.SessionUser>(
     'store/sessionUser',

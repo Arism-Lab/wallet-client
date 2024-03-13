@@ -8,9 +8,9 @@ const initialState: {
     loading: boolean
     error: any
 } = {
-    data: [],
+    data: actions.deriveLocalUsers(),
     loading: false,
-    error: {},
+    error: undefined,
 }
 
 export const localUsers = createSlice({
@@ -18,19 +18,6 @@ export const localUsers = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
-        // Deriving methods
-        builder.addCase(actions.deriveLocalUsers.pending, (state) => {
-            state.loading = true
-        })
-        builder.addCase(actions.deriveLocalUsers.fulfilled, (state, action) => {
-            state.data = action.payload
-            state.loading = false
-        })
-        builder.addCase(actions.deriveLocalUsers.rejected, (state, action) => {
-            state.error = action.payload
-            state.loading = false
-        })
-
         // Storing methods
         builder.addCase(actions.storeLocalUser.pending, (state) => {
             state.loading = true
@@ -38,6 +25,7 @@ export const localUsers = createSlice({
         builder.addCase(actions.storeLocalUser.fulfilled, (state, action) => {
             state.data = action.payload
             state.loading = false
+            state.error = undefined
         })
         builder.addCase(actions.storeLocalUser.rejected, (state, action) => {
             state.error = action.payload
@@ -51,6 +39,7 @@ export const localUsers = createSlice({
         builder.addCase(actions.storeLocalUsers.fulfilled, (state, action) => {
             state.data = action.payload
             state.loading = false
+            state.error = undefined
         })
         builder.addCase(actions.storeLocalUsers.rejected, (state, action) => {
             state.error = action.payload
@@ -64,6 +53,7 @@ export const localUsers = createSlice({
         builder.addCase(actions.removeLocalUser.fulfilled, (state, action) => {
             state.data = action.payload
             state.loading = false
+            state.error = undefined
         })
         builder.addCase(actions.removeLocalUser.rejected, (state, action) => {
             state.error = action.payload

@@ -12,6 +12,7 @@ import sideNavigation from '@data/sideNavigation'
 import siteMetadata from '@data/siteMetadata.json'
 import { useAppDispatch, useAppSelector } from '@store'
 import { removeSessionUser } from '@store/sessionUser/actions'
+import { sessionUser } from '@store/sessionUser/reducer'
 import { removeToken } from '@store/token/actions'
 
 const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
@@ -25,12 +26,10 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 	const pageTitle = sideNavigation.find((item) => item.path === currPath)?.title
 
 	useEffect(() => {
-		;(async () => {
-			if (!sessionUserState.error && !isHome) {
-				await router.push('/')
-			}
-		})()
-	}, [isHome])
+		if (sessionUserState.error && !sessionUserState.loading && !isHome) {
+			router.push('/')
+		}
+	}, [isHome, sessionUserState.error, sessionUserState.loading])
 
 	const logout = async () => {
 		await signOut({ callbackUrl: '/' })
@@ -42,7 +41,7 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 		return <TransitionWrapper router={router}>{children}</TransitionWrapper>
 	}
 
-	if (sessionUserState.loading) {
+	if (sessionUserState.loading && sessionUserState.error) {
 		return (
 			<TransitionWrapper router={router}>
 				<Loading />

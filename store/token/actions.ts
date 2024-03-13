@@ -1,21 +1,18 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { Account, TokenSet } from 'next-auth'
 
-export const deriveToken = createAsyncThunk<any, void>(
-    'derive/token',
-    async (_, action) => {
-        try {
-            const token = JSON.parse(window.localStorage.getItem('token')!)
+export const deriveToken = (): TokenSet | undefined => {
+    try {
+        if (typeof window === 'undefined') return undefined
 
-            return action.fulfillWithValue(token)
-        } catch {
-            return action.rejectWithValue(null)
-        }
+        return JSON.parse(window.localStorage.getItem('token') || 'undefined')
+    } catch {
+        return undefined
     }
-)
+}
 
 export const storeToken = createAsyncThunk<any, Account>(
-    'store/sessionUser',
+    'store/token',
     async (payload, action) => {
         try {
             const token: TokenSet = {

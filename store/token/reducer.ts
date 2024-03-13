@@ -8,9 +8,9 @@ const initialState: {
     loading: boolean
     error: any
 } = {
-    data: undefined,
+    data: actions.deriveToken(),
     loading: false,
-    error: {},
+    error: undefined,
 }
 
 export const token = createSlice({
@@ -18,25 +18,13 @@ export const token = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
-        // Deriving methods
-        builder.addCase(actions.deriveToken.pending, (state) => {
-            state.loading = true
-        })
-        builder.addCase(actions.deriveToken.fulfilled, (state, action) => {
-            state.data = action.payload
-            state.loading = false
-        })
-        builder.addCase(actions.deriveToken.rejected, (state, action) => {
-            state.error = action.payload
-            state.loading = false
-        })
-
         builder.addCase(actions.storeToken.pending, (state) => {
             state.loading = true
         })
         builder.addCase(actions.storeToken.fulfilled, (state, action) => {
             state.data = action.payload
             state.loading = false
+            state.error = undefined
         })
         builder.addCase(actions.storeToken.rejected, (state, action) => {
             state.error = action.payload
@@ -50,6 +38,7 @@ export const token = createSlice({
         builder.addCase(actions.removeToken.fulfilled, (state, action) => {
             state.data = action.payload
             state.loading = false
+            state.error = undefined
         })
         builder.addCase(actions.removeToken.rejected, (state, action) => {
             state.error = action.payload

@@ -20,10 +20,10 @@ const AccountCardSlider = ({ localUsers }: { localUsers: TA.LocalUser[] }) => {
 			aria-expanded={click !== null}
 		>
 			{localUsers
-				.sort(
-					(a, b) =>
-						new Date(b.lastLogin).getTime() - new Date(a.lastLogin).getTime()
-				)
+				// .sort(
+				// 	(a, b) =>
+				// 		new Date(b.lastLogin).getTime() - new Date(a.lastLogin).getTime()
+				// )
 				.map((localUser, index) => (
 					<AccountCard
 						key={index}

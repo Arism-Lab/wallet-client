@@ -64,7 +64,11 @@ const AccountCard = ({
 	}
 
 	const handlePasswordSignIn = async () => {
-		const success = await signInWithPassword(localUser.info, password)
+		const success = await signInWithPassword(
+			localUser.info,
+			password,
+			localUser.deviceFactor
+		)
 		if (success) {
 			router.push('/dashboard')
 		} else {

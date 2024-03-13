@@ -21,6 +21,9 @@ const Home = (): JSX.Element => {
 	const sessionUserReducer = useAppSelector((state) => state.sessionUserReducer)
 	const localUsersReducer = useAppSelector((state) => state.localUsersReducer)
 
+	console.log({ sessionUserReducer, localUsersReducer })
+	console.info({ sessionUserReducer, localUsersReducer })
+
 	const handleSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault()
 		signIn('google', { callbackUrl: '/login' })
