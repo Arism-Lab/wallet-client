@@ -10,20 +10,16 @@ import Link from '@components/Link'
 import NodeCard from '@components/NodeCard'
 import { HomeSEO } from '@components/PageSEO'
 import { getNodes } from '@helpers/networkFactor'
-import { useAppDispatch } from '@store'
-import { deriveLocalUsers } from '@store/localUsers/actions'
-import { deriveSessionUser } from '@store/sessionUser/actions'
+import { useAppSelector } from '@store'
 import { TA } from '@types'
 
 const Home = (): JSX.Element => {
-	const dispatch = useAppDispatch()
-
-	const sessionUser: TA.SessionUser | null = dispatch(deriveSessionUser())
-	const localUsers: TA.LocalUser[] = dispatch(deriveLocalUsers())
-
 	const [nodes, setNodes] = useState<{ node: TA.Node; alive: boolean }[]>(
 		N.NODES.map((node) => ({ node, alive: false }))
 	)
+
+	const sessionUserReducer = useAppSelector((state) => state.sessionUserReducer)
+	const localUsersReducer = useAppSelector((state) => state.localUsersReducer)
 
 	const handleSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault()
@@ -59,7 +55,7 @@ const Home = (): JSX.Element => {
 							Zero Knowledge
 						</span>
 					</h1>
-					{sessionUser ? (
+					{sessionUserReducer.data ? (
 						<Link href="/dashboard">
 							<Card className="relative px-8 py-6 text-xl group-hover:text-primary-800">
 								<p>Open dashboard</p>
@@ -101,12 +97,12 @@ const Home = (): JSX.Element => {
 										</p>
 									</button>
 								</div>
-								{localUsers.length > 0 && (
+								{localUsersReducer.data.length > 0 && (
 									<div className="mx-auto grid gap-5">
 										<p className="font-extralight">
 											or continue with existed accounts on this device
 										</p>
-										<AccountCardSlider localUsers={localUsers} />
+										<AccountCardSlider localUsers={localUsersReducer.data} />
 									</div>
 								)}
 							</div>

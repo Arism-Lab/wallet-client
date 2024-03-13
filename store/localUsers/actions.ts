@@ -5,7 +5,7 @@ import { TA } from '@types'
 
 export const deriveLocalUsers = createAsyncThunk<any, void>(
     'derive/localUsers',
-    async (_, { rejectWithValue, fulfillWithValue }) => {
+    async (_, action) => {
         try {
             const localUsers: TA.LocalUser[] = JSON.parse(
                 window.localStorage.getItem('localUsers') || '[]'
@@ -17,52 +17,76 @@ export const deriveLocalUsers = createAsyncThunk<any, void>(
                 }
             })
 
-            return fulfillWithValue(localUsers)
-        } catch {
-            return rejectWithValue(null)
+            return action.fulfillWithValue(localUsers)
+        } catch (e) {
+            return action.rejectWithValue(e)
         }
     }
 )
 
 export const storeLocalUser = createAsyncThunk<any, TA.LocalUser>(
     'store/localUser',
-    async (payload, _) => {
-        const localUsers: TA.LocalUser[] = JSON.parse(
-            window.localStorage.getItem('localUsers') || '[]'
-        )
+    async (payload, action) => {
+        try {
+            const localUsers: TA.LocalUser[] = JSON.parse(
+                window.localStorage.getItem('localUsers') || '[]'
+            )
 
-        const index = localUsers.findIndex(
-            (e) => e.info.email === payload.info.email
-        )
+            const index = localUsers.findIndex(
+                (e) => e.info.email === payload.info.email
+            )
 
-        if (index !== -1) {
-            localUsers[index] = payload
-        } else {
-            localUsers.push(payload)
+            if (index !== -1) {
+                localUsers[index] = payload
+            } else {
+                localUsers.push(payload)
+            }
+
+            window.localStorage.setItem(
+                'localUsers',
+                JSON.stringify(localUsers)
+            )
+
+            return action.fulfillWithValue(localUsers)
+        } catch (e) {
+            return action.rejectWithValue(e)
         }
-
-        window.localStorage.setItem('localUsers', JSON.stringify(localUsers))
     }
 )
 
 export const storeLocalUsers = createAsyncThunk<any, TA.LocalUser>(
     'store/localUsers',
-    async (payload, _) => {
-        window.localStorage.setItem('localUsers', JSON.stringify(payload))
+    async (payload, action) => {
+        try {
+            window.localStorage.setItem('localUsers', JSON.stringify(payload))
+
+            return action.fulfillWithValue(payload)
+        } catch (e) {
+            return action.rejectWithValue(e)
+        }
     }
 )
 
 export const removeLocalUser = createAsyncThunk<any, string>(
     'remove/localUser',
-    async (payload, _) => {
-        const localUsers: TA.LocalUser[] = JSON.parse(
-            window.localStorage.getItem('localUsers') || '[]'
-        )
+    async (payload, action) => {
+        try {
+            const localUsers: TA.LocalUser[] = JSON.parse(
+                window.localStorage.getItem('localUsers') || '[]'
+            )
 
-        const index = localUsers.findIndex((m) => m.info.email === payload)
+            const index = localUsers.findIndex((m) => m.info.email === payload)
 
-        localUsers.splice(index, 1)
+            localUsers.splice(index, 1)
 
-        window.localStorage.setItem('localUsers', JSON.stringify(localUsers))
+            window.localStorage.setItem(
+                'localUsers',
+                JSON.stringify(localUsers)
+            )
+
+            return action.fulfillWithValue(undefined)
+        } catch (e) {
+            return action.rejectWithValue(e)
+        }
     }
 )

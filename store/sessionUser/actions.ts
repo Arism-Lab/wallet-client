@@ -5,7 +5,7 @@ import { TA } from '@types'
 
 export const deriveSessionUser = createAsyncThunk<any, void>(
     'derive/sessionUsers',
-    async (_, { rejectWithValue, fulfillWithValue }) => {
+    async (_, action) => {
         try {
             const sessionUser: TA.SessionUser = JSON.parse(
                 window.localStorage.getItem('sessionUser') || '[]'
@@ -18,23 +18,35 @@ export const deriveSessionUser = createAsyncThunk<any, void>(
                 }
             })
 
-            return fulfillWithValue(sessionUser)
+            return action.fulfillWithValue(sessionUser)
         } catch {
-            return rejectWithValue(null)
+            return action.rejectWithValue(null)
         }
     }
 )
 
 export const storeSessionUser = createAsyncThunk<any, TA.SessionUser>(
     'store/sessionUser',
-    async (payload, _) => {
-        window.localStorage.setItem('sessionUser', JSON.stringify(payload))
+    async (payload, action) => {
+        try {
+            window.localStorage.setItem('sessionUser', JSON.stringify(payload))
+
+            return action.fulfillWithValue(payload)
+        } catch (e) {
+            return action.rejectWithValue(e)
+        }
     }
 )
 
 export const removeSessionUser = createAsyncThunk<any, void>(
     'remove/sessionUser',
-    async () => {
-        window.localStorage.removeItem('sessionUser')
+    async (_, action) => {
+        try {
+            window.localStorage.removeItem('sessionUser')
+
+            return action.fulfillWithValue(undefined)
+        } catch (e) {
+            return action.rejectWithValue(e)
+        }
     }
 )

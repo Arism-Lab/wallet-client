@@ -2,8 +2,7 @@ import { BN, EC, F } from '@common'
 import { addDevice, getDevices } from '@helpers/metadata'
 import { lagrangeInterpolation } from '@libs/arithmetic'
 import { getDeviceInfo } from '@libs/device'
-import { useAppDispatch } from '@store'
-import { deriveLocalUsers } from '@store/localUsers/actions'
+import { useAppSelector } from '@store'
 import { TA } from '@types'
 
 export const verifyDevice = async (
@@ -30,10 +29,9 @@ export const postDevice = async (
 }
 
 export const deriveDeviceFactor = (user: string): TA.Factor | undefined => {
-    const dispatch = useAppDispatch()
-    const localUser: TA.LocalUser | undefined = dispatch(deriveLocalUsers).find(
-        (e) => e.user.email === user
-    )
+    const localUser: TA.LocalUser | undefined = useAppSelector(
+        (state) => state.localUsersReducer
+    ).data.find((e) => e.info.email === user)
 
     return localUser?.deviceFactor
 }

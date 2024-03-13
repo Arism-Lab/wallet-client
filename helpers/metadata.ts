@@ -1,17 +1,16 @@
 import axios from 'axios'
 
-import { useAppDispatch } from '@store'
-import { deriveToken } from '@store/token/actions'
+import { useAppSelector } from '@store'
 import { TA, TM } from '@types'
 
-const dispatch = useAppDispatch()
+const token = useAppSelector((state) => state.tokenReducer)
 
 export const initializeUser = async (user: string): Promise<void> => {
     await axios.post(`${process.env.NEXT_PUBLIC_METADATA_URL}`, { user })
 }
 
 export const addDevice = async (data: TM.AddDeviceRequest): Promise<void> => {
-    const { id_token } = dispatch(deriveToken)
+    const { id_token } = token.data!
     const headers = {
         Authorization: `Bearer ${id_token}`,
     }
@@ -23,7 +22,7 @@ export const addDevice = async (data: TM.AddDeviceRequest): Promise<void> => {
     )
 }
 export const addKey = async (data: TM.AddKeyRequest): Promise<void> => {
-    const { id_token } = dispatch(deriveToken)
+    const { id_token } = token.data!
     const headers = {
         Authorization: `Bearer ${id_token}`,
     }
@@ -35,7 +34,7 @@ export const addKey = async (data: TM.AddKeyRequest): Promise<void> => {
 export const setRecoveryKey = async (
     data: TM.SetRecoveryKeyRequest
 ): Promise<void> => {
-    const { id_token } = dispatch(deriveToken)
+    const { id_token } = token.data!
     const headers = {
         Authorization: `Bearer ${id_token}`,
     }

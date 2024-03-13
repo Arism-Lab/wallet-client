@@ -4,9 +4,7 @@ import { useState } from 'react'
 import { PageSEO } from '@components/PageSEO'
 import sideNavigation from '@data/sideNavigation'
 import { constructRecoveryFactor } from '@helpers/recoveryFactor'
-import { useAppDispatch } from '@store'
-import { deriveSessionUser } from '@store/sessionUser/actions'
-import { TA } from '@types'
+import { useAppSelector } from '@store'
 
 export const getStaticProps: GetStaticProps = async () => {
 	const siteInfo = sideNavigation.find((item) => item.path === '/settings')
@@ -20,14 +18,12 @@ export const getStaticProps: GetStaticProps = async () => {
 }
 
 const Settings = ({ title, description }: PageSEOProps) => {
-	const dispatch = useAppDispatch()
-
 	const [password, setPassword] = useState('')
 
-	const sessionUser: TA.SessionUser = dispatch(deriveSessionUser())!
+	const sessionUserReducer = useAppSelector((state) => state.sessionUserReducer)
 
 	const handleSubmit = async () => {
-		await constructRecoveryFactor(sessionUser, password)
+		await constructRecoveryFactor(sessionUserReducer.data!, password)
 	}
 
 	return (

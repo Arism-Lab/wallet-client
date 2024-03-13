@@ -1,105 +1,75 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 import * as actions from '@store/localUsers/actions'
+import { TA } from '@types'
 
-const defaultState = {
+const initialState: {
+    data: TA.LocalUser[]
+    loading: boolean
+    error: any
+} = {
     data: [],
     loading: false,
-    error: null,
+    error: {},
 }
 
-export const deriveLocalUsers = createSlice({
-    name: 'derive/localUsers',
-    initialState: {
-        deriveLocalUsers: defaultState,
-    },
+export const localUsers = createSlice({
+    name: 'localUsers',
+    initialState,
     reducers: {},
     extraReducers: (builder) => {
+        // Deriving methods
         builder.addCase(actions.deriveLocalUsers.pending, (state) => {
-            state.deriveLocalUsers.data = []
-            state.deriveLocalUsers.loading = true
+            state.loading = true
         })
         builder.addCase(actions.deriveLocalUsers.fulfilled, (state, action) => {
-            state.deriveLocalUsers.data = action.payload
-            state.deriveLocalUsers.loading = false
+            state.data = action.payload
+            state.loading = false
         })
-        builder.addCase(actions.deriveLocalUsers.rejected, (state) => {
-            state.deriveLocalUsers.data = []
-            state.deriveLocalUsers.loading = false
+        builder.addCase(actions.deriveLocalUsers.rejected, (state, action) => {
+            state.error = action.payload
+            state.loading = false
         })
-    },
-})
 
-export const storeLocalUser = createSlice({
-    name: 'store/localUser',
-    initialState: {
-        storeLocalUser: defaultState,
-    },
-    reducers: {},
-    extraReducers: (builder) => {
+        // Storing methods
         builder.addCase(actions.storeLocalUser.pending, (state) => {
-            state.storeLocalUser.data = []
-            state.storeLocalUser.loading = true
+            state.loading = true
         })
         builder.addCase(actions.storeLocalUser.fulfilled, (state, action) => {
-            state.storeLocalUser.data = action.payload
-            state.storeLocalUser.loading = false
+            state.data = action.payload
+            state.loading = false
         })
-        builder.addCase(actions.storeLocalUser.rejected, (state) => {
-            state.storeLocalUser.data = []
-            state.storeLocalUser.loading = false
+        builder.addCase(actions.storeLocalUser.rejected, (state, action) => {
+            state.error = action.payload
+            state.loading = false
         })
-    },
-})
 
-export const storeLocalUsers = createSlice({
-    name: 'store/localUsers',
-    initialState: {
-        storeLocalUsers: defaultState,
-    },
-    reducers: {},
-    extraReducers: (builder) => {
+        // Storing methods
         builder.addCase(actions.storeLocalUsers.pending, (state) => {
-            state.storeLocalUsers.data = []
-            state.storeLocalUsers.loading = true
+            state.loading = true
         })
         builder.addCase(actions.storeLocalUsers.fulfilled, (state, action) => {
-            state.storeLocalUsers.data = action.payload
-            state.storeLocalUsers.loading = false
+            state.data = action.payload
+            state.loading = false
         })
-        builder.addCase(actions.storeLocalUsers.rejected, (state) => {
-            state.storeLocalUsers.data = []
-            state.storeLocalUsers.loading = false
+        builder.addCase(actions.storeLocalUsers.rejected, (state, action) => {
+            state.error = action.payload
+            state.loading = false
         })
-    },
-})
 
-export const removeLocalUser = createSlice({
-    name: 'remove/localUser',
-    initialState: {
-        removeLocalUser: defaultState,
-    },
-    reducers: {},
-    extraReducers: (builder) => {
+        // Removing methods
         builder.addCase(actions.removeLocalUser.pending, (state) => {
-            state.removeLocalUser.data = []
-            state.removeLocalUser.loading = true
+            state.loading = true
         })
         builder.addCase(actions.removeLocalUser.fulfilled, (state, action) => {
-            state.removeLocalUser.data = action.payload
-            state.removeLocalUser.loading = false
+            state.data = action.payload
+            state.loading = false
         })
-        builder.addCase(actions.removeLocalUser.rejected, (state) => {
-            state.removeLocalUser.data = []
-            state.removeLocalUser.loading = false
+        builder.addCase(actions.removeLocalUser.rejected, (state, action) => {
+            state.error = action.payload
+            state.loading = false
         })
     },
 })
 
-const localUsersReducer = {
-    deriveLocalUsersReducer: deriveLocalUsers.reducer,
-    storeLocalUserReducer: storeLocalUser.reducer,
-    storeLocalUsersReducer: storeLocalUsers.reducer,
-    removeLocalUserReducer: removeLocalUser.reducer,
-}
-export default localUsersReducer
+export default localUsers.reducer

@@ -10,13 +10,9 @@ import Loading from '@components/Loading'
 import TransitionWrapper from '@components/TransitionWrapper'
 import sideNavigation from '@data/sideNavigation'
 import siteMetadata from '@data/siteMetadata.json'
-import { useAppDispatch } from '@store'
-import {
-	deriveSessionUser,
-	removeSessionUser,
-} from '@store/sessionUser/actions'
+import { useAppDispatch, useAppSelector } from '@store'
+import { removeSessionUser } from '@store/sessionUser/actions'
 import { removeToken } from '@store/token/actions'
-import { TA } from '@types'
 
 const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 	const dispatch = useAppDispatch()
@@ -24,12 +20,13 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 
 	const currPath = router.pathname
 	const isHome = router.pathname === '/' || router.pathname === '/login'
-	const sessionUser: TA.SessionUser | null = dispatch(deriveSessionUser())
+	const sessionUserState = useAppSelector((state) => state.sessionUserReducer)
+
 	const pageTitle = sideNavigation.find((item) => item.path === currPath)?.title
 
 	useEffect(() => {
 		;(async () => {
-			if (!sessionUser && !isHome) {
+			if (!sessionUserState.error && !isHome) {
 				await router.push('/')
 			}
 		})()
@@ -45,7 +42,7 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 		return <TransitionWrapper router={router}>{children}</TransitionWrapper>
 	}
 
-	if (!sessionUser) {
+	if (sessionUserState.loading) {
 		return (
 			<TransitionWrapper router={router}>
 				<Loading />
@@ -123,12 +120,12 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 										<button className="flex place-items-center rounded-full bg-white py-2 pl-3 pr-2 text-sm transition-all duration-200 ease-in-out hover:bg-primary-600 hover:text-white">
 											<Image
 												alt="User avatar"
-												src={sessionUser?.info.image ?? '/images/avatar.png'}
+												src={sessionUserState.data!.info.image}
 												width={30}
 												height={30}
 												className="rounded-full"
 											/>
-											<p className="px-2">{sessionUser?.info.name ?? 'User'}</p>
+											<p className="px-2">{sessionUserState.data!.info.name}</p>
 										</button>
 										<button
 											onClick={() => logout()}

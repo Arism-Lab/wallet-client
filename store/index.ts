@@ -8,9 +8,9 @@ import tokenReducer from '@store/token/reducer'
 
 export const store = configureStore({
     reducer: {
-        ...localUsersReducer,
-        ...sessionUserReducer,
-        ...tokenReducer,
+        localUsersReducer,
+        sessionUserReducer,
+        tokenReducer,
     },
     middleware: (getDefaultMiddleware) => {
         const middleware = getDefaultMiddleware()

@@ -13,10 +13,8 @@ import {
 	signInWithOauthAndPassword,
 	signUp,
 } from '@helpers/wallet'
-import { useAppDispatch } from '@store'
-import { deriveSessionUser } from '@store/sessionUser/actions'
+import { useAppDispatch, useAppSelector } from '@store'
 import { storeToken } from '@store/token/actions'
-import { TA } from '@types'
 
 const STEPS = [
 	'Checking',
@@ -34,9 +32,10 @@ const Login = (): JSX.Element => {
 
 	const [step, setStep] = useState<number>(0)
 	const [password, setPassword] = useState('')
-	const sessionUser: TA.SessionUser | null = dispatch(deriveSessionUser())
 
-	if (sessionUser) {
+	const sessionUserReducer = useAppSelector((state) => state.sessionUserReducer)
+
+	if (sessionUserReducer.data) {
 		setStep(FINAL_STEP)
 	}
 

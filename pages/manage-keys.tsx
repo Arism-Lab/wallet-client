@@ -8,8 +8,7 @@ import sideNavigation from '@data/sideNavigation'
 import { getKeys } from '@helpers/metadata'
 import { derivePrivateFactors } from '@helpers/privateFactor'
 import { createNewKey } from '@helpers/wallet'
-import { useAppDispatch } from '@store'
-import { deriveSessionUser } from '@store/sessionUser/actions'
+import { useAppSelector } from '@store'
 import { TA } from '@types'
 
 export const getStaticProps: GetStaticProps = async () => {
@@ -24,16 +23,15 @@ export const getStaticProps: GetStaticProps = async () => {
 }
 
 const ManageKeys = ({ title, description }: PageSEOProps) => {
-	const dispatch = useAppDispatch()
-
 	const [keys, setKeys] = useState<TA.FullKey[] | undefined>(undefined)
-	const sessionUser: TA.SessionUser = dispatch(deriveSessionUser())!
+	const sessionUserReducer = useAppSelector((state) => state.sessionUserReducer)
 
 	useEffect(() => {
 		;(async () => {
-			const keys: TA.Key[] = await getKeys(sessionUser.info.email)
-			const privateFactors: TA.Factor[] =
-				await derivePrivateFactors(sessionUser)
+			const keys: TA.Key[] = await getKeys(sessionUserReducer.data!.info.email)
+			const privateFactors: TA.Factor[] = await derivePrivateFactors(
+				sessionUserReducer.data!
+			)
 
 			setKeys(
 				keys.map((key, i) => {
@@ -66,7 +64,7 @@ const ManageKeys = ({ title, description }: PageSEOProps) => {
 					))}
 				</div>
 				<button
-					onClick={() => createNewKey(sessionUser)}
+					onClick={() => createNewKey(sessionUserReducer.data!)}
 					className="mt-4 rounded-md bg-blue-500 p-2 text-white"
 				>
 					Create New Key

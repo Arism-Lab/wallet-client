@@ -1,82 +1,61 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { TokenSet } from 'next-auth'
 
 import * as actions from '@store/token/actions'
 
-const defaultState = {
-    data: [],
+const initialState: {
+    data: TokenSet | undefined
+    loading: boolean
+    error: any
+} = {
+    data: undefined,
     loading: false,
-    error: null,
+    error: {},
 }
 
-export const deriveToken = createSlice({
-    name: 'derive/token',
-    initialState: {
-        deriveToken: defaultState,
-    },
+export const token = createSlice({
+    name: 'token',
+    initialState,
     reducers: {},
     extraReducers: (builder) => {
+        // Deriving methods
         builder.addCase(actions.deriveToken.pending, (state) => {
-            state.deriveToken.data = []
-            state.deriveToken.loading = true
+            state.loading = true
         })
         builder.addCase(actions.deriveToken.fulfilled, (state, action) => {
-            state.deriveToken.data = action.payload
-            state.deriveToken.loading = false
+            state.data = action.payload
+            state.loading = false
         })
-        builder.addCase(actions.deriveToken.rejected, (state) => {
-            state.deriveToken.data = []
-            state.deriveToken.loading = false
+        builder.addCase(actions.deriveToken.rejected, (state, action) => {
+            state.error = action.payload
+            state.loading = false
         })
-    },
-})
 
-export const storeToken = createSlice({
-    name: 'store/sessionUser',
-    initialState: {
-        storeToken: defaultState,
-    },
-    reducers: {},
-    extraReducers: (builder) => {
         builder.addCase(actions.storeToken.pending, (state) => {
-            state.storeToken.data = []
-            state.storeToken.loading = true
+            state.loading = true
         })
         builder.addCase(actions.storeToken.fulfilled, (state, action) => {
-            state.storeToken.data = action.payload
-            state.storeToken.loading = false
+            state.data = action.payload
+            state.loading = false
         })
-        builder.addCase(actions.storeToken.rejected, (state) => {
-            state.storeToken.data = []
-            state.storeToken.loading = false
+        builder.addCase(actions.storeToken.rejected, (state, action) => {
+            state.error = action.payload
+            state.loading = false
         })
-    },
-})
 
-export const removeToken = createSlice({
-    name: 'remove/token',
-    initialState: {
-        removeToken: defaultState,
-    },
-    reducers: {},
-    extraReducers: (builder) => {
+        // Removing methods
         builder.addCase(actions.removeToken.pending, (state) => {
-            state.removeToken.data = []
-            state.removeToken.loading = true
+            state.loading = true
         })
         builder.addCase(actions.removeToken.fulfilled, (state, action) => {
-            state.removeToken.data = action.payload
-            state.removeToken.loading = false
+            state.data = action.payload
+            state.loading = false
         })
-        builder.addCase(actions.removeToken.rejected, (state) => {
-            state.removeToken.data = []
-            state.removeToken.loading = false
+        builder.addCase(actions.removeToken.rejected, (state, action) => {
+            state.error = action.payload
+            state.loading = false
         })
     },
 })
 
-const tokenReducer = {
-    deriveTokenReducer: deriveToken.reducer,
-    storeTokenReducer: storeToken.reducer,
-    removeTokenReducer: removeToken.reducer,
-}
-export default tokenReducer
+export default token.reducer
