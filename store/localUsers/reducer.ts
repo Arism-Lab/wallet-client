@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
-import * as actions from '@redux/localUsers/actions'
+
+import * as actions from '@store/localUsers/actions'
 
 const defaultState = {
     data: [],
@@ -96,9 +97,9 @@ export const removeLocalUser = createSlice({
 })
 
 const localUsersReducer = {
-    deriveLocalUsers,
-    storeLocalUser,
-    storeLocalUsers,
-    removeLocalUser,
+    deriveLocalUsersReducer: deriveLocalUsers.reducer,
+    storeLocalUserReducer: storeLocalUser.reducer,
+    storeLocalUsersReducer: storeLocalUsers.reducer,
+    removeLocalUserReducer: removeLocalUser.reducer,
 }
 export default localUsersReducer

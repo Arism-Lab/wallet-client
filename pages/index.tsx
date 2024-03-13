@@ -1,8 +1,6 @@
-import { deriveLocals, deriveSession } from '@libs/storage'
 import { signIn } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { HiOutlinePlus } from 'react-icons/hi2'
-import { useLocalStorage } from 'usehooks-ts'
 
 import { N } from '@common'
 import AccountCardSlider from '@components/AccountCardSlider'
@@ -12,12 +10,20 @@ import Link from '@components/Link'
 import NodeCard from '@components/NodeCard'
 import { HomeSEO } from '@components/PageSEO'
 import { getNodes } from '@helpers/networkFactor'
+import { useAppDispatch } from '@store'
+import { deriveLocalUsers } from '@store/localUsers/actions'
+import { deriveSessionUser } from '@store/sessionUser/actions'
 import { TA } from '@types'
 
 const Home = (): JSX.Element => {
-	const [session, setSession] = useState<TA.UserSession | undefined>()
-	const [locals, setLocals] = useState<TA.UserLocal[]>([])
-	const [nodes, setNodes] = useState<{ node: TA.Node; alive: boolean }[]>([])
+	const dispatch = useAppDispatch()
+
+	const sessionUser: TA.SessionUser | null = dispatch(deriveSessionUser())
+	const localUsers: TA.LocalUser[] = dispatch(deriveLocalUsers())
+
+	const [nodes, setNodes] = useState<{ node: TA.Node; alive: boolean }[]>(
+		N.NODES.map((node) => ({ node, alive: false }))
+	)
 
 	const handleSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault()
@@ -26,20 +32,6 @@ const Home = (): JSX.Element => {
 
 	useEffect(() => {
 		;(async () => {
-			const locals: TA.UserLocal[] = deriveLocals().sort(
-				(a, b) =>
-					new Date(b.lastLogin).getTime() - new Date(a.lastLogin).getTime()
-			)
-			console.log(value)
-
-			try {
-				const session: TA.UserSession = deriveSession()
-				setSession(session)
-			} catch {}
-
-			const nodes = N.NODES.map((node) => ({ node, alive: false }))
-			setNodes(nodes)
-
 			await getNodes().then((res) =>
 				setNodes(N.NODES.map((node) => ({ node, alive: res.includes(node) })))
 			)
@@ -67,7 +59,7 @@ const Home = (): JSX.Element => {
 							Zero Knowledge
 						</span>
 					</h1>
-					{session ? (
+					{sessionUser ? (
 						<Link href="/dashboard">
 							<Card className="relative px-8 py-6 text-xl group-hover:text-primary-800">
 								<p>Open dashboard</p>
@@ -109,12 +101,12 @@ const Home = (): JSX.Element => {
 										</p>
 									</button>
 								</div>
-								{locals.length > 0 && (
+								{localUsers.length > 0 && (
 									<div className="mx-auto grid gap-5">
 										<p className="font-extralight">
 											or continue with existed accounts on this device
 										</p>
-										<AccountCardSlider locals={locals} />
+										<AccountCardSlider localUsers={localUsers} />
 									</div>
 								)}
 							</div>

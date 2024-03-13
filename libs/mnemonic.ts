@@ -1,5 +1,5 @@
-import Web3 from 'web3'
 import * as bip39 from 'bip39'
+import Web3 from 'web3'
 
 export const generateMnemonic = () => {
     const web3 = new Web3()

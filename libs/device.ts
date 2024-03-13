@@ -1,4 +1,5 @@
 import DeviceDetector, { DeviceDetectorResult } from 'device-detector-js'
+
 import { TA } from '@types'
 
 export const getDeviceInfo = (lastLogin?: string): TA.Device => {

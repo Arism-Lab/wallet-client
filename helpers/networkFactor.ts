@@ -1,11 +1,12 @@
 import axios from 'axios'
 import { Dispatch, SetStateAction } from 'react'
+
+import { BN, C, EC, F, H, N } from '@common'
 import {
     kCombinations,
-    thresholdSame,
     lagrangeInterpolation,
+    thresholdSame,
 } from '@libs/arithmetic'
-import { BN, H, C, N, F, EC } from '@common'
 import type { TA, TN } from '@types'
 
 const ping = async (url: string): Promise<boolean> => {
@@ -47,7 +48,7 @@ export const getAddress = async (user: string): Promise<string | undefined> => {
 export const deriveNetworkFactor = async (
     { idToken, user }: TA.DeriveNetworkFactorRequest,
     setStep: Dispatch<SetStateAction<number>>
-): Promise<TA.DeriveNetworkFactorResponse> => {
+): Promise<TA.Factor | undefined> => {
     await getAddress(user)
 
     const tempPrivateKey = C.generatePrivateKey()

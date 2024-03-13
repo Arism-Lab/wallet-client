@@ -10,12 +10,12 @@ import Loading from '@components/Loading'
 import TransitionWrapper from '@components/TransitionWrapper'
 import sideNavigation from '@data/sideNavigation'
 import siteMetadata from '@data/siteMetadata.json'
-import { useAppDispatch } from '@redux'
+import { useAppDispatch } from '@store'
 import {
 	deriveSessionUser,
 	removeSessionUser,
-} from '@redux/sessionUser/actions'
-import { removeToken } from '@redux/token/actions'
+} from '@store/sessionUser/actions'
+import { removeToken } from '@store/token/actions'
 import { TA } from '@types'
 
 const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
@@ -24,12 +24,12 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 
 	const currPath = router.pathname
 	const isHome = router.pathname === '/' || router.pathname === '/login'
-	const userSession: TA.SessionUser | null = dispatch(deriveSessionUser())
+	const sessionUser: TA.SessionUser | null = dispatch(deriveSessionUser())
 	const pageTitle = sideNavigation.find((item) => item.path === currPath)?.title
 
 	useEffect(() => {
 		;(async () => {
-			if (!userSession && !isHome) {
+			if (!sessionUser && !isHome) {
 				await router.push('/')
 			}
 		})()
@@ -45,7 +45,7 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 		return <TransitionWrapper router={router}>{children}</TransitionWrapper>
 	}
 
-	if (!userSession) {
+	if (!sessionUser) {
 		return (
 			<TransitionWrapper router={router}>
 				<Loading />
@@ -123,12 +123,12 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 										<button className="flex place-items-center rounded-full bg-white py-2 pl-3 pr-2 text-sm transition-all duration-200 ease-in-out hover:bg-primary-600 hover:text-white">
 											<Image
 												alt="User avatar"
-												src={session?.user.image ?? '/images/avatar.png'}
+												src={sessionUser?.info.image ?? '/images/avatar.png'}
 												width={30}
 												height={30}
 												className="rounded-full"
 											/>
-											<p className="px-2">{session?.user.name ?? 'User'}</p>
+											<p className="px-2">{sessionUser?.info.name ?? 'User'}</p>
 										</button>
 										<button
 											onClick={() => logout()}

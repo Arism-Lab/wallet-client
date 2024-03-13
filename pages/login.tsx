@@ -1,4 +1,3 @@
-import { deriveSession, storeToken } from '@libs/storage'
 import { useRouter } from 'next/router'
 import { Session } from 'next-auth'
 import { getSession } from 'next-auth/react'
@@ -14,6 +13,10 @@ import {
 	signInWithOauthAndPassword,
 	signUp,
 } from '@helpers/wallet'
+import { useAppDispatch } from '@store'
+import { deriveSessionUser } from '@store/sessionUser/actions'
+import { storeToken } from '@store/token/actions'
+import { TA } from '@types'
 
 const STEPS = [
 	'Checking',
@@ -26,9 +29,16 @@ const STEPS = [
 const FINAL_STEP = STEPS.length - 1
 
 const Login = (): JSX.Element => {
-	const [step, setStep] = useState<number>(0)
 	const router = useRouter()
+	const dispatch = useAppDispatch()
+
+	const [step, setStep] = useState<number>(0)
 	const [password, setPassword] = useState('')
+	const sessionUser: TA.SessionUser | null = dispatch(deriveSessionUser())
+
+	if (sessionUser) {
+		setStep(FINAL_STEP)
+	}
 
 	useEffect(() => {
 		;(async () => {
@@ -37,15 +47,7 @@ const Login = (): JSX.Element => {
 				user,
 			}: Session = (await getSession()) as Session
 
-			storeToken(account)
-
-			try {
-				const session = deriveSession()
-				if (session) {
-					setStep(FINAL_STEP)
-					return
-				}
-			} catch {}
+			dispatch(storeToken(account))
 
 			let success: boolean | undefined = undefined
 

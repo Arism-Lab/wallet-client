@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
-import * as actions from '@redux/sessionUser/actions'
+
+import * as actions from '@store/sessionUser/actions'
 
 const defaultState = {
     data: [],
@@ -80,8 +81,8 @@ export const removeSessionUser = createSlice({
 })
 
 const sessionUser = {
-    deriveSessionUser,
-    storeSessionUser,
-    removeSessionUser,
+    deriveSessionUserReducer: deriveSessionUser.reducer,
+    storeSessionUserReducer: storeSessionUser.reducer,
+    removeSessionUserReducer: removeSessionUser.reducer,
 }
 export default sessionUser

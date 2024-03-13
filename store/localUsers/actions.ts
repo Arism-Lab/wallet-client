@@ -1,5 +1,6 @@
-import { serializeFactor } from '@libs/serializer'
 import { createAsyncThunk } from '@reduxjs/toolkit'
+
+import { serializeFactor } from '@libs/serializer'
 import { TA } from '@types'
 
 export const deriveLocalUsers = createAsyncThunk<any, void>(
@@ -17,8 +18,8 @@ export const deriveLocalUsers = createAsyncThunk<any, void>(
             })
 
             return fulfillWithValue(localUsers)
-        } catch (error) {
-            return rejectWithValue(error)
+        } catch {
+            return rejectWithValue(null)
         }
     }
 )

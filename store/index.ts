@@ -1,15 +1,16 @@
 import { configureStore } from '@reduxjs/toolkit'
-import logger from 'redux-logger'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
-import localUsersReducer from '@redux/localUsers/reducer'
-import sessionUserReducer from '@redux/sessionUser/reducer'
-import tokenReducer from '@redux/token/reducer'
+import logger from 'redux-logger'
+
+import localUsersReducer from '@store/localUsers/reducer'
+import sessionUserReducer from '@store/sessionUser/reducer'
+import tokenReducer from '@store/token/reducer'
 
 export const store = configureStore({
     reducer: {
-        localUsers: localUsersReducer,
-        sessionUser: sessionUserReducer,
-        token: tokenReducer,
+        ...localUsersReducer,
+        ...sessionUserReducer,
+        ...tokenReducer,
     },
     middleware: (getDefaultMiddleware) => {
         const middleware = getDefaultMiddleware()

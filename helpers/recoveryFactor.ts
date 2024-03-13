@@ -1,7 +1,7 @@
 import { BN, EC, H } from '@common'
+import { getRecoveryKey, setRecoveryKey } from '@helpers/metadata'
 import { lagrangeInterpolation } from '@libs/arithmetic'
 import { TA } from '@types'
-import { setRecoveryKey, getRecoveryKey } from '@helpers/metadata'
 
 export const deriveRecoveryFactor = async (
     user: string,
@@ -19,7 +19,7 @@ export const deriveRecoveryFactor = async (
 }
 
 export const constructRecoveryFactor = async (
-    session: TA.UserSession,
+    session: TA.SessionUser,
     password: string
 ): Promise<TA.Factor> => {
     const recoveryFactorX = BN.from(H.keccak256(password).slice(2), 16)
@@ -35,7 +35,7 @@ export const constructRecoveryFactor = async (
     }
 
     await setRecoveryKey({
-        user: session.user.email,
+        user: session.info.email,
         recoveryKey: recoveryKey.toString(16),
     })
 

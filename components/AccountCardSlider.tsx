@@ -1,10 +1,9 @@
 import { useState } from 'react'
 
+import AccountCard from '@components/AccountCard'
 import { TA } from '@types'
 
-import AccountCard from './AccountCard'
-
-const AccountCardSlider = ({ locals }: { locals: TA.UserLocal[] }) => {
+const AccountCardSlider = ({ localUsers }: { localUsers: TA.LocalUser[] }) => {
 	const [click, setClick] = useState<number | null>(null)
 
 	const handleClick = (index: number) => {
@@ -20,15 +19,20 @@ const AccountCardSlider = ({ locals }: { locals: TA.UserLocal[] }) => {
 			className="flex w-[90vw] gap-5 text-base transition-all duration-300 ease-in-out aria-expanded:gap-0"
 			aria-expanded={click !== null}
 		>
-			{locals.map((local, index) => (
-				<AccountCard
-					key={index}
-					local={local}
-					click={() => handleClick(index)}
-					hidden={click !== null && click !== index}
-					focus={click !== null}
-				/>
-			))}
+			{localUsers
+				.sort(
+					(a, b) =>
+						new Date(b.lastLogin).getTime() - new Date(a.lastLogin).getTime()
+				)
+				.map((localUser, index) => (
+					<AccountCard
+						key={index}
+						localUser={localUser}
+						click={() => handleClick(index)}
+						hidden={click !== null && click !== index}
+						focus={click !== null}
+					/>
+				))}
 		</div>
 	)
 }

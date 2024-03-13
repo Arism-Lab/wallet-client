@@ -1,14 +1,15 @@
-import { deriveSession } from '@libs/storage'
 import { GetStaticProps } from 'next'
 import { useEffect, useState } from 'react'
 
-import { BN, EC } from '@common'
+import { EC } from '@common'
 import Loading from '@components/Loading'
 import { PageSEO } from '@components/PageSEO'
 import sideNavigation from '@data/sideNavigation'
 import { getKeys } from '@helpers/metadata'
 import { derivePrivateFactors } from '@helpers/privateFactor'
 import { createNewKey } from '@helpers/wallet'
+import { useAppDispatch } from '@store'
+import { deriveSessionUser } from '@store/sessionUser/actions'
 import { TA } from '@types'
 
 export const getStaticProps: GetStaticProps = async () => {
@@ -23,16 +24,16 @@ export const getStaticProps: GetStaticProps = async () => {
 }
 
 const ManageKeys = ({ title, description }: PageSEOProps) => {
+	const dispatch = useAppDispatch()
+
 	const [keys, setKeys] = useState<TA.FullKey[] | undefined>(undefined)
-	const [session, setSession] = useState<TA.UserSession | undefined>(undefined)
+	const sessionUser: TA.SessionUser = dispatch(deriveSessionUser())!
 
 	useEffect(() => {
 		;(async () => {
-			const session = deriveSession()
-			setSession(session)
-
-			const keys: TA.Key[] = await getKeys(session.user.email)
-			const privateFactors: TA.Factor[] = await derivePrivateFactors(session)
+			const keys: TA.Key[] = await getKeys(sessionUser.info.email)
+			const privateFactors: TA.Factor[] =
+				await derivePrivateFactors(sessionUser)
 
 			setKeys(
 				keys.map((key, i) => {
@@ -65,7 +66,7 @@ const ManageKeys = ({ title, description }: PageSEOProps) => {
 					))}
 				</div>
 				<button
-					onClick={() => createNewKey(session!)}
+					onClick={() => createNewKey(sessionUser)}
 					className="mt-4 rounded-md bg-blue-500 p-2 text-white"
 				>
 					Create New Key

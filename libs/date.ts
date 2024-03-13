@@ -1,5 +1,6 @@
+import { format, register } from 'timeago.js'
+
 import siteMetadata from '@/data/siteMetadata.json'
-import { register, format } from 'timeago.js'
 
 const localeFunc = (
     diff: number,

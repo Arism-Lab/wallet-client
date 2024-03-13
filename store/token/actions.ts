@@ -7,8 +7,8 @@ export const deriveToken = createAsyncThunk<any, void>(
         try {
             const token = JSON.parse(window.localStorage.getItem('token')!)
             return fulfillWithValue(token)
-        } catch (error) {
-            return rejectWithValue(error)
+        } catch {
+            return rejectWithValue(null)
         }
     }
 )

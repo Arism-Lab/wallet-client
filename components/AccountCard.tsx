@@ -9,8 +9,8 @@ import Image from '@components/Image'
 import { getKeys } from '@helpers/metadata'
 import { checkMfa, signInWithPassword } from '@helpers/wallet'
 import { formatDate } from '@libs/date'
-import { useAppDispatch } from '@redux'
-import { removeLocalUser } from '@redux/localUsers/actions'
+import { useAppDispatch } from '@store'
+import { removeLocalUser } from '@store/localUsers/actions'
 import { TA } from '@types'
 
 type AccountCardProps = {

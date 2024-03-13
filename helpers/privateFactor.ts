@@ -1,7 +1,7 @@
 import { BN, EC, F } from '@common'
+import { getKeys } from '@helpers/metadata'
 import { lagrangeInterpolation } from '@libs/arithmetic'
 import { TA } from '@types'
-import { getKeys } from '@helpers/metadata'
 
 export const constructPrivateFactor = (
     factor1: TA.Factor,
@@ -29,9 +29,9 @@ export const verifyPrivateKey = async (
 }
 
 export const derivePrivateFactors = async (
-    session: TA.UserSession
+    session: TA.SessionUser
 ): Promise<TA.Factor[]> => {
-    const keys: TA.Key[] = await getKeys(session.user.email)
+    const keys: TA.Key[] = await getKeys(session.info.email)
 
     return keys.map((key) =>
         constructPrivateFactor(

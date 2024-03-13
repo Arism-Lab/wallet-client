@@ -1,10 +1,11 @@
-import { deriveSession } from '@libs/storage'
 import { GetStaticProps } from 'next'
 import { useState } from 'react'
 
 import { PageSEO } from '@components/PageSEO'
 import sideNavigation from '@data/sideNavigation'
 import { constructRecoveryFactor } from '@helpers/recoveryFactor'
+import { useAppDispatch } from '@store'
+import { deriveSessionUser } from '@store/sessionUser/actions'
 import { TA } from '@types'
 
 export const getStaticProps: GetStaticProps = async () => {
@@ -19,11 +20,14 @@ export const getStaticProps: GetStaticProps = async () => {
 }
 
 const Settings = ({ title, description }: PageSEOProps) => {
+	const dispatch = useAppDispatch()
+
 	const [password, setPassword] = useState('')
 
+	const sessionUser: TA.SessionUser = dispatch(deriveSessionUser())!
+
 	const handleSubmit = async () => {
-		const session: TA.UserSession = deriveSession()
-		await constructRecoveryFactor(session, password)
+		await constructRecoveryFactor(sessionUser, password)
 	}
 
 	return (

@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
-import * as actions from '@redux/token/actions'
+
+import * as actions from '@store/token/actions'
 
 const defaultState = {
     data: [],
@@ -74,8 +75,8 @@ export const removeToken = createSlice({
 })
 
 const tokenReducer = {
-    deriveToken,
-    storeToken,
-    removeToken,
+    deriveTokenReducer: deriveToken.reducer,
+    storeTokenReducer: storeToken.reducer,
+    removeTokenReducer: removeToken.reducer,
 }
 export default tokenReducer

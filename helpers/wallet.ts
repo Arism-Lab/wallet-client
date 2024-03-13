@@ -1,26 +1,31 @@
-import { storeLocals, storeSession } from '@libs/storage'
-import { TA } from '@types'
 import { Account } from 'next-auth'
 import { Dispatch, SetStateAction } from 'react'
-import { deriveNetworkFactor } from '@helpers/networkFactor'
+
+import { BN, EC, F } from '@common'
 import {
     constructDeviceFactor,
     constructDeviceFactorNewDevice,
     deriveDeviceFactor,
     postDevice,
 } from '@helpers/deviceFactor'
-import { BN, EC, F } from '@common'
-import {
-    constructPrivateFactor,
-    verifyPrivateKey,
-} from '@helpers/privateFactor'
 import {
     addKey,
     getRecoveryKey,
     getUser,
     initializeUser,
 } from '@helpers/metadata'
+import { deriveNetworkFactor } from '@helpers/networkFactor'
+import {
+    constructPrivateFactor,
+    verifyPrivateKey,
+} from '@helpers/privateFactor'
 import { deriveRecoveryFactor } from '@helpers/recoveryFactor'
+import { useAppDispatch } from '@store'
+import { storeLocalUser } from '@store/localUsers/actions'
+import { storeSessionUser } from '@store/sessionUser/actions'
+import { TA } from '@types'
+
+const dispatch = useAppDispatch()
 
 export const checkExistence = async (user: string): Promise<boolean> => {
     return await getUser(user).then((data) => data !== undefined)
@@ -30,7 +35,7 @@ export const checkMfa = async (user: string): Promise<boolean> => {
 }
 
 export const createNewKey = async (
-    session: TA.UserSession
+    session: TA.SessionUser
 ): Promise<boolean> => {
     const privateFactorX: string = EC.generatePrivateKey()
     const privateFactor = constructPrivateFactor(
@@ -41,7 +46,7 @@ export const createNewKey = async (
     const address = EC.getAddressFromPrivateKey(privateFactor.y)
 
     return await addKey({
-        user: session.user.email,
+        user: session.info.email,
         key: { address, privateFactorX },
     })
         .then((data) => data !== undefined)
@@ -50,16 +55,16 @@ export const createNewKey = async (
 
 // Use case: Sign up
 export const signUp = async (
-    user: TA.User,
+    info: TA.Info,
     token: Account,
     setStep: Dispatch<SetStateAction<number>>
 ): Promise<boolean> => {
-    await initializeUser(user.email)
+    await initializeUser(info.email)
 
     const networkFactor: TA.Factor | undefined = await deriveNetworkFactor(
         {
             idToken: token.id_token!,
-            user: user.email,
+            user: info.email,
         },
         setStep
     )
@@ -72,37 +77,43 @@ export const signUp = async (
         await constructDeviceFactor(networkFactor)
 
     const lastLogin = new Date().toISOString()
-    await postDevice(user.email, lastLogin)
+    await postDevice(info.email, lastLogin)
 
     const address = EC.getAddressFromPrivateKey(privateFactor.y)
     const privateFactorX = F.PRIVATE_FACTOR_X.toString(16, 64)
     await addKey({
-        user: user.email,
+        user: info.email,
         key: { address, privateFactorX },
     })
 
-    storeSession({ factor1: networkFactor, factor2: deviceFactor, user })
-    storeLocals({ deviceFactor, user, lastLogin })
+    dispatch(
+        storeSessionUser({
+            factor1: networkFactor,
+            factor2: deviceFactor,
+            info,
+        })
+    )
+    dispatch(storeLocalUser({ deviceFactor, info, lastLogin }))
 
     return true
 }
 
 // Use case: Log in on the original device with OAuth
 export const signInWithOauth = async (
-    user: TA.User,
+    info: TA.Info,
     token: Account,
     setStep: Dispatch<SetStateAction<number>>
 ): Promise<boolean> => {
     const networkFactor: TA.Factor | undefined = await deriveNetworkFactor(
         {
             idToken: token.id_token!,
-            user: user.email,
+            user: info.email,
         },
         setStep
     )
     if (!networkFactor) return false
 
-    const deviceFactor: TA.Factor | undefined = deriveDeviceFactor(user.email)
+    const deviceFactor: TA.Factor | undefined = deriveDeviceFactor(info.email)
     if (!deviceFactor) return false
 
     const privateFactor: TA.Factor = constructPrivateFactor(
@@ -110,12 +121,18 @@ export const signInWithOauth = async (
         deviceFactor
     )
 
-    const verified = await verifyPrivateKey(user.email, privateFactor.y)
+    const verified = await verifyPrivateKey(info.email, privateFactor.y)
     if (verified) {
         const lastLogin = new Date().toISOString()
 
-        storeSession({ factor1: networkFactor, factor2: deviceFactor, user })
-        storeLocals({ deviceFactor, user, lastLogin })
+        dispatch(
+            storeSessionUser({
+                factor1: networkFactor,
+                factor2: deviceFactor,
+                info,
+            })
+        )
+        dispatch(storeLocalUser({ deviceFactor, info, lastLogin }))
 
         return true
     }
@@ -125,15 +142,15 @@ export const signInWithOauth = async (
 
 // Use case: Log in on the original device with password (MFA must be turned on)
 export const signInWithPassword = async (
-    user: TA.User,
+    info: TA.Info,
     password: string
 ): Promise<boolean> => {
     const recoveryFactor: TA.Factor = await deriveRecoveryFactor(
-        user.email,
+        info.email,
         password
     )
 
-    const deviceFactor: TA.Factor | undefined = deriveDeviceFactor(user.email)
+    const deviceFactor: TA.Factor | undefined = deriveDeviceFactor(info.email)
     if (!deviceFactor) return false
 
     const privateFactor: TA.Factor = constructPrivateFactor(
@@ -141,12 +158,18 @@ export const signInWithPassword = async (
         deviceFactor
     )
 
-    const verified = await verifyPrivateKey(user.email, privateFactor.y)
+    const verified = await verifyPrivateKey(info.email, privateFactor.y)
     if (verified) {
         const lastLogin = new Date().toISOString()
 
-        storeSession({ factor1: deviceFactor, factor2: recoveryFactor, user })
-        storeLocals({ deviceFactor, user, lastLogin })
+        dispatch(
+            storeSessionUser({
+                factor1: deviceFactor,
+                factor2: recoveryFactor,
+                info,
+            })
+        )
+        dispatch(storeLocalUser({ deviceFactor, info, lastLogin }))
 
         return true
     }
@@ -156,7 +179,7 @@ export const signInWithPassword = async (
 
 // Use case: Log in on a new device with OAuth and password (MFA must be turned on)
 export const signInWithOauthAndPassword = async (
-    user: TA.User,
+    info: TA.Info,
     token: Account,
     password: string,
     setStep: Dispatch<SetStateAction<number>>
@@ -164,14 +187,14 @@ export const signInWithOauthAndPassword = async (
     const networkFactor: TA.Factor | undefined = await deriveNetworkFactor(
         {
             idToken: token.id_token!,
-            user: user.email,
+            user: info.email,
         },
         setStep
     )
     if (!networkFactor) return false
 
     const recoveryFactor: TA.Factor = await deriveRecoveryFactor(
-        user.email,
+        info.email,
         password
     )
 
@@ -181,17 +204,19 @@ export const signInWithOauthAndPassword = async (
     }: { privateFactor: TA.Factor; deviceFactor: TA.Factor } =
         await constructDeviceFactorNewDevice(recoveryFactor, networkFactor)
 
-    const verified = await verifyPrivateKey(user.email, privateFactor.y)
+    const verified = await verifyPrivateKey(info.email, privateFactor.y)
     if (verified) {
         const lastLogin = new Date().toISOString()
 
-        storeSession({
-            factor1: networkFactor,
-            factor2: deviceFactor,
-            factor3: recoveryFactor,
-            user,
-        })
-        storeLocals({ deviceFactor, user, lastLogin })
+        dispatch(
+            storeSessionUser({
+                factor1: networkFactor,
+                factor2: deviceFactor,
+                factor3: recoveryFactor,
+                info,
+            })
+        )
+        dispatch(storeLocalUser({ deviceFactor, info, lastLogin }))
 
         return true
     }

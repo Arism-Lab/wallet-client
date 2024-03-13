@@ -10,7 +10,7 @@ import Analytics from '@components/Analytics'
 import LayoutWrapper from '@components/LayoutWrapper'
 import '@styles/tailwind.css'
 import '@styles/extra.css'
-import { store } from '@redux'
+import { store } from '@store'
 
 // NProgress.configure({ showSpinner: false });
 
