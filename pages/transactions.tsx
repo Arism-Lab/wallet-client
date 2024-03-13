@@ -1,6 +1,7 @@
+import { GetStaticProps } from 'next'
+
 import { PageSEO } from '@components/PageSEO'
 import sideNavigation from '@data/sideNavigation'
-import { GetStaticProps } from 'next'
 
 export const getStaticProps: GetStaticProps = async (a) => {
 	const siteInfo = sideNavigation.find((item) => item.path === '/transactions')

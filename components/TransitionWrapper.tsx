@@ -1,5 +1,5 @@
-import { NextRouter } from 'next/router'
 import { motion } from 'framer-motion'
+import { NextRouter } from 'next/router'
 import { PageTransition } from 'next-page-transitions'
 
 const transitionStyles = {

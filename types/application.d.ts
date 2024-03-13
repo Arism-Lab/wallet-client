@@ -16,11 +16,6 @@ export type Factor = {
     x: BN
     y: BN
 }
-export type UserLocal = {
-    user: User
-    deviceFactor: Factor
-    lastLogin: string
-}
 export type Detection = {
     name: string
     version: string | undefined
@@ -31,16 +26,21 @@ export type Device = {
     browser: Detection | undefined
     os: Detection | undefined
 }
-export type User = {
+export type Info = {
     email: string
     name: string
     image: string
 }
-export type UserSession = {
+export type LocalUser = {
+    info: Info
+    deviceFactor: Factor
+    lastLogin: string
+}
+export type SessionUser = {
     factor1: Factor
     factor2: Factor
     factor3?: Factor | undefined
-    user: User
+    info: Info
 }
 export type Key = {
     address: string

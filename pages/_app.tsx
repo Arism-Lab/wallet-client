@@ -1,14 +1,15 @@
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import Router from 'next/router'
-import ProgressBar from 'react-scroll-progress-bar'
+import { SessionProvider } from 'next-auth/react'
 import NProgress from 'nprogress'
 import { Provider as ReduxProvider } from 'react-redux'
+import ProgressBar from 'react-scroll-progress-bar'
+
+import Analytics from '@components/Analytics'
 import LayoutWrapper from '@components/LayoutWrapper'
 import '@styles/tailwind.css'
 import '@styles/extra.css'
-import { SessionProvider } from 'next-auth/react'
-import Analytics from '@components/Analytics'
 import { store } from '@redux'
 
 // NProgress.configure({ showSpinner: false });

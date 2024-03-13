@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import AccountCard from './AccountCard'
+
 import { TA } from '@types'
+
+import AccountCard from './AccountCard'
 
 const AccountCardSlider = ({ locals }: { locals: TA.UserLocal[] }) => {
 	const [click, setClick] = useState<number | null>(null)

@@ -1,7 +1,7 @@
 import { BN } from '@common'
 import { TA } from '@types'
 
-export const upCastingFactor = (factor: {
+export const serializeFactor = (factor: {
     x: string | BN
     y: string | BN
 }): TA.Factor => {

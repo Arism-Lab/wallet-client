@@ -1,3 +1,7 @@
+import { deriveSession } from '@libs/storage'
+import { GetStaticProps } from 'next'
+import { useEffect, useState } from 'react'
+
 import { BN, EC } from '@common'
 import Loading from '@components/Loading'
 import { PageSEO } from '@components/PageSEO'
@@ -5,10 +9,7 @@ import sideNavigation from '@data/sideNavigation'
 import { getKeys } from '@helpers/metadata'
 import { derivePrivateFactors } from '@helpers/privateFactor'
 import { createNewKey } from '@helpers/wallet'
-import { deriveSession } from '@libs/storage'
 import { TA } from '@types'
-import { GetStaticProps } from 'next'
-import { useEffect, useState } from 'react'
 
 export const getStaticProps: GetStaticProps = async () => {
 	const siteInfo = sideNavigation.find((item) => item.path === '/manage-keys')

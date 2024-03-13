@@ -1,18 +1,19 @@
+import { deriveSession, storeToken } from '@libs/storage'
+import { useRouter } from 'next/router'
+import { Session } from 'next-auth'
 import { getSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md'
-import { useRouter } from 'next/router'
+
 import { HomeSEO } from '@components/PageSEO'
 import StepBar from '@components/StepBar'
-import { Session } from 'next-auth'
-import { deriveSession, storeToken } from '@libs/storage'
+import { verifyDevice } from '@helpers/deviceFactor'
+import { getUser } from '@helpers/metadata'
 import {
 	signInWithOauth,
 	signInWithOauthAndPassword,
 	signUp,
 } from '@helpers/wallet'
-import { verifyDevice } from '@helpers/deviceFactor'
-import { getUser } from '@helpers/metadata'
 
 const STEPS = [
 	'Checking',
@@ -38,11 +39,13 @@ const Login = (): JSX.Element => {
 
 			storeToken(account)
 
-			const wallet = deriveSession()
-			if (wallet) {
-				setStep(FINAL_STEP)
-				return
-			}
+			try {
+				const session = deriveSession()
+				if (session) {
+					setStep(FINAL_STEP)
+					return
+				}
+			} catch {}
 
 			let success: boolean | undefined = undefined
 

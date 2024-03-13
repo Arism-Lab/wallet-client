@@ -1,47 +1,51 @@
+import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { signOut } from 'next-auth/react'
-import { useEffect, useState } from 'react'
-import Image from 'next/image'
+import { useEffect } from 'react'
 import { AiOutlineLogout } from 'react-icons/ai'
 import { IoIosWarning } from 'react-icons/io'
-import sideNavigation from '@data/sideNavigation'
+
 import Link from '@components/Link'
-import siteMetadata from '@data/siteMetadata.json'
 import Loading from '@components/Loading'
 import TransitionWrapper from '@components/TransitionWrapper'
-import { deriveSession, wipeToken, wipeSession } from '@libs/storage'
-
-const logout = async () => {
-	await signOut({ callbackUrl: '/' })
-	wipeToken()
-	wipeSession()
-}
+import sideNavigation from '@data/sideNavigation'
+import siteMetadata from '@data/siteMetadata.json'
+import { useAppDispatch } from '@redux'
+import {
+	deriveSessionUser,
+	removeSessionUser,
+} from '@redux/sessionUser/actions'
+import { removeToken } from '@redux/token/actions'
+import { TA } from '@types'
 
 const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
-	const [user, setUser] = useState<any | null>(null)
-	const [loading, setLoading] = useState<boolean>(true)
+	const dispatch = useAppDispatch()
 	const router = useRouter()
+
 	const currPath = router.pathname
 	const isHome = router.pathname === '/' || router.pathname === '/login'
+	const userSession: TA.SessionUser | null = dispatch(deriveSessionUser())
+	const pageTitle = sideNavigation.find((item) => item.path === currPath)?.title
 
 	useEffect(() => {
 		;(async () => {
-			const user = deriveSession()
-			setUser(user)
-			setLoading(false)
-			if (!user && !isHome) {
+			if (!userSession && !isHome) {
 				await router.push('/')
 			}
 		})()
-	}, [router.pathname])
+	}, [isHome])
 
-	const pageTitle = sideNavigation.find((item) => item.path === currPath)?.title
+	const logout = async () => {
+		await signOut({ callbackUrl: '/' })
+		dispatch(removeSessionUser())
+		dispatch(removeToken())
+	}
 
 	if (isHome) {
 		return <TransitionWrapper router={router}>{children}</TransitionWrapper>
 	}
 
-	if (loading) {
+	if (!userSession) {
 		return (
 			<TransitionWrapper router={router}>
 				<Loading />
@@ -119,12 +123,12 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 										<button className="flex place-items-center rounded-full bg-white py-2 pl-3 pr-2 text-sm transition-all duration-200 ease-in-out hover:bg-primary-600 hover:text-white">
 											<Image
 												alt="User avatar"
-												src={user?.user?.image ?? '/images/avatar.png'}
+												src={session?.user.image ?? '/images/avatar.png'}
 												width={30}
 												height={30}
 												className="rounded-full"
 											/>
-											<p className="px-2">{user?.user?.name ?? 'User'}</p>
+											<p className="px-2">{session?.user.name ?? 'User'}</p>
 										</button>
 										<button
 											onClick={() => logout()}

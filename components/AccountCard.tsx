@@ -1,68 +1,70 @@
-import { TA } from '@types'
-import React, { useEffect, useState } from 'react'
-import Image from './Image'
-import { LuChevronLeft, LuChevronRight } from 'react-icons/lu'
-import { formatDate } from '@libs/date'
-import { signIn } from 'next-auth/react'
-import { BsTrash3 } from 'react-icons/bs'
-import { removeLocals } from '@libs/storage'
 import { useRouter } from 'next/navigation'
+import { signIn } from 'next-auth/react'
+import React, { useEffect, useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
-import { checkMfa, signInWithPassword } from '@helpers/wallet'
+import { BsTrash3 } from 'react-icons/bs'
+import { LuChevronLeft, LuChevronRight } from 'react-icons/lu'
+
+import Image from '@components/Image'
 import { getKeys } from '@helpers/metadata'
+import { checkMfa, signInWithPassword } from '@helpers/wallet'
+import { formatDate } from '@libs/date'
+import { useAppDispatch } from '@redux'
+import { removeLocalUser } from '@redux/localUsers/actions'
+import { TA } from '@types'
 
 type AccountCardProps = {
-	local: TA.UserLocal
+	localUser: TA.LocalUser
 	click: () => void
 	hidden: boolean
 	focus: boolean
 }
 
 const AccountCard = ({
-	local,
+	localUser,
 	click,
 	hidden,
 	focus,
 }: AccountCardProps): JSX.Element => {
+	const dispatch = useAppDispatch()
+	const router = useRouter()
+
 	const [removeConfirm, setRemoveConfirm] = useState(false)
 	const [password, setPassword] = useState('')
 	const [enabledMfa, setEnabledMfa] = useState(false)
 	const [keys, setKeys] = useState<TA.Key[]>([])
 
+	const expanded = focus && !hidden
+
 	useEffect(() => {
 		;(async () => {
-			const enabledMfa = await checkMfa(local.user.email)
+			const enabledMfa = await checkMfa(localUser.info.email)
 			setEnabledMfa(enabledMfa)
 
-			const keys = await getKeys(local.user.email)
+			const keys = await getKeys(localUser.info.email)
 			setKeys(keys)
 		})()
 	}, [])
-
-	const expanded = focus && !hidden
 
 	useEffect(() => {
 		setRemoveConfirm(false), [expanded]
 	}, [expanded])
 
-	const router = useRouter()
-
 	const removeAccount = () => {
-		removeLocals(local.user.email)
-		router.refresh()
+		dispatch(removeLocalUser(localUser.info.email))
 	}
 
 	const handleGoogleSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault()
 		signIn('google', {
 			callbackUrl: '/login',
-			login_hint: local.user.email,
+			login_hint: localUser.info.email,
 			prompt: 'select_account+consent',
 		})
 	}
 
 	const handlePasswordSignIn = async () => {
-		const success = await signInWithPassword(local.user, password)
+		const success = await signInWithPassword(localUser.info, password)
 		if (success) {
 			router.push('/dashboard')
 		} else {
@@ -78,9 +80,9 @@ const AccountCard = ({
 			>
 				<p className="font-light">
 					Are you sure to remove{' '}
-					<span className="font-medium">{local.user.name}</span> account? Since
-					you have turned on MFA, you will need to enter your password manually
-					when logging in via Google next time.
+					<span className="font-medium">{localUser.info.name}</span> account?
+					Since you have turned on MFA, you will need to enter your password
+					manually when logging in via Google next time.
 				</p>
 				<button
 					className="text-medium mx-auto flex w-min gap-5 rounded-lg border-2 border-red-600  bg-red-600 px-20 pb-1 text-white hover:border-red-800 hover:bg-red-800"
@@ -103,8 +105,8 @@ const AccountCard = ({
 					</button>
 				) : (
 					<Image
-						src={local.user.image!}
-						alt={local.user.email}
+						src={localUser.info.image!}
+						alt={localUser.info.email}
 						height={48}
 						width={48}
 						className="rounded-full"
@@ -112,10 +114,10 @@ const AccountCard = ({
 				)}
 				<div className="grid  text-left">
 					<p className="truncate-1 w-min overflow-hidden truncate text-ellipsis font-medium">
-						{local.user.name} ({formatDate(local.lastLogin, true)})
+						{localUser.info.name} ({formatDate(localUser.lastLogin, true)})
 					</p>
 					<p className="truncate-1 w-min overflow-hidden truncate text-ellipsis font-light text-gray-500">
-						{local.user.email}
+						{localUser.info.email}
 					</p>
 				</div>
 				{expanded ? (
@@ -127,7 +129,7 @@ const AccountCard = ({
 								account
 							</p>
 							<p className="font-light text-gray-500">
-								last login since {formatDate(local.lastLogin)}
+								last login since {formatDate(localUser.lastLogin)}
 							</p>
 						</div>
 						<button

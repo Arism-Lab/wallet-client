@@ -1,16 +1,18 @@
+import { deriveLocals, deriveSession } from '@libs/storage'
+import { signIn } from 'next-auth/react'
+import { useEffect, useState } from 'react'
+import { HiOutlinePlus } from 'react-icons/hi2'
+import { useLocalStorage } from 'usehooks-ts'
+
+import { N } from '@common'
+import AccountCardSlider from '@components/AccountCardSlider'
 import Card from '@components/Card'
 import Image from '@components/Image'
 import Link from '@components/Link'
-import { HomeSEO } from '@components/PageSEO'
-import { deriveLocals, deriveSession } from '@libs/storage'
-import { TA } from '@types'
-import { signIn, useSession } from 'next-auth/react'
-import { useEffect, useState } from 'react'
-import { HiOutlinePlus } from 'react-icons/hi2'
 import NodeCard from '@components/NodeCard'
-import AccountCardSlider from '@components/AccountCardSlider'
-import { N } from '@common'
+import { HomeSEO } from '@components/PageSEO'
 import { getNodes } from '@helpers/networkFactor'
+import { TA } from '@types'
 
 const Home = (): JSX.Element => {
 	const [session, setSession] = useState<TA.UserSession | undefined>()
@@ -28,10 +30,12 @@ const Home = (): JSX.Element => {
 				(a, b) =>
 					new Date(b.lastLogin).getTime() - new Date(a.lastLogin).getTime()
 			)
-			setLocals(locals)
+			console.log(value)
 
-			const session: TA.UserSession = deriveSession()
-			setSession(session)
+			try {
+				const session: TA.UserSession = deriveSession()
+				setSession(session)
+			} catch {}
 
 			const nodes = N.NODES.map((node) => ({ node, alive: false }))
 			setNodes(nodes)
@@ -73,7 +77,7 @@ const Home = (): JSX.Element => {
 						<div className="flex w-full flex-col gap-10 text-2xl">
 							<div className="mx-auto grid gap-5">
 								<p className="font-extralight">
-									add your accounts to the session
+									add your accounts to the wallet
 								</p>
 								<div className="mx-auto grid w-fit grid-cols-2 gap-5 text-lg">
 									<button

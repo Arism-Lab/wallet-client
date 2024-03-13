@@ -1,10 +1,11 @@
+import { deriveSession } from '@libs/storage'
+import { GetStaticProps } from 'next'
+import { useState } from 'react'
+
 import { PageSEO } from '@components/PageSEO'
 import sideNavigation from '@data/sideNavigation'
 import { constructRecoveryFactor } from '@helpers/recoveryFactor'
-import { deriveSession } from '@libs/storage'
 import { TA } from '@types'
-import { GetStaticProps } from 'next'
-import { useState } from 'react'
 
 export const getStaticProps: GetStaticProps = async () => {
 	const siteInfo = sideNavigation.find((item) => item.path === '/settings')

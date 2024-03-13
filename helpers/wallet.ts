@@ -1,4 +1,4 @@
-import { storeLocal, storeSession } from '@libs/storage'
+import { storeLocals, storeSession } from '@libs/storage'
 import { TA } from '@types'
 import { Account } from 'next-auth'
 import { Dispatch, SetStateAction } from 'react'
@@ -82,7 +82,7 @@ export const signUp = async (
     })
 
     storeSession({ factor1: networkFactor, factor2: deviceFactor, user })
-    storeLocal({ deviceFactor, user, lastLogin })
+    storeLocals({ deviceFactor, user, lastLogin })
 
     return true
 }
@@ -115,7 +115,7 @@ export const signInWithOauth = async (
         const lastLogin = new Date().toISOString()
 
         storeSession({ factor1: networkFactor, factor2: deviceFactor, user })
-        storeLocal({ deviceFactor, user, lastLogin })
+        storeLocals({ deviceFactor, user, lastLogin })
 
         return true
     }
@@ -146,7 +146,7 @@ export const signInWithPassword = async (
         const lastLogin = new Date().toISOString()
 
         storeSession({ factor1: deviceFactor, factor2: recoveryFactor, user })
-        storeLocal({ deviceFactor, user, lastLogin })
+        storeLocals({ deviceFactor, user, lastLogin })
 
         return true
     }
@@ -191,7 +191,7 @@ export const signInWithOauthAndPassword = async (
             factor3: recoveryFactor,
             user,
         })
-        storeLocal({ deviceFactor, user, lastLogin })
+        storeLocals({ deviceFactor, user, lastLogin })
 
         return true
     }
