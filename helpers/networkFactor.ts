@@ -71,6 +71,7 @@ export const deriveNetworkFactor = async (
                     commitment: tempCommitment,
                     tempPublicKey,
                 })
+
             commitments.push(commitment)
 
             await dispatch(
@@ -107,7 +108,6 @@ export const deriveNetworkFactor = async (
             )
         } catch {}
     }
-
     if (encryptedMasterShares.length < N.DERIVATION_THRESHOLD) return
 
     const thresholdPublicKey = thresholdSame(
@@ -115,7 +115,7 @@ export const deriveNetworkFactor = async (
         N.DERIVATION_THRESHOLD
     )
 
-    const decryptedMasterShares: (undefined | Buffer)[] = []
+    const decryptedMasterShares: Buffer[] = []
 
     for (const {
         value: {
@@ -171,7 +171,7 @@ export const deriveNetworkFactor = async (
         }
     }
 
-    console.log({ networkKey })
+    console.log({ decryptedMasterShares })
 
     if (!networkKey) return
 
