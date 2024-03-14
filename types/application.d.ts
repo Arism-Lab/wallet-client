@@ -110,6 +110,7 @@ export type LoginMethod =
     | 'signInPassword'
     | 'signInOauthAndPassword'
     | 'signUp'
+    | 'lost'
 export type Instruction = {
     name: string
     description: string

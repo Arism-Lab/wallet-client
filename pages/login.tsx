@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react'
 import Loading from '@components/Loading'
 import { HomeSEO } from '@components/PageSEO'
 import { getKeys, initializeUser } from '@helpers/metadata'
+import { checkMfa } from '@helpers/wallet'
+import LostAccount from '@layout/LostAccount'
 import SignInOauth from '@layout/SignInOauth'
 import SignInOauthAndPassword from '@layout/SignInOauthAndPassword'
 import SignInPassword from '@layout/SignInPassword'
@@ -42,7 +44,12 @@ const Login = ({ password }: { password: string | undefined }): JSX.Element => {
 				if (verifiedDevice) {
 					setMethod('signInOauth')
 				} else {
-					setMethod('signInOauthAndPassword')
+					const mfa = await checkMfa(info.email)
+					if (mfa) {
+						setMethod('signInOauthAndPassword')
+					} else {
+						setMethod('lost')
+					}
 				}
 			} else {
 				await initializeUser(info.email)
@@ -61,6 +68,8 @@ const Login = ({ password }: { password: string | undefined }): JSX.Element => {
 				return <SignInOauthAndPassword idToken={idToken!} info={info!} />
 			case 'signUp':
 				return <SignUp idToken={idToken!} info={info!} />
+			case 'lost':
+				return <LostAccount />
 			default:
 				return <Loading />
 		}

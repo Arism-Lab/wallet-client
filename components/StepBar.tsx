@@ -98,7 +98,7 @@ const StepWrapper = ({
 									key={index}
 									className="flex place-items-center justify-items-center gap-2"
 								>
-									<div className="w-[50px]">Key {index} </div>
+									<div className="w-[50px]">Key {index + 1} </div>
 									<span className="font-mono  cursor-pointer rounded-md border border-gray-300 px-3 py-[2px] text-sm font-medium opacity-80 hover:bg-gray-200">
 										{formatKey(state, true)}
 									</span>
@@ -110,7 +110,7 @@ const StepWrapper = ({
 								key={index}
 								className="flex place-items-center justify-items-center gap-2"
 							>
-								<div className="w-[50px]">Node {index} </div>
+								<div className="w-[50px]">Node {state.node} </div>
 								<span className="font-mono  cursor-pointer rounded-md border border-gray-300 px-2 py-[2px] text-sm font-medium opacity-80 hover:bg-gray-200">
 									{formatKey(state.value, true)}
 								</span>

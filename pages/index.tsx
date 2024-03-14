@@ -56,7 +56,7 @@ const Home = (): JSX.Element => {
 					</h1>
 					{sessionUserReducer.data ? (
 						<Link href="/dashboard">
-							<Card className="relative px-8 py-6 text-xl group-hover:text-primary-800">
+							<Card className="relative px-8 py-6 text-xl font-light group-hover:text-primary-800">
 								<p>Open dashboard</p>
 							</Card>
 						</Link>
