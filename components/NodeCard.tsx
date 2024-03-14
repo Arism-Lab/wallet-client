@@ -1,8 +1,7 @@
 import React from 'react'
 
+import Image from '@components/Image'
 import { TA } from '@types'
-
-import Image from './Image'
 
 const NodeCard = ({ node }: { node: { node: TA.Node; alive: boolean } }) => {
 	return (

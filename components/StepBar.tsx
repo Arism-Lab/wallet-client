@@ -1,5 +1,5 @@
-import { FaCheck } from 'react-icons/fa6'
-import { MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md'
+import { formatKey } from '@libs/key'
+import { TA } from '@types'
 
 const Loading = (): JSX.Element => {
 	return (
@@ -26,159 +26,277 @@ const Loading = (): JSX.Element => {
 	)
 }
 
-const PreviousStep = ({
-	stepName,
-	index,
-	currentStep,
+const StepWrapper = ({
+	step,
+	process,
+	setConfirm,
+	setPrivateKey,
+	setPassword,
+	children,
 }: {
-	stepName: string
-	index: number
-	currentStep: number
+	step: TA.Step
+	process: 'previous' | 'current' | 'next'
+	setConfirm?: React.Dispatch<React.SetStateAction<boolean>>
+	setPrivateKey?: React.Dispatch<React.SetStateAction<string>>
+	setPassword?: React.Dispatch<React.SetStateAction<string>>
+	children: JSX.Element
 }): JSX.Element => {
+	const theme = {
+		previous: 'gray-800',
+		current: 'primary-800',
+		next: 'gray-500',
+	}
+
 	return (
-		<>
-			{index != 0 && (
-				<div className="absolute inset-y-0 left-0 z-0 mt-[8%] h-1 w-1/2 bg-gray-800"></div>
-			)}
-			{index + 1 == currentStep ? (
-				<div className="absolute inset-y-0 right-0 z-0 mt-[8%] h-1 w-1/2 bg-gradient-to-r from-gray-800 to-secondary-800"></div>
-			) : (
-				<div className="absolute inset-y-0 right-0 z-0 mt-[8%] h-1 w-1/2 bg-gray-800"></div>
-			)}
-			<div className="z-10 flex h-8 w-8 items-center justify-center rounded-full bg-gray-800">
-				<FaCheck className="text-white" />
+		<div className="flex h-[100px] w-full place-items-center justify-items-center">
+			<span
+				className={`w-[235px] text-right text-lg font-light text-${theme[process]}`}
+			>
+				{step.instruction.name}
+			</span>
+			<div className="w-[100px]">{children}</div>
+			<div
+				className={`grid w-[650px] items-center gap-1 text-${theme[process]}`}
+			>
+				{process === 'current' && step.passwordInput && (
+					<div className="flex place-items-center justify-items-center gap-2">
+						<div className="w-[50px]">Pass</div>
+						<input
+							className="rounded-md border border-gray-300 px-2 py-[2px] text-sm font-medium"
+							type="password"
+							onChange={(e) => setPassword!(e.target.value)}
+						/>
+						<button
+							className="rounded-md border border-gray-300 px-2 py-[2px] text-sm font-medium"
+							onClick={() => setConfirm!(true)}
+						>
+							Confirm
+						</button>
+					</div>
+				)}
+				{process === 'current' && step.privateKeyInput && (
+					<div className="flex place-items-center justify-items-center gap-2">
+						<div className="w-[50px]">Key</div>
+						<input
+							className="w-[300px] rounded-md border border-gray-300 px-2 py-[2px] text-sm font-medium"
+							type="password"
+							onChange={(e) => setPrivateKey!(e.target.value)}
+						/>
+						<button
+							className="rounded-md border border-gray-300 px-2 py-[2px] text-sm font-medium"
+							onClick={() => setConfirm!(true)}
+						>
+							Confirm
+						</button>
+					</div>
+				)}
+				{Array.isArray(step.state) ? (
+					step.state.slice(0, 3).map((state, index) => {
+						if (typeof state === 'string') {
+							return (
+								<div
+									key={index}
+									className="flex place-items-center justify-items-center gap-2"
+								>
+									<div className="w-[50px]">Key {index} </div>
+									<span className="font-mono  cursor-pointer rounded-md border border-gray-300 px-3 py-[2px] text-sm font-medium opacity-80 hover:bg-gray-200">
+										{formatKey(state, true)}
+									</span>
+								</div>
+							)
+						}
+						return (
+							<div
+								key={index}
+								className="flex place-items-center justify-items-center gap-2"
+							>
+								<div className="w-[50px]">Node {index} </div>
+								<span className="font-mono  cursor-pointer rounded-md border border-gray-300 px-2 py-[2px] text-sm font-medium opacity-80 hover:bg-gray-200">
+									{formatKey(state.value, true)}
+								</span>
+							</div>
+						)
+					})
+				) : (
+					<div className="flex place-items-center justify-items-center gap-2">
+						<div className="w-[50px]">
+							{step.state && (step.state === 'success' ? 'Result' : 'Key')}
+						</div>
+						<span className="font-mono  cursor-pointer rounded-md border border-gray-300 px-2 py-[2px] text-sm font-medium opacity-80 hover:bg-gray-200">
+							{formatKey(step.state!, true)}
+						</span>
+					</div>
+				)}
 			</div>
-			<span className="text-gray-800">{stepName}</span>
-		</>
+		</div>
+	)
+}
+
+const PreviousStep = ({
+	step,
+	index,
+	currentIndex,
+	stepLength,
+}: {
+	step: TA.Step
+	index: number
+	currentIndex: number
+	stepLength: number
+}): JSX.Element => {
+	const isFirstIndex = index == 0
+	const isNextIndex = index == currentIndex - 1
+	const isLastIndex = index == stepLength - 1
+
+	return (
+		<StepWrapper step={step} process="previous">
+			<div className="relative">
+				{isNextIndex && !isLastIndex && (
+					<div className="absolute inset-x-0 top-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-gradient-to-b from-gray-800 to-secondary-800"></div>
+				)}
+				{!isLastIndex && (
+					<div className="absolute inset-x-0 top-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-gray-800"></div>
+				)}
+				{!isFirstIndex && (
+					<div className="absolute inset-x-0 bottom-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-gray-800"></div>
+				)}
+				<div className="z-0 mx-auto flex w-full items-center justify-center">
+					<span className="flex h-[30px] w-[30px] place-items-center justify-center rounded-full bg-gray-800 text-white">
+						{index + 1}
+					</span>
+				</div>
+			</div>
+		</StepWrapper>
 	)
 }
 
 const CurrentStep = ({
-	stepName,
+	step,
 	index,
-	currentStep,
 	stepLength,
-	trigger,
+	setConfirm,
+	setPrivateKey,
+	setPassword,
 }: {
-	stepName: string
+	step: TA.Step
 	index: number
-	currentStep: number
 	stepLength: number
-	trigger: () => void
+	setConfirm?: React.Dispatch<React.SetStateAction<boolean>>
+	setPrivateKey?: React.Dispatch<React.SetStateAction<string>>
+	setPassword?: React.Dispatch<React.SetStateAction<string>>
 }): JSX.Element => {
-	if (index == stepLength - 1) {
-		return (
-			<>
-				<div className="absolute inset-y-0 left-0 z-10 mt-[8%] h-1 w-[42%] bg-gradient-to-r from-blue-800 to-primary-800"></div>
-				<button
-					className="z-20 flex h-8 w-8 items-center justify-center rounded-full border-2 border-primary-800 text-primary-800 transition-all duration-300 hover:bg-primary-800 hover:text-white"
-					onClick={trigger}
-				>
-					<MdOutlineKeyboardDoubleArrowRight className="h-4 w-4" />
-				</button>
-				<span className="text-primary-800">Dashboard</span>
-			</>
-		)
-	} else {
-		return (
-			<>
-				{index != 0 && (
-					<div className="absolute inset-y-0 left-0 z-0 mt-[8%] h-1 w-1/2 bg-gradient-to-r from-secondary-800 to-primary-800"></div>
+	const isFirstIndex = index == 0
+	const isLastIndex = index == stepLength - 1
+
+	return (
+		<StepWrapper
+			step={step}
+			process="current"
+			setConfirm={setConfirm}
+			setPrivateKey={setPrivateKey}
+			setPassword={setPassword}
+		>
+			<div className="relative">
+				{!isFirstIndex && (
+					<div className="absolute inset-x-0 bottom-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-gradient-to-b from-secondary-800 to-primary-800"></div>
 				)}
-				<div className="absolute inset-y-0 right-0 z-10 mt-[8%] h-1 w-[42%] bg-gradient-to-r from-primary-800 to-primary-500"></div>
-				<div className="z-0 flex h-8 w-8 items-center justify-center rounded-full bg-primary-800">
-					<Loading />
+				{!isLastIndex && (
+					<div className="absolute inset-x-0 top-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-gradient-to-b from-primary-800 to-primary-500"></div>
+				)}
+				<div className="z-0 mx-auto flex w-full items-center justify-center">
+					<span className="flex h-[30px] w-[30px] place-items-center justify-center rounded-full bg-primary-800 text-white">
+						<Loading />
+					</span>
 				</div>
-				<span className="text-primary-800">{stepName}</span>
-			</>
-		)
-	}
+			</div>
+		</StepWrapper>
+	)
 }
 
 const NextStep = ({
-	stepName,
+	step,
 	index,
-	currentStep,
+	currentIndex,
 	stepLength,
 }: {
-	stepName: string
+	step: TA.Step
 	index: number
-	currentStep: number
+	currentIndex: number
 	stepLength: number
 }): JSX.Element => {
-	if (index == stepLength - 1) {
-		return (
-			<>
-				<div className="absolute inset-y-0 left-0 z-0 mt-[8%] h-1 w-[42%] bg-gray-500"></div>
-				<button
-					className="z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-500 text-gray-500"
-					disabled
-				>
-					<MdOutlineKeyboardDoubleArrowRight className="h-4 w-4" />
-				</button>
-				<span className="text-gray-500">Dashboard</span>
-			</>
-		)
-	}
+	const isLastIndex = index == stepLength - 1
+	const isNextIndex = index == currentIndex + 1
 
 	return (
-		<>
-			{index - 1 == currentStep ? (
-				<div className="absolute inset-y-0 left-0 z-0 mt-[8%] h-1 w-1/2 bg-gradient-to-r from-primary-500 to-gray-500"></div>
-			) : (
-				<div className="absolute inset-y-0 left-0 z-0 mt-[8%] h-1 w-1/2 bg-gray-500"></div>
-			)}
-			{index != stepLength - 1 && (
-				<div className="absolute inset-y-0 right-0 z-0 mt-[8%] h-1 w-1/2 bg-gray-500"></div>
-			)}
-			<div className="z-0 flex h-8 w-8 items-center justify-center rounded-full bg-gray-500">
-				<span className="text-white">{index + 1}</span>
+		<StepWrapper step={step} process="next">
+			<div className="relative">
+				{isNextIndex ? (
+					<div className="absolute inset-x-0 bottom-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-gradient-to-b from-primary-500 to-gray-500"></div>
+				) : (
+					<div className="absolute inset-x-0 bottom-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-gray-500"></div>
+				)}
+				{!isLastIndex && (
+					<div className="absolute inset-x-0 top-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-gray-500"></div>
+				)}
+				<div className="z-0 mx-auto flex w-full items-center justify-center">
+					<span className="flex h-[30px] w-[30px] place-items-center justify-center rounded-full bg-gray-500 text-white">
+						{index + 1}
+					</span>
+				</div>
 			</div>
-			<span className="text-gray-500">{stepName}</span>
-		</>
+		</StepWrapper>
 	)
 }
 
 const StepBar = ({
-	currentStep,
-	totalSteps,
-	trigger,
+	data,
+	setConfirm,
+	setPrivateKey,
+	setPassword,
 }: {
-	currentStep: number
-	totalSteps: string[]
-	trigger: () => void
+	data: TA.LoginState
+	setConfirm?: React.Dispatch<React.SetStateAction<boolean>>
+	setPrivateKey?: React.Dispatch<React.SetStateAction<string>>
+	setPassword?: React.Dispatch<React.SetStateAction<string>>
 }): JSX.Element => {
-	const length = totalSteps.length
-	const className = `grid grid-cols-6 items-center transition transition-all duration-150 ease-in-out`
+	const stepLength = Object.values(data).length
+
+	let currentIndex: number = Object.values(data).findIndex(
+		(step: TA.Step) => step.state === '' || step.state?.length === 0
+	)
+	if (currentIndex === -1) {
+		currentIndex = stepLength
+	}
 
 	return (
-		<div className={className}>
-			{totalSteps.map((stepName, index) => (
-				<div className="block" key={index}>
-					<div className="grid-cols relative grid justify-items-center gap-3">
-						{index < currentStep ? (
-							<PreviousStep
-								stepName={stepName}
-								index={index}
-								currentStep={currentStep}
-							/>
-						) : index == currentStep ? (
-							<CurrentStep
-								stepName={stepName}
-								index={index}
-								currentStep={currentStep}
-								stepLength={totalSteps.length}
-								trigger={trigger}
-							/>
-						) : (
-							<NextStep
-								stepName={stepName}
-								index={index}
-								currentStep={currentStep}
-								stepLength={totalSteps.length}
-							/>
-						)}
-					</div>
+		<div
+			className={`grid w-full place-items-center transition-all duration-150 ease-in-out`}
+		>
+			{Object.values(data).map((step: TA.Step, index) => (
+				<div className="grid w-full justify-items-center" key={index}>
+					{index < currentIndex ? (
+						<PreviousStep
+							step={step}
+							index={index}
+							currentIndex={currentIndex}
+							stepLength={stepLength}
+						/>
+					) : index == currentIndex ? (
+						<CurrentStep
+							step={step}
+							index={index}
+							stepLength={stepLength}
+							setConfirm={setConfirm}
+							setPrivateKey={setPrivateKey}
+							setPassword={setPassword}
+						/>
+					) : (
+						<NextStep
+							step={step}
+							index={index}
+							currentIndex={currentIndex}
+							stepLength={stepLength}
+						/>
+					)}
 				</div>
 			))}
 		</div>

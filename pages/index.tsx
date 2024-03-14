@@ -19,10 +19,6 @@ const Home = (): JSX.Element => {
 	)
 
 	const sessionUserReducer = useAppSelector((state) => state.sessionUserReducer)
-	const localUsersReducer = useAppSelector((state) => state.localUsersReducer)
-
-	console.log({ sessionUserReducer, localUsersReducer })
-	console.info({ sessionUserReducer, localUsersReducer })
 
 	const handleSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault()
@@ -100,14 +96,8 @@ const Home = (): JSX.Element => {
 										</p>
 									</button>
 								</div>
-								{localUsersReducer.data.length > 0 && (
-									<div className="mx-auto grid gap-5">
-										<p className="font-extralight">
-											or continue with existed accounts on this device
-										</p>
-										<AccountCardSlider localUsers={localUsersReducer.data} />
-									</div>
-								)}
+
+								<AccountCardSlider />
 							</div>
 						</div>
 					)}

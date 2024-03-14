@@ -103,40 +103,69 @@ export type ConstructRecoveryFactorResponse = {
 
 /***************************************
  *
- * OTHERS' REQUEST AMD RESPONSE TYPES
+ * LOGIN HOOK TYPES
  ***************************************/
-export type AddNewDeviceRequest = {
-    user: User
-    networkFactor: Factor
-    recoveryFactor: Factor
-}
-
-/***************************************
- *
- * UI TYPES
- ***************************************/
-
-export type Step = {
+export type LoginMethod =
+    | 'signInOauth'
+    | 'signInPassword'
+    | 'signInOauthAndPassword'
+    | 'signUp'
+export type Instruction = {
     name: string
     description: string
 }
-export type Value = {
-    node: Node
+export type NodeState = {
+    node: number
     value: string
 }
-export type NetworkFactorStep1 = {
-    step: Step
-    node: Value[]
+export type Step = {
+    instruction: Instruction
+    state: NodeState[] | string[] | string | undefined
+    privateKeyInput?: boolean
+    passwordInput?: boolean
 }
-export type NetworkFactorStep2 = {
-    step: Step
-    node: Value[]
+export type SignInOauthSteps = {
+    networkFactorStep1: Step
+    networkFactorStep2: Step
+    networkFactorStep3: Step
+    networkFactorStep4: Step
+    networkFactorStep5: Step
+    deviceFactorStep1: Step
+    privateFactorStep1: Step
+    verifyStep: Step
 }
-export type NetworkFactorStep3 = {
-    step: Step
-    node: Value[]
+export type SignInOauthAndPasswordSteps = {
+    networkFactorStep1: Step
+    networkFactorStep2: Step
+    networkFactorStep3: Step
+    networkFactorStep4: Step
+    networkFactorStep5: Step
+    recoveryFactorStep1: Step
+    recoveryFactorStep2: Step
+    verifyStep: Step
 }
-export type NetworkFactorStep4 = {
-    step: Step
-    node: string
+export type SignInPasswordSteps = {
+    recoveryFactorStep1: Step
+    recoveryFactorStep2: Step
+    verifyStep: Step
+}
+export type SignUpSteps = {
+    networkFactorStep1: Step
+    networkFactorStep2: Step
+    networkFactorStep3: Step
+    networkFactorStep4: Step
+    networkFactorStep5: Step
+    privateFactorStep1: Step
+    deviceFactorStep1: Step
+    verifyStep: Step
+}
+export type LoginState =
+    | SignInOauthSteps
+    | SignInOauthAndPasswordSteps
+    | SignInPasswordSteps
+    | SignUpSteps
+export type LoginReducer = {
+    data: LoginState
+    error: any
+    loading: boolean
 }

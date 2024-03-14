@@ -1,119 +1,75 @@
-import { useRouter } from 'next/router'
-import { Session } from 'next-auth'
+import { Session, TokenSet } from 'next-auth'
 import { getSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
-import { MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md'
 
+import Loading from '@components/Loading'
 import { HomeSEO } from '@components/PageSEO'
-import StepBar from '@components/StepBar'
-import { verifyDevice } from '@helpers/deviceFactor'
-import { getUser } from '@helpers/metadata'
-import {
-	signInWithOauth,
-	signInWithOauthAndPassword,
-	signUp,
-} from '@helpers/wallet'
+import { getKeys, initializeUser } from '@helpers/metadata'
+import SignInOauth from '@layout/SignInOauth'
+import SignInOauthAndPassword from '@layout/SignInOauthAndPassword'
+import SignInPassword from '@layout/SignInPassword'
+import SignUp from '@layout/SignUp'
 import { useAppDispatch, useAppSelector } from '@store'
 import { storeToken } from '@store/token/actions'
 import { TA } from '@types'
 
-const STEPS = [
-	'Checking',
-	'Making commitments',
-	'Making share proofs',
-	'Decrypting shares',
-	'Reconstructing private key',
-	'Finished',
-]
-const FINAL_STEP = STEPS.length - 1
-
-const Login = (): JSX.Element => {
-	const router = useRouter()
+const Login = ({ password }: { password: string | undefined }): JSX.Element => {
 	const dispatch = useAppDispatch()
 
-	const [step, setStep] = useState<number>(0)
-	const [password, setPassword] = useState('')
-
-	const sessionUserReducer = useAppSelector((state) => state.sessionUserReducer)
 	const localUsersReducer = useAppSelector((state) => state.localUsersReducer)
 
-	console.log({ sessionUserReducer, localUsersReducer })
+	const [method, setMethod] = useState<TA.LoginMethod | undefined>()
+	const [info, setInfo] = useState<TA.Info | undefined>()
+	const [idToken, setIdToken] = useState<string | undefined>()
 
 	useEffect(() => {
 		;(async () => {
-			if (sessionUserReducer.data) {
-				setStep(FINAL_STEP)
-				return
-			}
-
 			const {
-				token: { account },
-				user,
+				token: { account: token },
+				user: info,
 			}: Session = (await getSession()) as Session
 
-			dispatch(storeToken(account))
+			setInfo(info)
+			setIdToken(token.id_token!)
+			dispatch(storeToken(token))
 
-			let success: boolean | undefined = undefined
+			const keys = await getKeys(info.email)
+			if (keys.length > 0) {
+				const verifiedDevice = localUsersReducer.data.find(
+					(e) => e.info.email === info.email
+				)?.deviceFactor
 
-			const existed = await getUser(user.email)
-			if (existed) {
-				const { verified }: { verified: boolean } = await verifyDevice(
-					user.email
-				)
-
-				const deviceFactor: TA.Factor = localUsersReducer.data.find(
-					(e) => e.info.email === user.email
-				)!.deviceFactor
-
-				success = verified
-					? await signInWithOauth(user, account, deviceFactor, setStep)
-					: await signInWithOauthAndPassword(user, account, password, setStep)
+				if (verifiedDevice) {
+					setMethod('signInOauth')
+				} else {
+					setMethod('signInOauthAndPassword')
+				}
 			} else {
-				success = await signUp(user, account, setStep)
-			}
-
-			if (!success) {
-				alert('Failed to sign in')
+				await initializeUser(info.email)
+				setMethod('signUp')
 			}
 		})()
 	}, [])
 
-	const navigateToDashboard = () => {
-		router.push('/dashboard')
+	const LoginLayout = () => {
+		switch (method) {
+			case 'signInOauth':
+				return <SignInOauth idToken={idToken!} info={info!} />
+			case 'signInPassword':
+				return <SignInPassword password={password!} info={info!} />
+			case 'signInOauthAndPassword':
+				return <SignInOauthAndPassword idToken={idToken!} info={info!} />
+			case 'signUp':
+				return <SignUp idToken={idToken!} info={info!} />
+			default:
+				return <Loading />
+		}
 	}
 
 	return (
 		<>
 			<HomeSEO />
-			<main className="bg-global relative flex h-screen w-screen">
-				<div className="mx-auto my-auto grid w-full place-items-center gap-20">
-					{step === FINAL_STEP ? (
-						<h1 className="text-6xl font-extralight leading-snug text-primary-800">
-							You are all set!
-						</h1>
-					) : (
-						<h1 className="text-6xl font-extralight leading-snug text-gray-800">
-							Logging in...
-						</h1>
-					)}
-					<StepBar
-						currentStep={step}
-						totalSteps={STEPS}
-						trigger={navigateToDashboard}
-					/>
-				</div>
-				{step === FINAL_STEP && (
-					<button
-						className="group absolute inset-y-0 right-0 z-10 flex h-full w-1/3 bg-opacity-0 hover:bg-gradient-to-r hover:from-transparent hover:to-primary-200"
-						onClick={navigateToDashboard}
-					>
-						<p className="my-auto mr-5 hidden w-full text-right text-3xl font-light text-white group-hover:block">
-							Dashboard
-							<MdOutlineKeyboardDoubleArrowRight className="ml-2 inline-block h-8 w-8 font-light" />
-						</p>
-					</button>
-				)}
-			</main>
+			<LoginLayout />
 		</>
 	)
 }

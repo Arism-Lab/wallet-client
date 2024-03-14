@@ -7,9 +7,7 @@ export const deriveRecoveryFactor = async (
     user: string,
     password: string
 ): Promise<TA.Factor> => {
-    const recoveryFactorX = BN.from(H.keccak256(password).slice(2), 16).umod(
-        EC.ORDER
-    )
+    const recoveryFactorX = BN.from(H.keccak256(password).slice(2), 16)
     const recoveryFactorKey = await getRecoveryKey(user)
 
     return {

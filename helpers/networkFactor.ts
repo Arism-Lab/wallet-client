@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { Dispatch, SetStateAction } from 'react'
 
 import { BN, C, EC, F, H, N } from '@common'
 import {
@@ -7,6 +6,7 @@ import {
     lagrangeInterpolation,
     thresholdSame,
 } from '@libs/arithmetic'
+import { AppDispatch } from '@store'
 import type { TA, TN } from '@types'
 
 const ping = async (url: string): Promise<boolean> => {
@@ -16,7 +16,10 @@ const ping = async (url: string): Promise<boolean> => {
         .catch(() => false)
 }
 
-export const getNodes = async (): Promise<TA.Node[]> => {
+export const getNodes = async (
+    dispatch?: AppDispatch,
+    actions?: any
+): Promise<TA.Node[]> => {
     const nodes: TA.Node[] = []
 
     for (let i = 0; i < N.NODES.length; i += 1) {
@@ -25,6 +28,14 @@ export const getNodes = async (): Promise<TA.Node[]> => {
                 nodes.push(N.NODES[i])
             }
         })
+
+        if (dispatch)
+            await dispatch(
+                actions.emitNetWorkFactorStep1({
+                    node: N.NODES[i].id,
+                    value: N.NODES[i].url,
+                })
+            )
     }
 
     if (N.NODES.length < N.DERIVATION_THRESHOLD)
@@ -33,34 +44,27 @@ export const getNodes = async (): Promise<TA.Node[]> => {
     return nodes
 }
 
-export const getAddress = async (user: string): Promise<string | undefined> => {
-    const nodes = await getNodes()
+export const deriveNetworkFactor = async (
+    idToken: string,
+    user: string,
+    dispatch: AppDispatch,
+    actions: any
+): Promise<TA.Factor | undefined> => {
+    const nodes: TA.Node[] = await getNodes(dispatch, actions)
 
     for (const { url } of nodes) {
         try {
-            const { data } = await axios.post<string>(`${url}/wallet`, { user })
-            return data
+            await axios.post<string>(`${url}/wallet`, { user })
         } catch {}
     }
-    return undefined
-}
-
-export const deriveNetworkFactor = async (
-    { idToken, user }: TA.DeriveNetworkFactorRequest,
-    setStep: Dispatch<SetStateAction<number>>
-): Promise<TA.Factor | undefined> => {
-    await getAddress(user)
 
     const tempPrivateKey = C.generatePrivateKey()
     const tempPublicKey = C.getPublicKey(tempPrivateKey).toString('hex')
     const tempCommitment = H.keccak256(idToken)
 
-    const nodes = await getNodes()
     const commitments: TN.CommitmentResponse[] = []
 
-    setStep(1)
-
-    for (const { url } of nodes) {
+    for (const { id, url } of nodes) {
         try {
             const { data: commitment } =
                 await axios.post<TN.CommitmentResponse>(`${url}/commitment`, {
@@ -68,12 +72,17 @@ export const deriveNetworkFactor = async (
                     tempPublicKey,
                 })
             commitments.push(commitment)
+
+            await dispatch(
+                actions.emitNetWorkFactorStep2({
+                    node: id,
+                    value: commitment.publicKey,
+                })
+            )
         } catch {}
     }
 
     if (commitments.length < N.GENERATION_THRESHOLD) return
-
-    setStep(2)
 
     const encryptedMasterShares: { value: TN.SecretResponse; id: number }[] = []
 
@@ -89,17 +98,22 @@ export const deriveNetworkFactor = async (
                 }
             )
             encryptedMasterShares.push({ value, id })
+
+            await dispatch(
+                actions.emitNetWorkFactorStep3({
+                    node: id,
+                    value: BN.from(value.ciphertext).toString(16),
+                })
+            )
         } catch {}
     }
 
-    setStep(3)
+    if (encryptedMasterShares.length < N.DERIVATION_THRESHOLD) return
 
     const thresholdPublicKey = thresholdSame(
         encryptedMasterShares.map((e) => e.value.publicKey),
         N.DERIVATION_THRESHOLD
     )
-
-    if (encryptedMasterShares.length < N.DERIVATION_THRESHOLD) return
 
     const decryptedMasterShares: (undefined | Buffer)[] = []
 
@@ -109,13 +123,24 @@ export const deriveNetworkFactor = async (
             ciphertext,
         },
     } of encryptedMasterShares) {
-        const decryptedMasterShare = await C.decrypt(tempPrivateKey, {
+        const decryptedMasterShare: Buffer = await C.decrypt(tempPrivateKey, {
             ephemPublicKey: Buffer.from(ephemPublicKey, 'hex'),
             iv: Buffer.from(iv, 'hex'),
             mac: Buffer.from(mac, 'hex'),
             ciphertext: Buffer.from(ciphertext, 'hex'),
         })
         decryptedMasterShares.push(decryptedMasterShare)
+
+        await dispatch(
+            actions.emitNetWorkFactorStep4({
+                node: encryptedMasterShares.find(
+                    (e) => e.value.ciphertext === ciphertext
+                )!.id,
+                value: BN.from(decryptedMasterShare.toString(), 16).toString(
+                    16
+                ),
+            })
+        )
     }
 
     const masterShares: TA.Point[] = decryptedMasterShares.reduce(
@@ -130,9 +155,7 @@ export const deriveNetworkFactor = async (
         [] as TA.Point[]
     )
 
-    setStep(4)
-
-    let privateKey: BN | undefined = undefined
+    let networkKey: BN | undefined = undefined
     const allCombis = kCombinations(masterShares.length, N.DERIVATION_THRESHOLD)
 
     for (const combi of allCombis) {
@@ -144,16 +167,16 @@ export const deriveNetworkFactor = async (
         const publicKey = EC.getPublicKeyFromPrivateKey(derivedPrivateKey)
 
         if (thresholdPublicKey === publicKey) {
-            privateKey = derivedPrivateKey
+            networkKey = derivedPrivateKey
         }
     }
 
-    if (!privateKey) return
+    if (!networkKey) return
 
-    setStep(5)
+    await dispatch(actions.emitNetWorkFactorStep5(networkKey.toString(16)))
 
     return {
         x: F.NETWORK_FACTOR_X,
-        y: privateKey,
+        y: networkKey,
     }
 }
