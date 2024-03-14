@@ -64,20 +64,11 @@ const AccountCard = ({
 	}
 
 	const handlePasswordSignIn = async () => {
-		const success = await signInWithPassword(
-			localUser.info,
-			password,
-			localUser.deviceFactor
-		)
-		if (success) {
-			router.push('/dashboard')
-		} else {
-			alert('Invalid password')
-		}
+		router.push('/login')
 	}
 
 	return (
-		<>
+		<div className="relative">
 			<div
 				className="absolute inset-x-0 -top-0 z-10 h-0 w-full transform select-none items-center justify-center gap-2 truncate rounded-2xl border-2 border-red-600 bg-white px-5 pb-3 pt-2 text-lg opacity-0 duration-300 ease-in-out aria-expanded:grid aria-expanded:h-max aria-expanded:-translate-y-28 aria-expanded:opacity-100"
 				aria-expanded={removeConfirm}
@@ -185,7 +176,7 @@ const AccountCard = ({
 					</button>
 				)}
 			</button>
-		</>
+		</div>
 	)
 }
 
