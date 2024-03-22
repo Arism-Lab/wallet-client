@@ -11,7 +11,7 @@
         "dev:node1": "cd ../arism-node && yarn start:dev:node1",
         "dev:node2": "cd ../arism-node && yarn start:dev:node2",
         "dev:node3": "cd ../arism-node && yarn start:dev:node3",
-        "dev:all": "concurrently \"yarn dev\" \"yarn dev:metadata\" \"yarn dev:node1\" \"yarn dev:node2\" \"yarn dev:node3\""
+        "dev:backend": "concurrently \"yarn dev:metadata\" \"yarn dev:node1\" \"yarn dev:node2\" \"yarn dev:node3\""
     },
     "dependencies": {
         "@reduxjs/toolkit": "^2.2.1",

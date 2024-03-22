@@ -12,7 +12,6 @@ import sideNavigation from '@data/sideNavigation'
 import siteMetadata from '@data/siteMetadata.json'
 import { useAppDispatch, useAppSelector } from '@store'
 import { removeSessionUser } from '@store/sessionUser/actions'
-import { sessionUser } from '@store/sessionUser/reducer'
 import { removeToken } from '@store/token/actions'
 
 const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
@@ -53,7 +52,7 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 		<>
 			<TransitionWrapper router={router}>
 				<div className="bg-global flex h-screen w-screen">
-					<div className="flex w-1/5 flex-col text-gray-800">
+					<div className="flex w-1/5 flex-col text-zinc-800">
 						<Link
 							className="mx-auto flex place-items-center items-center py-10"
 							href="/"
@@ -77,7 +76,9 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 									href={item.path}
 									key={index}
 									className={`${
-										currPath === item.path ? 'text-black' : 'text-gray-500'
+										currPath === item.path
+											? 'pointer-events-none rounded-full bg-zinc-900 text-white'
+											: 'text-zinc-500'
 									} mx-auto flex h-14 w-5/6 items-center justify-items-start py-3 transition-all duration-200 ease-in-out hover:rounded-full hover:bg-black hover:bg-opacity-10`}
 								>
 									{item.icon({
@@ -93,7 +94,7 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 								<Link
 									href={item.url}
 									key={item.name}
-									className="flex items-start text-base text-gray-500 transition-all duration-200 ease-in-out hover:text-black"
+									className="flex items-start text-base text-zinc-500 transition-all duration-200 ease-in-out hover:text-black"
 								>
 									{item.name}
 								</Link>
@@ -101,8 +102,8 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 						</div>
 					</div>
 					<hr className="h-full w-[0.75px] self-center bg-black bg-opacity-10" />
-					<main className="w-full">
-						<div className="flex flex-col p-12">
+					<main className="h-full w-full">
+						<div className="flex h-full w-full flex-col p-12">
 							<div className="flex w-full justify-between">
 								<p className="text-5xl font-extrabold">{pageTitle}</p>
 								<div className="flex place-items-center gap-5">
@@ -135,7 +136,7 @@ const LayoutWrapper = ({ children }: Wrapper): JSX.Element => {
 									</div>
 								</div>
 							</div>
-							{children}
+							<div className="h-full w-full py-3">{children}</div>
 						</div>
 					</main>
 				</div>

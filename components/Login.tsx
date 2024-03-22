@@ -52,7 +52,7 @@ const Login = ({
 						You are all set!
 					</h1>
 				) : (
-					<h1 className="my-auto h-full w-full text-center text-6xl font-extralight leading-snug text-gray-800">
+					<h1 className="my-auto h-full w-full text-center text-6xl font-extralight leading-snug text-zinc-800">
 						{title()}
 					</h1>
 				)}

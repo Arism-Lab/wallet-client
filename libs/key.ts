@@ -7,7 +7,11 @@ export const formatKey = (key: string, long: boolean) => {
         }
     }
     if (key.length > 25) {
-        return key.slice(0, 13) + '...' + key.slice(-10)
+        return key.slice(0, 10) + '...' + key.slice(-8)
     }
     return key
+}
+
+export const validPrivateKey = (key: string) => {
+    return key.length === 64
 }

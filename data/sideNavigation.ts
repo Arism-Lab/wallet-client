@@ -1,11 +1,20 @@
 import React from 'react'
 import { IconType } from 'react-icons'
-import { RiHomeLine, RiHomeFill } from 'react-icons/ri'
-import { PiFlowArrow, PiFlowArrowFill } from 'react-icons/pi'
-import { PiNewspaperClipping, PiNewspaperClippingFill } from 'react-icons/pi'
-import { PiAppWindow, PiAppWindowFill } from 'react-icons/pi'
-import { RiSettingsLine, RiSettingsFill } from 'react-icons/ri'
 import { BsDiagram3, BsDiagram3Fill } from 'react-icons/bs'
+import {
+    PiAppWindow,
+    PiAppWindowFill,
+    PiFlowArrow,
+    PiFlowArrowFill,
+    PiNewspaperClipping,
+    PiNewspaperClippingFill,
+} from 'react-icons/pi'
+import {
+    RiHomeFill,
+    RiHomeLine,
+    RiSettingsFill,
+    RiSettingsLine,
+} from 'react-icons/ri'
 
 const icon = (ActiveIcon: IconType, DefaultIcon: IconType) => {
     function Icon(props: { active: boolean; className: string }): JSX.Element {
@@ -34,8 +43,8 @@ const navigation = [
         icon: icon(PiNewspaperClippingFill, PiNewspaperClipping),
     },
     {
-        title: 'Manage Keys',
-        path: '/manage-keys',
+        title: 'Keys',
+        path: '/keys',
         description: 'Manage keys associated with your account',
         icon: icon(BsDiagram3Fill, BsDiagram3),
     },

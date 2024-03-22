@@ -68,7 +68,7 @@ const AccountCard = ({
 	}
 
 	return (
-		<div className="relative">
+		<div className="relative mx-auto">
 			<div
 				className="absolute inset-x-0 -top-0 z-10 h-0 w-full transform select-none items-center justify-center gap-2 truncate rounded-2xl border-2 border-red-600 bg-white px-5 pb-3 pt-2 text-lg opacity-0 duration-300 ease-in-out aria-expanded:grid aria-expanded:h-max aria-expanded:-translate-y-28 aria-expanded:opacity-100"
 				aria-expanded={removeConfirm}
@@ -87,7 +87,7 @@ const AccountCard = ({
 				</button>
 			</div>
 			<button
-				className="card mx-auto flex w-full cursor-default justify-between overflow-hidden truncate transition-all duration-300 ease-in-out disabled:w-[0px] disabled:p-0 disabled:opacity-0 aria-expanded:w-[90vw]"
+				className="card-secondary mx-auto flex w-full cursor-default justify-between overflow-hidden truncate transition-all duration-300 ease-in-out disabled:w-[0px] disabled:p-0 disabled:opacity-0 aria-expanded:w-[90vw]"
 				disabled={hidden}
 				aria-expanded={expanded}
 			>
@@ -111,19 +111,19 @@ const AccountCard = ({
 					<p className="truncate-1 w-min overflow-hidden truncate text-ellipsis font-medium">
 						{localUser.info.name} ({formatDate(localUser.lastLogin, true)})
 					</p>
-					<p className="truncate-1 w-min overflow-hidden truncate text-ellipsis font-light text-gray-500">
+					<p className="truncate-1 w-min overflow-hidden truncate text-ellipsis font-light text-zinc-500">
 						{localUser.info.email}
 					</p>
 				</div>
 				{expanded ? (
 					<>
-						<hr className="h-full w-[0.5px] bg-gray-300" />
+						<hr className="h-full w-[0.5px] bg-zinc-300" />
 						<div className="flex flex-col text-center">
 							<p className="font-medium">
 								{keys.length} key{keys.length > 1 && 's'} associated to this
 								account
 							</p>
-							<p className="font-light text-gray-500">
+							<p className="font-light text-zinc-500">
 								last login since {formatDate(localUser.lastLogin)}
 							</p>
 						</div>
@@ -134,7 +134,7 @@ const AccountCard = ({
 						>
 							{removeConfirm ? <AiOutlineClose /> : <BsTrash3 />}
 						</button>
-						<hr className="h-full w-[0.5px] bg-gray-300" />
+						<hr className="h-full w-[0.5px] bg-zinc-300" />
 						<button onClick={(e) => handleGoogleSignIn(e)} className="">
 							<Image
 								src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/google-color-icon.png"
@@ -144,15 +144,15 @@ const AccountCard = ({
 								className="hover:opacity-50"
 							/>
 						</button>
-						<p className="text-lg font-light text-gray-500">or</p>
+						<p className="text-lg font-light text-zinc-500">or</p>
 						<input
 							type="password"
-							className="relative rounded-lg border-2 border-gray-300 px-4 py-2 text-lg font-light ring-primary-500  hover:bg-white hover:text-primary-700 focus:border-opacity-0 focus:outline-none focus:ring-2"
+							className="relative rounded-lg border-2 border-zinc-300 px-4 py-2 text-lg font-light ring-primary-500  hover:bg-white hover:text-primary-700 focus:border-opacity-0 focus:outline-none focus:ring-2"
 							checked={password !== ''}
 							onChange={(e) => setPassword(e.target.value)}
 						/>
 						<button
-							className="grid h-12 w-12 cursor-pointer place-items-center justify-items-center rounded-full border-2 border-primary-600 text-2xl text-primary-600 hover:bg-primary-100 disabled:pointer-events-none disabled:border-gray-400 disabled:text-gray-400 disabled:opacity-50"
+							className="grid h-12 w-12 cursor-pointer place-items-center justify-items-center rounded-full border-2 border-primary-600 text-2xl text-primary-600 hover:bg-primary-100 disabled:pointer-events-none disabled:border-zinc-400 disabled:text-zinc-400 disabled:opacity-50"
 							disabled={password === ''}
 							onClick={() => handlePasswordSignIn()}
 						>

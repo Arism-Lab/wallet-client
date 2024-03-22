@@ -9,10 +9,10 @@ const NodeCard = ({ node }: { node: { node: TA.Node; alive: boolean } }) => {
 			<Image
 				src="https://static.vecteezy.com/system/resources/thumbnails/017/193/863/small/cube-purple-3d-png.png"
 				alt="Node"
-				height={48}
-				width={48}
+				height={30}
+				width={30}
 			/>
-			<p className="ml-5 font-medium">{node.node.url}</p>
+			<p className="ml-5 text-sm font-medium">{node.node.url}</p>
 			{node.alive ? (
 				<div className="relative mb-14">
 					<div className="live-animated"></div>

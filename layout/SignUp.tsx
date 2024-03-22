@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import { BN, EC, F } from '@common'
 import Login from '@components/Login'
@@ -6,7 +7,7 @@ import { constructDeviceFactor } from '@helpers/deviceFactor'
 import { addKey } from '@helpers/metadata'
 import { deriveNetworkFactor } from '@helpers/networkFactor'
 import { storeUser } from '@helpers/wallet'
-import { useAppDispatch } from '@store'
+import { RootState, useAppDispatch } from '@store'
 import * as actions from '@store/signUp/actions'
 import { TA } from '@types'
 
@@ -17,10 +18,15 @@ const SignUp = ({ idToken, info }: { idToken: string; info: TA.Info }) => {
 	const [confirm, setConfirm] = useState<boolean>(false)
 	const [networkFactor, setNetworkFactor] = useState<TA.Factor | undefined>()
 
+	const signUpReducer = useSelector((state: RootState) => state.signUpReducer)
+
 	// Stage 1: Derive Network Factor
 	useEffect(() => {
 		;(async () => {
-			if (!networkFactor) {
+			if (
+				!networkFactor &&
+				signUpReducer.data.networkFactorStep1.state?.length === 0
+			) {
 				const networkFactor: TA.Factor = (await deriveNetworkFactor(
 					idToken,
 					info.email,

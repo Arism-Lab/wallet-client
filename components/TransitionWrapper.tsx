@@ -26,25 +26,25 @@ const TransitionWrapper = ({
 }: Wrapper & { router: NextRouter }) => {
 	return (
 		<PageTransition
-			timeout={100}
-			classNames="page-transition"
-			monkeyPatchScrolling
-			loadingDelay={100}
-			loadingTimeout={{
-				enter: 500,
-				exit: 0,
-			}}
-			loadingClassNames="loading-indicator"
+		// timeout={100}
+		// classNames="page-transition"
+		// monkeyPatchScrolling
+		// loadingDelay={100}
+		// loadingTimeout={{
+		// 	enter: 500,
+		// 	exit: 0,
+		// }}
+		// loadingClassNames="loading-indicator"
 		>
-			<motion.div
+			{/* <motion.div
 				key={router.route}
 				initial="enter"
 				animate="enterActive"
 				exit="exit"
 				variants={transitionStyles}
-			>
-				{children}
-			</motion.div>
+			> */}
+			{children}
+			{/* </motion.div> */}
 		</PageTransition>
 	)
 }

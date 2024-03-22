@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+import { append } from '@libs/array'
 import * as actions from '@store/signInOauthAndPassword/actions'
 import { TA } from '@types'
 
@@ -91,10 +92,10 @@ export const signInOauthAndPassWord = createSlice({
             actions.emitNetWorkFactorStep1.fulfilled,
             (state, action) => {
                 if (Array.isArray(state.data.networkFactorStep1.state)) {
-                    state.data.networkFactorStep1.state = [
-                        ...state.data.networkFactorStep1.state,
-                        action.payload,
-                    ]
+                    state.data.networkFactorStep1.state = append(
+                        state.data.networkFactorStep1.state,
+                        action.payload
+                    )
                 }
                 state.loading = false
                 state.error = undefined
@@ -116,10 +117,10 @@ export const signInOauthAndPassWord = createSlice({
             actions.emitNetWorkFactorStep2.fulfilled,
             (state, action) => {
                 if (Array.isArray(state.data.networkFactorStep2.state)) {
-                    state.data.networkFactorStep2.state = [
-                        ...state.data.networkFactorStep2.state,
-                        action.payload,
-                    ]
+                    state.data.networkFactorStep2.state = append(
+                        state.data.networkFactorStep2.state,
+                        action.payload
+                    )
                 }
                 state.loading = false
                 state.error = undefined
@@ -141,10 +142,10 @@ export const signInOauthAndPassWord = createSlice({
             actions.emitNetWorkFactorStep3.fulfilled,
             (state, action) => {
                 if (Array.isArray(state.data.networkFactorStep3.state)) {
-                    state.data.networkFactorStep3.state = [
-                        ...state.data.networkFactorStep3.state,
-                        action.payload,
-                    ]
+                    state.data.networkFactorStep3.state = append(
+                        state.data.networkFactorStep3.state,
+                        action.payload
+                    )
                 }
                 state.loading = false
                 state.error = undefined
@@ -166,10 +167,10 @@ export const signInOauthAndPassWord = createSlice({
             actions.emitNetWorkFactorStep4.fulfilled,
             (state, action) => {
                 if (Array.isArray(state.data.networkFactorStep4.state)) {
-                    state.data.networkFactorStep4.state = [
-                        ...state.data.networkFactorStep4.state,
-                        action.payload,
-                    ]
+                    state.data.networkFactorStep4.state = append(
+                        state.data.networkFactorStep4.state,
+                        action.payload
+                    )
                 }
                 state.loading = false
                 state.error = undefined

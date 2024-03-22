@@ -23,9 +23,6 @@ const AccountCardSlider = () => {
 
 	return (
 		<div className="mx-auto grid gap-5">
-			<p className="font-extralight">
-				or continue with existed accounts on this device
-			</p>
 			<div
 				className="flex w-[90vw] gap-5 text-base transition-all duration-300 ease-in-out aria-expanded:gap-0"
 				aria-expanded={click !== null}

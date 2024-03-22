@@ -95,45 +95,45 @@ html {
     }
 }
 .live-dot {
-    width: 15px;
-    height: 15px;
+    width: 10px;
+    height: 10px;
     background-color: #62bd19;
     border-radius: 50%;
     position: absolute;
-    top: 20px;
-    left: 20px;
+    top: 25px;
+    left: 25px;
 }
 .live-animated {
-    border-radius: 30px;
+    border-radius: 25px;
     animation: pulsate 1s ease-out;
     animation-iteration-count: infinite;
-    border: 3px solid #62bd19;
+    border: 2px solid #62bd19;
     height: 25px;
     width: 25px;
     position: absolute;
-    left: 15px;
-    top: 15px;
+    left: 17px;
+    top: 17px;
     opacity: 0;
 }
 .dead-dot {
-    width: 15px;
-    height: 15px;
+    width: 10px;
+    height: 10px;
     background-color: #bd1919;
     border-radius: 50%;
     position: absolute;
-    top: 20px;
-    left: 20px;
+    top: 25px;
+    left: 25px;
 }
 .dead-animated {
-    border-radius: 30px;
+    border-radius: 25px;
     animation: pulsate 1s ease-out;
     animation-iteration-count: infinite;
-    border: 3px solid #bd1919;
+    border: 2px solid #bd1919;
     height: 25px;
     width: 25px;
     position: absolute;
-    left: 15px;
-    top: 15px;
+    left: 17px;
+    top: 17px;
     opacity: 0;
 }
 

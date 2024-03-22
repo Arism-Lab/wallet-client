@@ -41,7 +41,7 @@ const Settings = ({ title, description }: PageSEOProps) => {
 						name="password"
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
-						className="rounded-md border border-gray-300 p-2"
+						className="rounded-md border border-zinc-300 p-2"
 					/>
 					<button
 						onClick={handleSubmit}

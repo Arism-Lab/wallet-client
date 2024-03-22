@@ -171,11 +171,7 @@ export const deriveNetworkFactor = async (
         }
     }
 
-    console.log({ decryptedMasterShares })
-
     if (!networkKey) return
-
-    console.log({ networkKey: networkKey.toString(16) })
 
     await dispatch(actions.emitNetWorkFactorStep5(networkKey.toString(16)))
 

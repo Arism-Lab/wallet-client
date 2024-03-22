@@ -1,4 +1,9 @@
-import { formatKey } from '@libs/key'
+import { useState } from 'react'
+import { CiCircleChevRight } from 'react-icons/ci'
+import { FaDiceFive } from 'react-icons/fa'
+
+import { EC } from '@common'
+import { formatKey, validPrivateKey } from '@libs/key'
 import { TA } from '@types'
 
 const Loading = (): JSX.Element => {
@@ -42,10 +47,25 @@ const StepWrapper = ({
 	children: JSX.Element
 }): JSX.Element => {
 	const theme = {
-		previous: 'gray-800',
+		previous: 'zinc-800',
 		current: 'primary-800',
-		next: 'gray-500',
+		next: 'zinc-500',
 	}
+
+	const [pri, setPri] = useState<string>('')
+	const [pass, setPass] = useState<string>('')
+
+	const onSetPrivateKey = (key: string) => {
+		setPri(key)
+		setPrivateKey!(key)
+	}
+
+	const onSetPassword = (password: string) => {
+		setPass(password)
+		setPassword!(password)
+	}
+
+	const randomKey = EC.generatePrivateKey()
 
 	return (
 		<div className="flex h-[100px] w-full place-items-center justify-items-center">
@@ -62,36 +82,43 @@ const StepWrapper = ({
 					<div className="flex place-items-center justify-items-center gap-2">
 						<div className="w-[50px]">Pass</div>
 						<input
-							className="rounded-md border border-gray-300 px-2 py-[2px] text-sm font-medium"
+							className="rounded-md border border-zinc-300 px-2 py-[2px] text-sm font-medium"
 							type="password"
 							onChange={(e) => setPassword!(e.target.value)}
 						/>
 						<button
-							className="rounded-md border border-gray-300 px-2 py-[2px] text-sm font-medium"
+							className="rounded-md border border-zinc-300 px-2 py-[2px] text-sm font-medium"
 							onClick={() => setConfirm!(true)}
 						>
-							Confirm
+							<CiCircleChevRight />
 						</button>
 					</div>
 				)}
 				{process === 'current' && step.privateKeyInput && (
 					<div className="flex place-items-center justify-items-center gap-2">
 						<div className="w-[50px]">Key</div>
-						<input
-							className="w-[300px] rounded-md border border-gray-300 px-2 py-[2px] text-sm font-medium"
-							type="password"
-							onChange={(e) => setPrivateKey!(e.target.value)}
-						/>
-						<button
-							className="rounded-md border border-gray-300 px-2 py-[2px] text-sm font-medium"
+						<div className="w-[300px] rounded-md border border-zinc-300 px-2 py-[2px] text-sm font-medium">
+							<input
+								className="h-full w-full appearance-none border-none bg-transparent focus:outline-none"
+								type="text"
+								value={pri}
+								onChange={(e) => onSetPrivateKey(e.target.value)}
+							/>
+						</div>
+						<CiCircleChevRight
+							className="h-7 w-7 cursor-pointer text-primary-500 aria-disabled:pointer-events-none aria-disabled:text-zinc-500/50"
 							onClick={() => setConfirm!(true)}
-						>
-							Confirm
-						</button>
+							aria-disabled={!validPrivateKey(pri)}
+						/>
+						<p className="text-xs text-zinc-500">or</p>
+						<FaDiceFive
+							className="h-6 w-6 cursor-pointer text-primary-500"
+							onClick={() => onSetPrivateKey(randomKey)}
+						/>
 					</div>
 				)}
 				{Array.isArray(step.state) ? (
-					step.state.slice(0, 3).map((state, index) => {
+					step.state.map((state, index) => {
 						if (typeof state === 'string') {
 							return (
 								<div
@@ -99,7 +126,7 @@ const StepWrapper = ({
 									className="flex place-items-center justify-items-center gap-2"
 								>
 									<div className="w-[50px]">Key {index + 1} </div>
-									<span className="font-mono  cursor-pointer rounded-md border border-gray-300 px-3 py-[2px] text-sm font-medium opacity-80 hover:bg-gray-200">
+									<span className="font-mono  cursor-pointer rounded-md border border-zinc-300 px-3 py-[2px] text-sm font-medium opacity-80 hover:bg-zinc-200">
 										{formatKey(state, true)}
 									</span>
 								</div>
@@ -111,7 +138,7 @@ const StepWrapper = ({
 								className="flex place-items-center justify-items-center gap-2"
 							>
 								<div className="w-[50px]">Node {state.node} </div>
-								<span className="font-mono  cursor-pointer rounded-md border border-gray-300 px-2 py-[2px] text-sm font-medium opacity-80 hover:bg-gray-200">
+								<span className="font-mono  cursor-pointer rounded-md border border-zinc-300 px-2 py-[2px] text-sm font-medium opacity-80 hover:bg-zinc-200">
 									{formatKey(state.value, true)}
 								</span>
 							</div>
@@ -122,8 +149,8 @@ const StepWrapper = ({
 						<div className="w-[50px]">
 							{step.state && (step.state === 'success' ? 'Result' : 'Key')}
 						</div>
-						<span className="font-mono  cursor-pointer rounded-md border border-gray-300 px-2 py-[2px] text-sm font-medium opacity-80 hover:bg-gray-200">
-							{formatKey(step.state!, true)}
+						<span className="font-mono  cursor-pointer rounded-md border border-zinc-300 px-2 py-[2px] text-sm font-medium opacity-80 hover:bg-zinc-200">
+							{formatKey(step.state || '', true)}
 						</span>
 					</div>
 				)}
@@ -151,16 +178,16 @@ const PreviousStep = ({
 		<StepWrapper step={step} process="previous">
 			<div className="relative">
 				{isNextIndex && !isLastIndex && (
-					<div className="absolute inset-x-0 top-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-gradient-to-b from-gray-800 to-secondary-800"></div>
+					<div className="absolute inset-x-0 top-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-gradient-to-b from-zinc-800 to-secondary-800"></div>
 				)}
 				{!isLastIndex && (
-					<div className="absolute inset-x-0 top-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-gray-800"></div>
+					<div className="absolute inset-x-0 top-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-zinc-800"></div>
 				)}
 				{!isFirstIndex && (
-					<div className="absolute inset-x-0 bottom-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-gray-800"></div>
+					<div className="absolute inset-x-0 bottom-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-zinc-800"></div>
 				)}
 				<div className="z-0 mx-auto flex w-full items-center justify-center">
-					<span className="flex h-[30px] w-[30px] place-items-center justify-center rounded-full bg-gray-800 text-white">
+					<span className="flex h-[30px] w-[30px] place-items-center justify-center rounded-full bg-zinc-800 text-white">
 						{index + 1}
 					</span>
 				</div>
@@ -230,15 +257,15 @@ const NextStep = ({
 		<StepWrapper step={step} process="next">
 			<div className="relative">
 				{isNextIndex ? (
-					<div className="absolute inset-x-0 bottom-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-gradient-to-b from-primary-500 to-gray-500"></div>
+					<div className="absolute inset-x-0 bottom-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-gradient-to-b from-primary-500 to-zinc-500"></div>
 				) : (
-					<div className="absolute inset-x-0 bottom-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-gray-500"></div>
+					<div className="absolute inset-x-0 bottom-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-zinc-500"></div>
 				)}
 				{!isLastIndex && (
-					<div className="absolute inset-x-0 top-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-gray-500"></div>
+					<div className="absolute inset-x-0 top-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-zinc-500"></div>
 				)}
 				<div className="z-0 mx-auto flex w-full items-center justify-center">
-					<span className="flex h-[30px] w-[30px] place-items-center justify-center rounded-full bg-gray-500 text-white">
+					<span className="flex h-[30px] w-[30px] place-items-center justify-center rounded-full bg-zinc-500 text-white">
 						{index + 1}
 					</span>
 				</div>
@@ -263,8 +290,19 @@ const StepBar = ({
 	let currentIndex: number = Object.values(data).findIndex(
 		(step: TA.Step) => step.state === '' || step.state?.length === 0
 	)
+
 	if (currentIndex === -1) {
 		currentIndex = stepLength
+	} else if (currentIndex !== 0) {
+		const previousState = data[Object.keys(data)[currentIndex]].state - 1
+
+		if (Array.isArray(previousState)) {
+			if (typeof previousState[0] === 'string') {
+				currentIndex = stepLength - Number(previousState[0].length !== 2)
+			} else if (typeof previousState[0] === 'object') {
+				currentIndex = stepLength - Number(previousState[0].value.length !== 3)
+			}
+		}
 	}
 
 	return (
