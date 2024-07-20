@@ -1,10 +1,10 @@
-import { useRouter } from 'next/router'
-import React from 'react'
+'use client'
+
+import { useRouter } from 'next/navigation'
 import { MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md'
 
 import StepBar from '@components/StepBar'
 import { useAppSelector } from '@store'
-import { TA } from '@types'
 
 const Login = ({
 	method,
@@ -12,7 +12,7 @@ const Login = ({
 	setPrivateKey,
 	setPassword,
 }: {
-	method: TA.LoginMethod
+	method: LoginMethod
 	setConfirm?: React.Dispatch<React.SetStateAction<boolean>>
 	setPrivateKey?: React.Dispatch<React.SetStateAction<string>>
 	setPassword?: React.Dispatch<React.SetStateAction<string>>

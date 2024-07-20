@@ -1,3 +1,5 @@
+'use client'
+
 import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 import React, { useEffect, useState } from 'react'
@@ -6,33 +8,25 @@ import { BsTrash3 } from 'react-icons/bs'
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu'
 
 import Image from '@components/Image'
-import { getKeys } from '@helpers/metadata'
+import { getPrivateIndices } from '@helpers/metadata'
 import { checkMfa } from '@helpers/wallet'
 import { formatDate } from '@libs/date'
-import { useAppDispatch } from '@store'
-import { removeLocalUser } from '@store/localUsers/actions'
-import { TA } from '@types'
+import { removeLocalUser } from '@libs/local'
 
 type AccountCardProps = {
-	localUser: TA.LocalUser
+	localUser: LocalUser
 	click: () => void
 	hidden: boolean
 	focus: boolean
 }
 
-const AccountCard = ({
-	localUser,
-	click,
-	hidden,
-	focus,
-}: AccountCardProps): JSX.Element => {
-	const dispatch = useAppDispatch()
+const AccountCard = ({ localUser, click, hidden, focus }: AccountCardProps) => {
 	const router = useRouter()
 
 	const [removeConfirm, setRemoveConfirm] = useState(false)
 	const [password, setPassword] = useState('')
 	const [enabledMfa, setEnabledMfa] = useState(false)
-	const [keys, setKeys] = useState<TA.Key[]>([])
+	const [privateIndices, setPrivateIndices] = useState<PrivateIndex[]>([])
 
 	const expanded = focus && !hidden
 
@@ -41,8 +35,8 @@ const AccountCard = ({
 			const enabledMfa = await checkMfa(localUser.info.email)
 			setEnabledMfa(enabledMfa)
 
-			const keys = await getKeys(localUser.info.email)
-			setKeys(keys)
+			const privateIndices = await getPrivateIndices(localUser.info.email)
+			setPrivateIndices(privateIndices)
 		})()
 	}, [])
 
@@ -51,7 +45,7 @@ const AccountCard = ({
 	}, [expanded])
 
 	const removeAccount = () => {
-		dispatch(removeLocalUser(localUser.info.email))
+		removeLocalUser(localUser.info.email)
 	}
 
 	const handleGoogleSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -120,8 +114,8 @@ const AccountCard = ({
 						<hr className="h-full w-[0.5px] bg-zinc-300" />
 						<div className="flex flex-col text-center">
 							<p className="font-medium">
-								{keys.length} key{keys.length > 1 && 's'} associated to this
-								account
+								{privateIndices.length} key{privateIndices.length > 1 && 's'}{' '}
+								associated to this account
 							</p>
 							<p className="font-light text-zinc-500">
 								last login since {formatDate(localUser.lastLogin)}

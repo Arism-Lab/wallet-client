@@ -1,9 +1,6 @@
-import React from 'react'
-
 import Image from '@components/Image'
-import { TA } from '@types'
 
-const NodeCard = ({ node }: { node: { node: TA.Node; alive: boolean } }) => {
+const NodeCard = ({ node }: { node: { node: ArismNode; alive: boolean } }) => {
 	return (
 		<div className="flex select-none place-items-center rounded-2xl">
 			<Image

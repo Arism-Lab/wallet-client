@@ -1,10 +1,10 @@
+import { TA } from '@types'
 import { useState } from 'react'
 import { CiCircleChevRight } from 'react-icons/ci'
 import { FaDiceFive } from 'react-icons/fa'
 
-import { EC } from '@common'
-import { formatKey, validPrivateKey } from '@libs/key'
-import { TA } from '@types'
+import { C } from '@common'
+import { formatKey, validatePrivateKey } from '@libs/key'
 
 const Loading = (): JSX.Element => {
 	return (
@@ -65,7 +65,7 @@ const StepWrapper = ({
 		setPassword!(password)
 	}
 
-	const randomKey = EC.generatePrivateKey()
+	const randomKey = C.generatePrivateKey()
 
 	return (
 		<div className="flex h-[100px] w-full place-items-center justify-items-center">
@@ -108,7 +108,7 @@ const StepWrapper = ({
 						<CiCircleChevRight
 							className="h-7 w-7 cursor-pointer text-primary-500 aria-disabled:pointer-events-none aria-disabled:text-zinc-500/50"
 							onClick={() => setConfirm!(true)}
-							aria-disabled={!validPrivateKey(pri)}
+							aria-disabled={!validatePrivateKey(pri)}
 						/>
 						<p className="text-xs text-zinc-500">or</p>
 						<FaDiceFive

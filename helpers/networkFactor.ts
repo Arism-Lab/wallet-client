@@ -1,95 +1,156 @@
-import axios from 'axios'
-
-import { BN, C, EC, F, H, N } from '@common'
+import { BN, C, E, F, H, N } from '@common'
+import { fetcher } from '@libs/api'
 import {
     kCombinations,
     lagrangeInterpolation,
     thresholdSame,
 } from '@libs/arithmetic'
 import { AppDispatch } from '@store'
-import type { TA, TN } from '@types'
-
-const ping = async (url: string): Promise<boolean> => {
-    return await axios
-        .get(url)
-        .then((res) => res.data === 'pong!')
-        .catch(() => false)
-}
-
-export const getNodes = async (
-    dispatch?: AppDispatch,
-    actions?: any
-): Promise<TA.Node[]> => {
-    const nodes: TA.Node[] = []
-
-    for (let i = 0; i < N.NODES.length; i += 1) {
-        await ping(N.NODES[i].url).then((alive) => {
-            if (alive) {
-                nodes.push(N.NODES[i])
-            }
-        })
-
-        if (dispatch)
-            await dispatch(
-                actions.emitNetWorkFactorStep1({
-                    node: N.NODES[i].id,
-                    value: N.NODES[i].url,
-                })
-            )
-    }
-
-    if (N.NODES.length < N.DERIVATION_THRESHOLD)
-        throw new Error('Not enough Nodes')
-
-    return nodes
-}
 
 export const deriveNetworkFactor = async (
     idToken: string,
     user: string,
     dispatch: AppDispatch,
     actions: any
-): Promise<TA.Factor | undefined> => {
-    const nodes: TA.Node[] = await getNodes(dispatch, actions)
+): Promise<Point | undefined> => {
+    const nodes: ArismNode[] = await getNodes(user, dispatch, actions)
 
-    for (const { url } of nodes) {
-        try {
-            await axios.post<string>(`${url}/wallet`, { user })
-        } catch {}
+    const [tempPrivateKey, tempPublicKey] = E.generateKeyPair()
+    const tempCommitment: string = H.keccak256(idToken)
+
+    const commitments: CommitmentResponse[] = await getCommitments(
+        nodes,
+        tempCommitment,
+        tempPublicKey,
+        dispatch,
+        actions
+    )
+
+    const encryptedMasterShares: { id: number; value: SecretResponse }[] =
+        await getEncryptedMasterShares(
+            nodes,
+            user,
+            idToken,
+            tempPublicKey,
+            commitments,
+            dispatch,
+            actions
+        )
+
+    const decryptedMasterShares: Point[] = await getDecryptedMasterShares(
+        encryptedMasterShares,
+        tempPrivateKey,
+        dispatch,
+        actions
+    )
+
+    const networkKey: string = await getNetworkKey(
+        encryptedMasterShares,
+        decryptedMasterShares,
+        dispatch,
+        actions
+    )
+
+    const networkFactor: Point = { x: F.NETWORK_INDEX, y: networkKey }
+
+    return networkFactor
+}
+
+export const ping = async (url: string): Promise<boolean> => {
+    const res = await fetcher<string>('GET', url)
+        .then((res) => res === 'pong!')
+        .catch(() => false)
+
+    return res
+}
+
+const getNodes = async (
+    user: string,
+    dispatch: AppDispatch,
+    actions: any
+): Promise<ArismNode[]> => {
+    const nodes: ArismNode[] = []
+
+    await Promise.all(
+        N.NODES.map(async (node) => {
+            await ping(node.url).then(async (alive) => {
+                if (alive) {
+                    nodes.push(node)
+
+                    await dispatch(
+                        actions.emitNetWorkFactorStep1({
+                            node: node.id,
+                            value: node.url,
+                        })
+                    )
+                }
+            })
+        })
+    )
+
+    if (N.NODES.length < N.DERIVATION_THRESHOLD) {
+        throw new Error('Not enough Nodes')
     }
 
-    const tempPrivateKey = C.generatePrivateKey()
-    const tempPublicKey = C.getPublicKey(tempPrivateKey).toString('hex')
-    const tempCommitment = H.keccak256(idToken)
+    // TODO: Check if this is necessary
+    await Promise.allSettled(
+        nodes.map(
+            async ({ url }) => await fetcher('POST', `${url}/wallet`, { user })
+        )
+    )
 
-    const commitments: TN.CommitmentResponse[] = []
+    return nodes
+}
 
-    for (const { id, url } of nodes) {
-        try {
-            const { data: commitment } =
-                await axios.post<TN.CommitmentResponse>(`${url}/commitment`, {
-                    commitment: tempCommitment,
-                    tempPublicKey,
-                })
+const getCommitments = async (
+    nodes: ArismNode[],
+    tempCommitment: string,
+    tempPublicKey: string,
+    dispatch: AppDispatch,
+    actions: any
+): Promise<CommitmentResponse[]> => {
+    const commitments: CommitmentResponse[] = []
 
-            commitments.push(commitment)
+    await Promise.allSettled(
+        nodes.map(async ({ id, url }) => {
+            await fetcher<CommitmentResponse>('POST', `${url}/commitment`, {
+                commitment: tempCommitment,
+                tempPublicKey,
+            }).then(async (commitment) => {
+                commitments.push(commitment)
 
-            await dispatch(
-                actions.emitNetWorkFactorStep2({
-                    node: id,
-                    value: commitment.publicKey,
-                })
-            )
-        } catch {}
+                await dispatch(
+                    actions.emitNetWorkFactorStep2({
+                        node: id,
+                        value: commitment.publicKey,
+                    })
+                )
+            })
+        })
+    )
+
+    if (commitments.length < N.GENERATION_THRESHOLD) {
+        throw new Error('Not enough Commitments')
     }
 
-    if (commitments.length < N.GENERATION_THRESHOLD) return
+    return commitments
+}
 
-    const encryptedMasterShares: { value: TN.SecretResponse; id: number }[] = []
+const getEncryptedMasterShares = async (
+    nodes: ArismNode[],
+    user: string,
+    idToken: string,
+    tempPublicKey: string,
+    commitments: CommitmentResponse[],
+    dispatch: AppDispatch,
+    actions: any
+): Promise<{ id: number; value: SecretResponse }[]> => {
+    const encryptedMasterShares: { id: number; value: SecretResponse }[] = []
 
-    for (const { url, id } of nodes) {
-        try {
-            const { data: value } = await axios.post<TN.SecretResponse>(
+    await Promise.allSettled(
+        nodes.map(async ({ url, id }) => {
+            const value = await fetcher<SecretResponse>(
+                'POST',
                 `${url}/secret`,
                 {
                     commitments,
@@ -98,6 +159,7 @@ export const deriveNetworkFactor = async (
                     tempPublicKey,
                 }
             )
+
             encryptedMasterShares.push({ value, id })
 
             await dispatch(
@@ -106,77 +168,92 @@ export const deriveNetworkFactor = async (
                     value: BN.from(value.ciphertext).toString(16),
                 })
             )
-        } catch {}
+        })
+    )
+
+    if (encryptedMasterShares.length < N.DERIVATION_THRESHOLD) {
+        throw new Error('Not enough Master Shares')
     }
-    if (encryptedMasterShares.length < N.DERIVATION_THRESHOLD) return
+
+    return encryptedMasterShares
+}
+
+const getDecryptedMasterShares = async (
+    encryptedMasterShares: { id: number; value: SecretResponse }[],
+    tempPrivateKey: string,
+    dispatch: AppDispatch,
+    actions: any
+): Promise<Point[]> => {
+    const decryptedMasterShares: string[] = []
+
+    for (const { value } of encryptedMasterShares) {
+        const decryptedMasterShare: string = E.decrypt(
+            tempPrivateKey,
+            value.ciphertext
+        )
+        decryptedMasterShares.push(decryptedMasterShare)
+
+        await dispatch(
+            actions.emitNetWorkFactorStep4({
+                node: encryptedMasterShares.find(
+                    (e) => e.value.ciphertext === value.ciphertext
+                )!.id,
+                value: decryptedMasterShare,
+            })
+        )
+    }
+
+    const masterShares: Point[] = decryptedMasterShares.reduce(
+        (acc, curr, index) => {
+            if (curr)
+                acc.push({
+                    x: encryptedMasterShares[index].id.toString(16),
+                    y: curr,
+                })
+            return acc
+        },
+        [] as Point[]
+    )
+
+    return masterShares
+}
+
+const getNetworkKey = async (
+    encryptedMasterShares: { id: number; value: SecretResponse }[],
+    decryptedMasterShares: Point[],
+    dispatch: AppDispatch,
+    actions: any
+): Promise<string> => {
+    let networkKey: string | undefined
+
+    const allCombis = kCombinations(
+        decryptedMasterShares.length,
+        N.DERIVATION_THRESHOLD
+    )
 
     const thresholdPublicKey = thresholdSame(
         encryptedMasterShares.map((e) => e.value.publicKey),
         N.DERIVATION_THRESHOLD
     )
 
-    const decryptedMasterShares: Buffer[] = []
-
-    for (const {
-        value: {
-            metadata: { ephemPublicKey, iv, mac },
-            ciphertext,
-        },
-    } of encryptedMasterShares) {
-        const decryptedMasterShare: Buffer = await C.decrypt(tempPrivateKey, {
-            ephemPublicKey: Buffer.from(ephemPublicKey, 'hex'),
-            iv: Buffer.from(iv, 'hex'),
-            mac: Buffer.from(mac, 'hex'),
-            ciphertext: Buffer.from(ciphertext, 'hex'),
-        })
-        decryptedMasterShares.push(decryptedMasterShare)
-
-        await dispatch(
-            actions.emitNetWorkFactorStep4({
-                node: encryptedMasterShares.find(
-                    (e) => e.value.ciphertext === ciphertext
-                )!.id,
-                value: BN.from(decryptedMasterShare.toString(), 16).toString(
-                    16
-                ),
-            })
-        )
-    }
-
-    const masterShares: TA.Point[] = decryptedMasterShares.reduce(
-        (acc, curr, index) => {
-            if (curr)
-                acc.push({
-                    x: BN.from(encryptedMasterShares[index].id, 16),
-                    y: BN.from(curr.toString(), 16),
-                })
-            return acc
-        },
-        [] as TA.Point[]
-    )
-
-    let networkKey: BN | undefined = undefined
-    const allCombis = kCombinations(masterShares.length, N.DERIVATION_THRESHOLD)
-
     for (const combi of allCombis) {
-        const derivedPrivateKey = lagrangeInterpolation(
-            masterShares.filter((_, index) => combi.includes(index)),
-            BN.ZERO
+        const derivedPrivateKey: string = lagrangeInterpolation(
+            decryptedMasterShares.filter((_, index) => combi.includes(index)),
+            '0'
         )
 
-        const publicKey = EC.getPublicKeyFromPrivateKey(derivedPrivateKey)
+        const publicKey = C.getPublicKeyFromPrivateKey(derivedPrivateKey)
 
         if (thresholdPublicKey === publicKey) {
             networkKey = derivedPrivateKey
         }
     }
 
-    if (!networkKey) return
-
-    await dispatch(actions.emitNetWorkFactorStep5(networkKey.toString(16)))
-
-    return {
-        x: F.NETWORK_FACTOR_X,
-        y: networkKey,
+    if (!networkKey) {
+        throw new Error('Could not construct Network Key')
     }
+
+    await dispatch(actions.emitNetWorkFactorStep5(networkKey))
+
+    return networkKey
 }

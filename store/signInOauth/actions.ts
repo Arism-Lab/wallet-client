@@ -1,8 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
-import { TA } from '@types'
-
-export const emitNetWorkFactorStep1 = createAsyncThunk<any, TA.NodeState>(
+export const emitNetWorkFactorStep1 = createAsyncThunk<any, NodeState>(
     'signInOauth/emit/networkFactorStep1',
     async (payload, action) => {
         try {
@@ -13,7 +11,7 @@ export const emitNetWorkFactorStep1 = createAsyncThunk<any, TA.NodeState>(
     }
 )
 
-export const emitNetWorkFactorStep2 = createAsyncThunk<any, TA.NodeState>(
+export const emitNetWorkFactorStep2 = createAsyncThunk<any, NodeState>(
     'signInOauth/emit/networkFactorStep2',
     async (payload, action) => {
         try {
@@ -24,7 +22,7 @@ export const emitNetWorkFactorStep2 = createAsyncThunk<any, TA.NodeState>(
     }
 )
 
-export const emitNetWorkFactorStep3 = createAsyncThunk<any, TA.NodeState>(
+export const emitNetWorkFactorStep3 = createAsyncThunk<any, NodeState>(
     'signInOauth/emit/networkFactorStep3',
     async (payload, action) => {
         try {
@@ -35,7 +33,7 @@ export const emitNetWorkFactorStep3 = createAsyncThunk<any, TA.NodeState>(
     }
 )
 
-export const emitNetWorkFactorStep4 = createAsyncThunk<any, TA.NodeState>(
+export const emitNetWorkFactorStep4 = createAsyncThunk<any, NodeState>(
     'signInOauth/emit/networkFactorStep4',
     async (payload, action) => {
         try {

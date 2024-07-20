@@ -1,4 +1,6 @@
-import React, { useEffect } from 'react'
+'use client'
+
+import { useEffect } from 'react'
 
 import Login from '@components/Login'
 import {
@@ -7,24 +9,23 @@ import {
 } from '@helpers/privateFactor'
 import { deriveRecoveryFactor } from '@helpers/recoveryFactor'
 import { storeUser } from '@helpers/wallet'
-import { useAppDispatch, useAppSelector } from '@store'
+import { useAppDispatch } from '@store'
 import * as actions from '@store/signInPassword/actions'
-import { TA } from '@types'
 
 const SignInPassword = ({
 	password,
 	info,
+	localUsers,
 }: {
 	password: string
-	info: TA.Info
+	info: Info
+	localUsers: LocalUser[]
 }) => {
 	const dispatch = useAppDispatch()
 
-	const localUsersReducer = useAppSelector((state) => state.localUsersReducer)
-
 	useEffect(() => {
 		;(async () => {
-			const recoveryFactor: TA.Factor = await deriveRecoveryFactor(
+			const recoveryFactor: Point = await deriveRecoveryFactor(
 				info.email,
 				password
 			)
@@ -33,11 +34,11 @@ const SignInPassword = ({
 				actions.emitRecoveryFactorStep1(recoveryFactor.y.toString())
 			)
 
-			const deviceFactor: TA.Factor = localUsersReducer.data.find(
+			const deviceFactor: Point = localUsers.find(
 				(e) => e.info.email === info.email
 			)!.deviceFactor
 
-			const privateFactor: TA.Factor = constructPrivateFactor(
+			const privateFactor: Point = constructPrivateFactor(
 				recoveryFactor,
 				deviceFactor
 			)
@@ -52,11 +53,7 @@ const SignInPassword = ({
 			if (verified) {
 				const lastLogin = new Date().toISOString()
 
-				storeUser(
-					{ deviceFactor, info, lastLogin },
-					{ factor1: deviceFactor, factor2: recoveryFactor, info },
-					dispatch
-				)
+				await storeUser({ deviceFactor, info, lastLogin })
 
 				await dispatch(actions.emitVerifyStep('success'))
 			}

@@ -1,43 +1,38 @@
-import { BN, EC, F } from '@common'
-import { getKeys } from '@helpers/metadata'
+import { C, F } from '@common'
+import { getPrivateIndices } from '@helpers/metadata'
 import { lagrangeInterpolation } from '@libs/arithmetic'
-import { TA } from '@types'
 
 export const constructPrivateFactor = (
-    factor1: TA.Factor,
-    factor2: TA.Factor,
-    privateFactorX: BN = F.PRIVATE_FACTOR_X
-): TA.Factor => {
-    const privateKey = lagrangeInterpolation([factor1, factor2], privateFactorX)
-    const privateFactor: TA.Factor = {
-        x: privateFactorX,
-        y: privateKey,
-    }
+    factor1: Point,
+    factor2: Point,
+    privateIndex: string = F.PRIVATE_INDEX
+): Point => {
+    const privateKey = lagrangeInterpolation([factor1, factor2], privateIndex)
+    const privateFactor: Point = { x: privateIndex, y: privateKey }
 
     return privateFactor
 }
 
 export const verifyPrivateKey = async (
     user: string,
-    privateKey: BN
+    privateKey: string
 ): Promise<boolean> => {
-    const computedAddress: string = EC.getAddressFromPrivateKey(privateKey)
-
-    const keys: TA.Key[] = await getKeys(user)
+    const computedAddress: string = C.getAddressFromPrivateKey(privateKey)
+    const keys: Key[] = await getPrivateIndices(user)
 
     return keys.some((key) => key.address === computedAddress)
 }
 
 export const derivePrivateFactors = async (
-    session: TA.SessionUser
-): Promise<TA.Factor[]> => {
-    const keys: TA.Key[] = await getKeys(session.info.email)
+    session: SessionUser
+): Promise<Point[]> => {
+    const keys: Key[] = await getPrivateIndices(session.info.email)
 
     return keys.map((key) =>
         constructPrivateFactor(
             session.factor1,
             session.factor2,
-            BN.from(key.privateFactorX, 16)
+            key.privateIndex
         )
     )
 }

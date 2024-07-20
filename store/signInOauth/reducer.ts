@@ -2,10 +2,9 @@ import { createSlice } from '@reduxjs/toolkit'
 
 import { append } from '@libs/array'
 import * as actions from '@store/signInOauth/actions'
-import { TA } from '@types'
 
 const initialState: {
-    data: TA.SignInOauthSteps
+    data: SignInOauthSteps
     loading: boolean
     error: any
 } = {

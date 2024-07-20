@@ -1,22 +1,25 @@
-import React, { useEffect, useState } from 'react'
+'use client'
+
+import { useSession } from 'next-auth/react'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { BN, EC, F } from '@common'
+import { C, F } from '@common'
 import Login from '@components/Login'
 import { constructDeviceFactor } from '@helpers/deviceFactor'
-import { addKey } from '@helpers/metadata'
+import { addPrivateIndex } from '@helpers/metadata'
 import { deriveNetworkFactor } from '@helpers/networkFactor'
 import { storeUser } from '@helpers/wallet'
 import { RootState, useAppDispatch } from '@store'
 import * as actions from '@store/signUp/actions'
-import { TA } from '@types'
 
-const SignUp = ({ idToken, info }: { idToken: string; info: TA.Info }) => {
+const SignUp = ({ sessionUser }: { sessionUser: SessionUser }) => {
 	const dispatch = useAppDispatch()
+	const { update } = useSession()
 
 	const [privateKey, setPrivateKey] = useState<string>('')
 	const [confirm, setConfirm] = useState<boolean>(false)
-	const [networkFactor, setNetworkFactor] = useState<TA.Factor | undefined>()
+	const [networkFactor, setNetworkFactor] = useState<Point | undefined>()
 
 	const signUpReducer = useSelector((state: RootState) => state.signUpReducer)
 
@@ -27,9 +30,9 @@ const SignUp = ({ idToken, info }: { idToken: string; info: TA.Info }) => {
 				!networkFactor &&
 				signUpReducer.data.networkFactorStep1.state?.length === 0
 			) {
-				const networkFactor: TA.Factor = (await deriveNetworkFactor(
-					idToken,
-					info.email,
+				const networkFactor: Point = (await deriveNetworkFactor(
+					sessionUser.jwt.id_token,
+					sessionUser.info.email,
 					dispatch,
 					actions
 				))!
@@ -42,11 +45,9 @@ const SignUp = ({ idToken, info }: { idToken: string; info: TA.Info }) => {
 	useEffect(() => {
 		if (networkFactor && confirm) {
 			;(async () => {
-				const privateFactor: TA.Factor = {
-					x: F.PRIVATE_FACTOR_X,
-					y: privateKey
-						? BN.from(privateKey, 16)
-						: BN.from(EC.generatePrivateKey(), 16),
+				const privateFactor: Point = {
+					x: F.PRIVATE_INDEX,
+					y: privateKey ?? C.generatePrivateKey(),
 				}
 
 				await dispatch(
@@ -62,23 +63,17 @@ const SignUp = ({ idToken, info }: { idToken: string; info: TA.Info }) => {
 
 				const lastLogin = new Date().toISOString()
 
-				await addKey({
-					user: info.email,
-					key: {
-						address: EC.getAddressFromPrivateKey(privateFactor.y),
-						privateFactorX: privateFactor.x.toString(16),
-					},
+				await addPrivateIndex(sessionUser.info.email, {
+					address: C.getAddressFromPrivateKey(privateFactor.y),
+					index: privateFactor.x,
 				})
 
-				await storeUser(
-					{ deviceFactor, info, lastLogin },
-					{
-						factor1: networkFactor,
-						factor2: deviceFactor,
-						info,
-					},
-					dispatch
-				)
+				await update({
+					...sessionUser,
+					factor1: networkFactor,
+					factor2: deviceFactor,
+				})
+				await storeUser({ deviceFactor, info: sessionUser.info, lastLogin })
 
 				await dispatch(actions.emitVerifyStep('success'))
 			})()

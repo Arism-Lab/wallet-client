@@ -1,7 +1,6 @@
 import JsonStringify from 'json-stable-stringify'
 
-import { BN, EC } from '@common'
-import { TA } from '@types'
+import { BN, C } from '@common'
 
 export const thresholdSame = <T>(arr: T[], t: number): T | null => {
     const hashMap: Record<string, number> = {}
@@ -49,29 +48,35 @@ export const kCombinations = (s: number | number[], k: number): number[][] => {
     return combs
 }
 
-export const lagrangeInterpolation = (points: TA.Point[], x: BN): BN => {
-    let result = BN.ZERO
-    for (const { x: currentX, y: currentY } of points) {
+export const lagrangeInterpolation = (points: Point[], x: string): string => {
+    let result: BN = BN.ZERO
+    const correspondingX: BN = BN.from(x, 16)
+
+    for (const currentPoint of points) {
         let upper = BN.ONE
         let lower = BN.ONE
+        const currentX: BN = BN.from(currentPoint.x, 16)
+        const currentY: BN = BN.from(currentPoint.y, 16)
 
-        for (const { x: otherX } of points) {
-            if (!currentX.eq(otherX)) {
-                upper = upper.mul(x.sub(otherX)).umod(EC.ORDER)
+        for (const anotherPoint of points) {
+            const anotherX: BN = BN.from(anotherPoint.x, 16)
 
-                let diff = currentX.sub(otherX)
+            if (!currentX.eq(anotherX)) {
+                upper = upper.mul(correspondingX.sub(anotherX)).umod(C.ORDER)
 
-                diff = diff.umod(EC.ORDER)
-                lower = lower.mul(diff).umod(EC.ORDER)
+                let diff = currentX.sub(anotherX)
+
+                diff = diff.umod(C.ORDER)
+                lower = lower.mul(diff).umod(C.ORDER)
             }
         }
 
-        let delta = upper.mul(lower.invm(EC.ORDER)).umod(EC.ORDER)
-        delta = delta.mul(currentY).umod(EC.ORDER)
-        result = result.add(delta).umod(EC.ORDER)
+        let delta = upper.mul(lower.invm(C.ORDER)).umod(C.ORDER)
+        delta = delta.mul(currentY).umod(C.ORDER)
+        result = result.add(delta).umod(C.ORDER)
     }
 
-    return result
+    return result.toString('hex')
 }
 
 export const sumMod = (arr: string[], modulo: BN): string => {

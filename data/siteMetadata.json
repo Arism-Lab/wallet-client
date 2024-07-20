@@ -1,6 +1,6 @@
 {
     "title": "Arism Wallet",
-    "headerTitle": "Arism Wallet - The Hyper Wallet Protocol",
+    "headerTitle": "The Hyper Wallet Protocol",
     "description": "A Distributed Key and Identifier Management Protocol powered by Zero Knowledge",
     "language": "en-us",
     "locale": "en-US",
@@ -9,6 +9,38 @@
     "siteRepo": "https://github.com/Arism-Lab/arism-application",
     "siteLogo": "/static/logo.png",
     "siteBanner": "/static/banner.png",
+    "internalLinks": [
+        {
+            "title": "Dashboard",
+            "path": "/dashboard",
+            "description": "View your wallet general information"
+        },
+        {
+            "title": "DIDs",
+            "path": "/dids",
+            "description": "Manage your Decentralized Identifiers"
+        },
+        {
+            "title": "Keys",
+            "path": "/keys",
+            "description": "Manage keys associated with your account"
+        },
+        {
+            "title": "Devices",
+            "path": "/devices",
+            "description": "Manage your shares and devices for each key"
+        },
+        {
+            "title": "Transactions",
+            "path": "/transactions",
+            "description": "View your transaction history"
+        },
+        {
+            "title": "Settings",
+            "path": "/settings",
+            "description": "Account preferences and 2FA settings"
+        }
+    ],
     "externalLinks": [
         {
             "name": "Homepage",

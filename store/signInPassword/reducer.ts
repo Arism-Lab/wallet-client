@@ -1,10 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 import * as actions from '@store/signInPassword/actions'
-import { TA } from '@types'
 
 const initialState: {
-    data: TA.SignInPasswordSteps
+    data: SignInPasswordSteps
     loading: boolean
     error: any
 } = {
