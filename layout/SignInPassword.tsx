@@ -10,7 +10,7 @@ import {
 import { deriveRecoveryFactor } from '@helpers/recoveryFactor'
 import { storeUser } from '@helpers/wallet'
 import { useAppDispatch } from '@store'
-import * as actions from '@store/signInPassword/actions'
+import * as signInPassword from '@store/signInPassword/actions'
 
 const SignInPassword = ({
 	password,
@@ -30,9 +30,7 @@ const SignInPassword = ({
 				password
 			)
 
-			await dispatch(
-				actions.emitRecoveryFactorStep1(recoveryFactor.y.toString())
-			)
+			await dispatch(signInPassword.emitStep1(recoveryFactor.y.toString()))
 
 			const deviceFactor: Point = localUsers.find(
 				(e) => e.info.email === info.email
@@ -43,7 +41,7 @@ const SignInPassword = ({
 				deviceFactor
 			)
 			await dispatch(
-				actions.emitRecoveryFactorStep2([
+				signInPassword.emitStep2([
 					privateFactor.y.toString(),
 					deviceFactor.y.toString(),
 				])
@@ -55,7 +53,7 @@ const SignInPassword = ({
 
 				await storeUser({ deviceFactor, info, lastLogin })
 
-				await dispatch(actions.emitVerifyStep('success'))
+				await dispatch(signInPassword.emitStep3('success'))
 			}
 		})()
 	}, [])

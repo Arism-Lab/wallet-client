@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
-export const emitRecoveryFactorStep1 = createAsyncThunk<any, string>(
-    'signInPassword/emit/recoveryFactorStep1',
+export const emitStep1 = createAsyncThunk<any, string>(
+    'signInPassword/emit/emitStep1',
     async (payload, action) => {
         try {
             return action.fulfillWithValue(payload)
@@ -11,8 +11,8 @@ export const emitRecoveryFactorStep1 = createAsyncThunk<any, string>(
     }
 )
 
-export const emitRecoveryFactorStep2 = createAsyncThunk<any, string[]>(
-    'signInPassword/emit/recoveryFactorStep2',
+export const emitStep2 = createAsyncThunk<any, string[]>(
+    'signInPassword/emit/step2',
     async (payload, action) => {
         try {
             return action.fulfillWithValue(payload)
@@ -22,8 +22,8 @@ export const emitRecoveryFactorStep2 = createAsyncThunk<any, string[]>(
     }
 )
 
-export const emitVerifyStep = createAsyncThunk<any, string>(
-    'signInPassword/emit/verifyStep',
+export const emitStep3 = createAsyncThunk<any, string>(
+    'signInPassword/emit/step3',
     async (payload, action) => {
         try {
             return action.fulfillWithValue(payload)

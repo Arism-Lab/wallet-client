@@ -11,7 +11,8 @@ import { addPrivateIndex } from '@helpers/metadata'
 import { deriveNetworkFactor } from '@helpers/networkFactor'
 import { storeUser } from '@helpers/wallet'
 import { RootState, useAppDispatch } from '@store'
-import * as actions from '@store/signUp/actions'
+import * as networkFactorActions from '@store/networkFactor/actions'
+import * as signUpActions from '@store/signUp/actions'
 
 const SignUp = ({ sessionUser }: { sessionUser: SessionUser }) => {
 	const dispatch = useAppDispatch()
@@ -20,64 +21,58 @@ const SignUp = ({ sessionUser }: { sessionUser: SessionUser }) => {
 	const [privateKey, setPrivateKey] = useState<string>('')
 	const [confirm, setConfirm] = useState<boolean>(false)
 	const [networkFactor, setNetworkFactor] = useState<Point | undefined>()
-
-	const signUpReducer = useSelector((state: RootState) => state.signUpReducer)
+	const signUpSteps: SignUpSteps = useSelector(
+		(state: RootState) => state.signUpReducer
+	).data
 
 	// Stage 1: Derive Network Factor
 	useEffect(() => {
+		if (networkFactor || signUpSteps.step1.state.length !== 0) return
 		;(async () => {
-			if (
-				!networkFactor &&
-				signUpReducer.data.networkFactorStep1.state?.length === 0
-			) {
-				const networkFactor: Point = (await deriveNetworkFactor(
-					sessionUser.jwt.id_token,
-					sessionUser.info.email,
-					dispatch,
-					actions
-				))!
-				setNetworkFactor(networkFactor)
-			}
+			const factor: Point = (await deriveNetworkFactor(
+				sessionUser.jwt.id_token,
+				sessionUser.info.email,
+				dispatch,
+				networkFactorActions
+			))!
+			setNetworkFactor(factor)
 		})()
 	}, [])
 
 	// Stage 2: Derive other Factors
 	useEffect(() => {
-		if (networkFactor && confirm) {
-			;(async () => {
-				const privateFactor: Point = {
-					x: F.PRIVATE_INDEX,
-					y: privateKey ?? C.generatePrivateKey(),
-				}
+		if (!networkFactor || !confirm) return
+		;(async () => {
+			const privateFactor: Point = {
+				x: F.PRIVATE_INDEX,
+				y: privateKey ?? C.generatePrivateKey(),
+			}
 
-				await dispatch(
-					actions.emitPrivateFactorStep1(privateFactor.y.toString())
-				)
+			await dispatch(signUpActions.emitStep1(privateFactor.y.toString()))
 
-				const deviceFactor = await constructDeviceFactor(
-					privateFactor,
-					networkFactor
-				)
+			const deviceFactor = await constructDeviceFactor(
+				privateFactor,
+				networkFactor
+			)
 
-				await dispatch(actions.emitDeviceFactorStep1(deviceFactor.y.toString()))
+			await dispatch(signUpActions.emitStep2(deviceFactor.y.toString()))
 
-				const lastLogin = new Date().toISOString()
+			const lastLogin = new Date().toISOString()
 
-				await addPrivateIndex(sessionUser.info.email, {
-					address: C.getAddressFromPrivateKey(privateFactor.y),
-					index: privateFactor.x,
-				})
+			await addPrivateIndex(sessionUser.info.email, {
+				address: C.getAddressFromPrivateKey(privateFactor.y),
+				index: privateFactor.x,
+			})
 
-				await update({
-					...sessionUser,
-					factor1: networkFactor,
-					factor2: deviceFactor,
-				})
-				await storeUser({ deviceFactor, info: sessionUser.info, lastLogin })
+			await update({
+				...sessionUser,
+				factor1: networkFactor,
+				factor2: deviceFactor,
+			})
+			await storeUser({ deviceFactor, info: sessionUser.info, lastLogin })
 
-				await dispatch(actions.emitVerifyStep('success'))
-			})()
-		}
+			await dispatch(signUpActions.emitStep3('success'))
+		})()
 	}, [networkFactor, confirm])
 
 	return (

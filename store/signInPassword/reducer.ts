@@ -8,7 +8,7 @@ const initialState: {
     error: any
 } = {
     data: {
-        recoveryFactorStep1: {
+        step1: {
             instruction: {
                 name: 'Reconstructing Recovery Key',
                 description:
@@ -17,7 +17,7 @@ const initialState: {
             state: '',
             passwordInput: true,
         },
-        recoveryFactorStep2: {
+        step2: {
             instruction: {
                 name: 'Deriving Private Key',
                 description:
@@ -25,7 +25,7 @@ const initialState: {
             },
             state: [],
         },
-        verifyStep: {
+        step3: {
             instruction: {
                 name: 'Verifying & Storing Metadata',
                 description:
@@ -44,55 +44,43 @@ export const signInPassword = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         // Recovery Factor step 1 methods
-        builder.addCase(actions.emitRecoveryFactorStep1.pending, (state) => {
+        builder.addCase(actions.emitStep1.pending, (state) => {
             state.loading = true
         })
-        builder.addCase(
-            actions.emitRecoveryFactorStep1.fulfilled,
-            (state, action) => {
-                state.data.recoveryFactorStep1.state = action.payload
-                state.loading = false
-                state.error = undefined
-            }
-        )
-        builder.addCase(
-            actions.emitRecoveryFactorStep1.rejected,
-            (state, action) => {
-                state.error = action.payload
-                state.loading = false
-            }
-        )
-
-        // Recovery Factor step 2 methods
-        builder.addCase(actions.emitRecoveryFactorStep2.pending, (state) => {
-            state.loading = true
-        })
-        builder.addCase(
-            actions.emitRecoveryFactorStep2.fulfilled,
-            (state, action) => {
-                state.data.recoveryFactorStep2.state = action.payload
-                state.loading = false
-                state.error = undefined
-            }
-        )
-        builder.addCase(
-            actions.emitRecoveryFactorStep2.rejected,
-            (state, action) => {
-                state.error = action.payload
-                state.loading = false
-            }
-        )
-
-        // Verify storage step methods
-        builder.addCase(actions.emitVerifyStep.pending, (state) => {
-            state.loading = true
-        })
-        builder.addCase(actions.emitVerifyStep.fulfilled, (state, action) => {
-            state.data.verifyStep.state = action.payload
+        builder.addCase(actions.emitStep1.fulfilled, (state, action) => {
+            state.data.step1.state = action.payload
             state.loading = false
             state.error = undefined
         })
-        builder.addCase(actions.emitVerifyStep.rejected, (state, action) => {
+        builder.addCase(actions.emitStep1.rejected, (state, action) => {
+            state.error = action.payload
+            state.loading = false
+        })
+
+        // Recovery Factor step 2 methods
+        builder.addCase(actions.emitStep2.pending, (state) => {
+            state.loading = true
+        })
+        builder.addCase(actions.emitStep2.fulfilled, (state, action) => {
+            state.data.step2.state = action.payload
+            state.loading = false
+            state.error = undefined
+        })
+        builder.addCase(actions.emitStep2.rejected, (state, action) => {
+            state.error = action.payload
+            state.loading = false
+        })
+
+        // Verify storage step methods
+        builder.addCase(actions.emitStep3.pending, (state) => {
+            state.loading = true
+        })
+        builder.addCase(actions.emitStep3.fulfilled, (state, action) => {
+            state.data.step3.state = action.payload
+            state.loading = false
+            state.error = undefined
+        })
+        builder.addCase(actions.emitStep3.rejected, (state, action) => {
             state.error = action.payload
             state.loading = false
         })

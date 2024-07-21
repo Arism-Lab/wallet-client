@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-import { append } from '@libs/array'
 import * as actions from '@store/signInOauthAndPassword/actions'
 
 const initialState: {
@@ -9,46 +8,7 @@ const initialState: {
     error: any
 } = {
     data: {
-        networkFactorStep1: {
-            instruction: {
-                name: 'Checking Mainnet Status',
-                description: 'Pinging to Validation Nodes to check the Mainnet',
-            },
-            state: [],
-        },
-        networkFactorStep2: {
-            instruction: {
-                name: 'Making Commitments',
-                description:
-                    'Making Application Commitments from the Application to the Mainnet to encrypt their Master Shares',
-            },
-            state: [],
-        },
-        networkFactorStep3: {
-            instruction: {
-                name: 'Deriving Master Shares',
-                description:
-                    'Deriving encrypted Master Shares from the Mainnet to the Application',
-            },
-            state: [],
-        },
-        networkFactorStep4: {
-            instruction: {
-                name: 'Decrypting Master Shares',
-                description:
-                    'Decrypting derived Master Shares on the Application',
-            },
-            state: [],
-        },
-        networkFactorStep5: {
-            instruction: {
-                name: 'Reconstructing Network Key',
-                description:
-                    'Reconstructing Network Factor by the decrypted Master Shares on the Application',
-            },
-            state: '',
-        },
-        recoveryFactorStep1: {
+        step1: {
             instruction: {
                 name: 'Reconstructing Recovery Key',
                 description:
@@ -57,7 +17,7 @@ const initialState: {
             state: '',
             passwordInput: true,
         },
-        recoveryFactorStep2: {
+        step2: {
             instruction: {
                 name: 'Deriving Factors',
                 description:
@@ -65,7 +25,7 @@ const initialState: {
             },
             state: [],
         },
-        verifyStep: {
+        step3: {
             instruction: {
                 name: 'Verifying & Storing Metadata',
                 description:
@@ -83,176 +43,44 @@ export const signInOauthAndPassWord = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
-        // Network Factor step 1 methods
-        builder.addCase(actions.emitNetWorkFactorStep1.pending, (state) => {
-            state.loading = true
-        })
-        builder.addCase(
-            actions.emitNetWorkFactorStep1.fulfilled,
-            (state, action) => {
-                if (Array.isArray(state.data.networkFactorStep1.state)) {
-                    state.data.networkFactorStep1.state = append(
-                        state.data.networkFactorStep1.state,
-                        action.payload
-                    )
-                }
-                state.loading = false
-                state.error = undefined
-            }
-        )
-        builder.addCase(
-            actions.emitNetWorkFactorStep1.rejected,
-            (state, action) => {
-                state.error = action.payload
-                state.loading = false
-            }
-        )
-
-        // Network Factor step 2 methods
-        builder.addCase(actions.emitNetWorkFactorStep2.pending, (state) => {
-            state.loading = true
-        })
-        builder.addCase(
-            actions.emitNetWorkFactorStep2.fulfilled,
-            (state, action) => {
-                if (Array.isArray(state.data.networkFactorStep2.state)) {
-                    state.data.networkFactorStep2.state = append(
-                        state.data.networkFactorStep2.state,
-                        action.payload
-                    )
-                }
-                state.loading = false
-                state.error = undefined
-            }
-        )
-        builder.addCase(
-            actions.emitNetWorkFactorStep2.rejected,
-            (state, action) => {
-                state.error = action.payload
-                state.loading = false
-            }
-        )
-
-        // Network Factor step 3 methods
-        builder.addCase(actions.emitNetWorkFactorStep3.pending, (state) => {
-            state.loading = true
-        })
-        builder.addCase(
-            actions.emitNetWorkFactorStep3.fulfilled,
-            (state, action) => {
-                if (Array.isArray(state.data.networkFactorStep3.state)) {
-                    state.data.networkFactorStep3.state = append(
-                        state.data.networkFactorStep3.state,
-                        action.payload
-                    )
-                }
-                state.loading = false
-                state.error = undefined
-            }
-        )
-        builder.addCase(
-            actions.emitNetWorkFactorStep3.rejected,
-            (state, action) => {
-                state.error = action.payload
-                state.loading = false
-            }
-        )
-
-        // Network Factor step 4 methods
-        builder.addCase(actions.emitNetWorkFactorStep4.pending, (state) => {
-            state.loading = true
-        })
-        builder.addCase(
-            actions.emitNetWorkFactorStep4.fulfilled,
-            (state, action) => {
-                if (Array.isArray(state.data.networkFactorStep4.state)) {
-                    state.data.networkFactorStep4.state = append(
-                        state.data.networkFactorStep4.state,
-                        action.payload
-                    )
-                }
-                state.loading = false
-                state.error = undefined
-            }
-        )
-        builder.addCase(
-            actions.emitNetWorkFactorStep4.rejected,
-            (state, action) => {
-                state.error = action.payload
-                state.loading = false
-            }
-        )
-
-        // Network Factor step 5 methods
-        builder.addCase(actions.emitNetWorkFactorStep5.pending, (state) => {
-            state.loading = true
-        })
-        builder.addCase(
-            actions.emitNetWorkFactorStep5.fulfilled,
-            (state, action) => {
-                state.data.networkFactorStep5.state = action.payload
-                state.loading = false
-                state.error = undefined
-            }
-        )
-        builder.addCase(
-            actions.emitNetWorkFactorStep5.rejected,
-            (state, action) => {
-                state.error = action.payload
-                state.loading = false
-            }
-        )
-
         // Recovery Factor step 1 methods
-        builder.addCase(actions.emitRecoveryFactorStep1.pending, (state) => {
+        builder.addCase(actions.emitStep1.pending, (state) => {
             state.loading = true
         })
-        builder.addCase(
-            actions.emitRecoveryFactorStep1.fulfilled,
-            (state, action) => {
-                state.data.recoveryFactorStep1.state = action.payload
-                state.loading = false
-                state.error = undefined
-            }
-        )
-        builder.addCase(
-            actions.emitRecoveryFactorStep1.rejected,
-            (state, action) => {
-                state.error = action.payload
-                state.loading = false
-            }
-        )
-
-        // Recovery Factor step 2 methods
-        builder.addCase(actions.emitRecoveryFactorStep2.pending, (state) => {
-            state.loading = true
-        })
-        builder.addCase(
-            actions.emitRecoveryFactorStep2.fulfilled,
-            (state, action) => {
-                state.data.recoveryFactorStep2.state = action.payload
-                state.loading = false
-                state.error = undefined
-            }
-        )
-        builder.addCase(
-            actions.emitRecoveryFactorStep2.rejected,
-            (state, action) => {
-                state.error = action.payload
-                state.loading = false
-            }
-        )
-
-        // Verify storage step methods
-        builder.addCase(actions.emitVerifyStep.pending, (state) => {
-            state.loading = true
-        })
-        builder.addCase(actions.emitVerifyStep.fulfilled, (state, action) => {
-            state.data.verifyStep.state = action.payload
+        builder.addCase(actions.emitStep1.fulfilled, (state, action) => {
+            state.data.step1.state = action.payload
             state.loading = false
             state.error = undefined
         })
-        builder.addCase(actions.emitVerifyStep.rejected, (state, action) => {
+        builder.addCase(actions.emitStep1.rejected, (state, action) => {
+            state.error = action.payload
+            state.loading = false
+        })
+
+        // Recovery Factor step 2 methods
+        builder.addCase(actions.emitStep2.pending, (state) => {
+            state.loading = true
+        })
+        builder.addCase(actions.emitStep2.fulfilled, (state, action) => {
+            state.data.step2.state = action.payload
+            state.loading = false
+            state.error = undefined
+        })
+        builder.addCase(actions.emitStep2.rejected, (state, action) => {
+            state.error = action.payload
+            state.loading = false
+        })
+
+        // Verify storage step methods
+        builder.addCase(actions.emitStep3.pending, (state) => {
+            state.loading = true
+        })
+        builder.addCase(actions.emitStep3.fulfilled, (state, action) => {
+            state.data.step3.state = action.payload
+            state.loading = false
+            state.error = undefined
+        })
+        builder.addCase(actions.emitStep3.rejected, (state, action) => {
             state.error = action.payload
             state.loading = false
         })

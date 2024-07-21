@@ -10,7 +10,8 @@ import { verifyPrivateKey } from '@helpers/privateFactor'
 import { deriveRecoveryFactor } from '@helpers/recoveryFactor'
 import { storeUser } from '@helpers/wallet'
 import { useAppDispatch } from '@store'
-import { signInOauthAndPasswordActions as actions } from '@store/actions'
+import * as networkFactorActions from '@store/networkFactor/actions'
+import * as signInOauthAndPasswordActions from '@store/signInOauthAndPassword/actions'
 
 const SignInOauthAndPassword = ({
 	sessionUser,
@@ -31,7 +32,7 @@ const SignInOauthAndPassword = ({
 				sessionUser.jwt.id_token,
 				sessionUser.info.email,
 				dispatch,
-				actions
+				networkFactorActions
 			))!
 			setNetworkFactor(networkFactor)
 		})()
@@ -46,13 +47,18 @@ const SignInOauthAndPassword = ({
 					password
 				)
 
-				await dispatch(actions.emitRecoveryFactorStep1(recoveryFactor.y))
+				await dispatch(
+					signInOauthAndPasswordActions.emitStep1(recoveryFactor.y)
+				)
 
 				const { privateFactor, deviceFactor } =
 					await constructDeviceFactorNewDevice(recoveryFactor, networkFactor)
 
 				await dispatch(
-					actions.emitRecoveryFactorStep2([privateFactor.y, deviceFactor.y])
+					signInOauthAndPasswordActions.emitStep2([
+						privateFactor.y,
+						deviceFactor.y,
+					])
 				)
 
 				const verifiedPrivateKey = await verifyPrivateKey(
@@ -70,7 +76,7 @@ const SignInOauthAndPassword = ({
 					})
 					await storeUser({ deviceFactor, info: sessionUser.info, lastLogin })
 
-					await dispatch(actions.emitVerifyStep('success'))
+					await dispatch(signInOauthAndPasswordActions.emitStep3('success'))
 				}
 			})()
 		}

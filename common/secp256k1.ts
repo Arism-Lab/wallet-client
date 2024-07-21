@@ -43,6 +43,28 @@ export const getAddressFromPrivateKey = (privateKey: string): string => {
     return toChecksumAddress(lowercaseAddress)
 }
 
+export const getAddressFromPublicKey = (publicKey: string): string => {
+    const formatedPublicKey = publicKey.slice(2)
+    const publicKeyBytes = Buffer.from(formatedPublicKey, 'hex')
+
+    const hash = H.keccak256(publicKeyBytes)
+    const address = hash.slice(-40)
+
+    const hashAddress = H.keccak256(address).slice(2)
+
+    let checksumAddress = '0x'
+
+    for (let i = 0; i < address.length; i++) {
+        if (parseInt(hashAddress[i], 16) >= 8) {
+            checksumAddress += address[i].toUpperCase()
+        } else {
+            checksumAddress += address[i]
+        }
+    }
+
+    return checksumAddress
+}
+
 // export const ellipticAddition = (p1: Point, p2: Point): Point => {
 //     const p1CurvePoint = secp256k1.curve.point(p1.x, p1.y)
 //     const p2CurvePoint = secp256k1.curve.point(p2.x, p2.y)

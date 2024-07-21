@@ -11,7 +11,8 @@ import {
 } from '@helpers/privateFactor'
 import { storeUser } from '@helpers/wallet'
 import { useAppDispatch } from '@store'
-import { signInOauthActions as actions } from '@store/actions'
+import * as networkFactorActions from '@store/networkFactor/actions'
+import * as signInOauthActions from '@store/signInOauth/actions'
 
 const SignInOauth = ({
 	sessionUser,
@@ -30,21 +31,21 @@ const SignInOauth = ({
 					sessionUser.jwt.id_token,
 					sessionUser.info.email,
 					dispatch,
-					actions
+					networkFactorActions
 				))!
 
 				const deviceFactor: Point = localUsers.find(
 					(e) => e.info.email === sessionUser.info.email
 				)!.deviceFactor
 
-				await dispatch(actions.emitDeviceFactorStep1(deviceFactor.y))
+				await dispatch(signInOauthActions.emitStep1(deviceFactor.y))
 
 				const privateFactor: Point = constructPrivateFactor(
 					networkFactor,
 					deviceFactor
 				)
 
-				await dispatch(actions.emitPrivateFactorStep1(privateFactor.y))
+				await dispatch(signInOauthActions.emitStep2(privateFactor.y))
 
 				const verifiedPrivateKey = await verifyPrivateKey(
 					sessionUser.info.email,
@@ -60,7 +61,7 @@ const SignInOauth = ({
 					})
 					await storeUser({ deviceFactor, info: sessionUser.info, lastLogin })
 
-					await dispatch(actions.emitVerifyStep('success'))
+					await dispatch(signInOauthActions.emitStep3('success'))
 				}
 			} catch (error) {}
 		})()

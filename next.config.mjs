@@ -4,6 +4,7 @@ const nextConfig = {
     devIndicators: {
         buildActivity: false,
     },
+    reactStrictMode: false,
     images: {
         formats: ['image/avif', 'image/webp'],
         remotePatterns: [
@@ -27,7 +28,6 @@ const nextConfig = {
     async headers() {
         return [
             {
-                // matching all API routes
                 source: '/api/:path*',
                 headers: [
                     { key: 'Access-Control-Allow-Credentials', value: 'true' },

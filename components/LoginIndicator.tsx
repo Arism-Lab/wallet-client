@@ -17,7 +17,7 @@ import { store } from '@store'
 
 const LoginIndicator = ({ keys, password, sessionUser }) => {
 	const localUsers: LocalUser[] = getLocalUsers()
-	const [method, setMethod] = useState<string>('')
+	const [method, setMethod] = useState<LoginMethod | string>('')
 
 	useEffect(() => {
 		;(async () => {

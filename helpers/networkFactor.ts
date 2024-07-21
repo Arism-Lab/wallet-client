@@ -6,12 +6,13 @@ import {
     thresholdSame,
 } from '@libs/arithmetic'
 import { AppDispatch } from '@store'
+import * as networkFactorActions from '@store/networkFactor/actions'
 
 export const deriveNetworkFactor = async (
     idToken: string,
     user: string,
     dispatch: AppDispatch,
-    actions: any
+    actions: typeof networkFactorActions
 ): Promise<Point | undefined> => {
     const nodes: ArismNode[] = await getNodes(user, dispatch, actions)
 
@@ -67,7 +68,7 @@ export const ping = async (url: string): Promise<boolean> => {
 const getNodes = async (
     user: string,
     dispatch: AppDispatch,
-    actions: any
+    actions: typeof networkFactorActions
 ): Promise<ArismNode[]> => {
     const nodes: ArismNode[] = []
 
@@ -78,10 +79,7 @@ const getNodes = async (
                     nodes.push(node)
 
                     await dispatch(
-                        actions.emitNetWorkFactorStep1({
-                            node: node.id,
-                            value: node.url,
-                        })
+                        actions.emitStep1({ node: node.id, value: node.url })
                     )
                 }
             })
@@ -107,7 +105,7 @@ const getCommitments = async (
     tempCommitment: string,
     tempPublicKey: string,
     dispatch: AppDispatch,
-    actions: any
+    actions: typeof networkFactorActions
 ): Promise<CommitmentResponse[]> => {
     const commitments: CommitmentResponse[] = []
 
@@ -120,10 +118,7 @@ const getCommitments = async (
                 commitments.push(commitment)
 
                 await dispatch(
-                    actions.emitNetWorkFactorStep2({
-                        node: id,
-                        value: commitment.publicKey,
-                    })
+                    actions.emitStep2({ node: id, value: commitment.publicKey })
                 )
             })
         })
@@ -143,7 +138,7 @@ const getEncryptedMasterShares = async (
     tempPublicKey: string,
     commitments: CommitmentResponse[],
     dispatch: AppDispatch,
-    actions: any
+    actions: typeof networkFactorActions
 ): Promise<{ id: number; value: SecretResponse }[]> => {
     const encryptedMasterShares: { id: number; value: SecretResponse }[] = []
 
@@ -152,18 +147,13 @@ const getEncryptedMasterShares = async (
             const value = await fetcher<SecretResponse>(
                 'POST',
                 `${url}/secret`,
-                {
-                    commitments,
-                    user,
-                    idToken,
-                    tempPublicKey,
-                }
+                { commitments, user, idToken, tempPublicKey }
             )
 
             encryptedMasterShares.push({ value, id })
 
             await dispatch(
-                actions.emitNetWorkFactorStep3({
+                actions.emitStep3({
                     node: id,
                     value: BN.from(value.ciphertext).toString(16),
                 })
@@ -182,7 +172,7 @@ const getDecryptedMasterShares = async (
     encryptedMasterShares: { id: number; value: SecretResponse }[],
     tempPrivateKey: string,
     dispatch: AppDispatch,
-    actions: any
+    actions: typeof networkFactorActions
 ): Promise<Point[]> => {
     const decryptedMasterShares: string[] = []
 
@@ -194,7 +184,7 @@ const getDecryptedMasterShares = async (
         decryptedMasterShares.push(decryptedMasterShare)
 
         await dispatch(
-            actions.emitNetWorkFactorStep4({
+            actions.emitStep4({
                 node: encryptedMasterShares.find(
                     (e) => e.value.ciphertext === value.ciphertext
                 )!.id,
@@ -222,7 +212,7 @@ const getNetworkKey = async (
     encryptedMasterShares: { id: number; value: SecretResponse }[],
     decryptedMasterShares: Point[],
     dispatch: AppDispatch,
-    actions: any
+    actions: typeof networkFactorActions
 ): Promise<string> => {
     let networkKey: string | undefined
 
@@ -253,7 +243,7 @@ const getNetworkKey = async (
         throw new Error('Could not construct Network Key')
     }
 
-    await dispatch(actions.emitNetWorkFactorStep5(networkKey))
+    await dispatch(actions.emitStep5(networkKey))
 
     return networkKey
 }

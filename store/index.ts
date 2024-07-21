@@ -4,10 +4,20 @@ import { configureStore } from '@reduxjs/toolkit'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import logger from 'redux-logger'
 
-import reducer from './reducer'
+import networkFactorReducer from '@store/networkFactor/reducer'
+import signInOauthReducer from '@store/signInOauth/reducer'
+import signInOauthAndPasswordReducer from '@store/signInOauthAndPassword/reducer'
+import signInPasswordReducer from '@store/signInPassword/reducer'
+import signUpReducer from '@store/signUp/reducer'
 
 export const store = configureStore({
-    reducer,
+    reducer: {
+        signInOauthReducer,
+        signInOauthAndPasswordReducer,
+        signInPasswordReducer,
+        signUpReducer,
+        networkFactorReducer,
+    },
     middleware: (getDefaultMiddleware) => {
         const middleware = getDefaultMiddleware()
         if (process.env.NODE_ENV === 'development') middleware.push(logger)
