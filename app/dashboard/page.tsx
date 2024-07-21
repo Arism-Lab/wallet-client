@@ -4,9 +4,7 @@ import AccountBalanceCard from '@components/AccountBalanceCard'
 import RecentTransactionCard from '@components/RecentTransactionCard'
 import siteMetadata from '@data/siteMetadata.json'
 
-const metadata = siteMetadata.internalLinks.find(
-	(link) => link.title === 'Dashboard'
-)!
+const metadata = siteMetadata.internalLinks.find((link) => link.title === 'Dashboard')!
 
 export const generateMetadata = (): Metadata => {
 	return {

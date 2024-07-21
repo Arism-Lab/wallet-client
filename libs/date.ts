@@ -2,11 +2,7 @@ import { format, register } from 'timeago.js'
 
 import siteMetadata from '@/data/siteMetadata.json'
 
-const localeFunc = (
-    diff: number,
-    idx: number,
-    totalSec?: number
-): [string, string] => {
+const localeFunc = (diff: number, idx: number, totalSec?: number): [string, string] => {
     return [
         ['just now', 'right now'],
         ['%s secs ago', 'in %s secs'],

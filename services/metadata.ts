@@ -10,10 +10,7 @@ export const find = async (user: string): Promise<Metadata | undefined> => {
     return metadata?.toObject()
 }
 
-export const initialize = async (
-    user: string,
-    authorization: string
-): Promise<Metadata> => {
+export const initialize = async (user: string, authorization: string): Promise<Metadata> => {
     const verified = await verify(authorization, user)
     if (!verified) {
         throw new Error('Unauthorized')
@@ -40,9 +37,7 @@ export const initialize = async (
 export const findDevices = async (user: string): Promise<Device[]> => {
     await connectDB()
 
-    const devices: Device[] = await Metadata.findOne({ user }).then(
-        (res) => res.devices
-    )
+    const devices: Device[] = await Metadata.findOne({ user }).then((res) => res.devices)
 
     return devices
 }
@@ -59,9 +54,7 @@ export const addDevice = async (
 
     await connectDB()
 
-    const devices: Device[] = await Metadata.findOne({ user }).then(
-        (res) => res.devices
-    )
+    const devices: Device[] = await Metadata.findOne({ user }).then((res) => res.devices)
     const index = devices.findIndex((d) => d.id === device.id)
 
     if (index !== -1) {
@@ -73,9 +66,7 @@ export const addDevice = async (
     await Metadata.findOneAndUpdate({ user }, { devices })
 }
 
-export const findPrivateIndices = async (
-    user: string
-): Promise<PrivateIndex[]> => {
+export const findPrivateIndices = async (user: string): Promise<PrivateIndex[]> => {
     await connectDB()
 
     const privateIndices: PrivateIndex[] = await Metadata.findOne({
@@ -109,9 +100,7 @@ export const addPrivateIndex = async (
 export const findRecoveryKey = async (user: string): Promise<string> => {
     await connectDB()
 
-    const recoveryKey: string = await Metadata.findOne({ user }).then(
-        (res) => res.recoveryKey
-    )
+    const recoveryKey: string = await Metadata.findOne({ user }).then((res) => res.recoveryKey)
 
     return recoveryKey
 }

@@ -13,11 +13,7 @@ import { useAppDispatch } from '@store'
 import * as networkFactorActions from '@store/networkFactor/actions'
 import * as signInOauthAndPasswordActions from '@store/signInOauthAndPassword/actions'
 
-const SignInOauthAndPassword = ({
-	sessionUser,
-}: {
-	sessionUser: SessionUser
-}) => {
+const SignInOauthAndPassword = ({ sessionUser }: { sessionUser: SessionUser }) => {
 	const dispatch = useAppDispatch()
 	const { update } = useSession()
 
@@ -42,29 +38,18 @@ const SignInOauthAndPassword = ({
 	useEffect(() => {
 		if (networkFactor && confirm) {
 			;(async () => {
-				const recoveryFactor: Point = await deriveRecoveryFactor(
-					sessionUser.info.email,
-					password
+				const recoveryFactor: Point = await deriveRecoveryFactor(sessionUser.info.email, password)
+
+				await dispatch(signInOauthAndPasswordActions.emitStep1(recoveryFactor.y))
+
+				const { privateFactor, deviceFactor } = await constructDeviceFactorNewDevice(
+					recoveryFactor,
+					networkFactor
 				)
 
-				await dispatch(
-					signInOauthAndPasswordActions.emitStep1(recoveryFactor.y)
-				)
+				await dispatch(signInOauthAndPasswordActions.emitStep2([privateFactor.y, deviceFactor.y]))
 
-				const { privateFactor, deviceFactor } =
-					await constructDeviceFactorNewDevice(recoveryFactor, networkFactor)
-
-				await dispatch(
-					signInOauthAndPasswordActions.emitStep2([
-						privateFactor.y,
-						deviceFactor.y,
-					])
-				)
-
-				const verifiedPrivateKey = await verifyPrivateKey(
-					sessionUser.info.email,
-					privateFactor.y
-				)
+				const verifiedPrivateKey = await verifyPrivateKey(sessionUser.info.email, privateFactor.y)
 				if (verifiedPrivateKey) {
 					const lastLogin = new Date().toISOString()
 
@@ -82,13 +67,7 @@ const SignInOauthAndPassword = ({
 		}
 	}, [confirm])
 
-	return (
-		<Login
-			method="signInOauthAndPassword"
-			setConfirm={setConfirm}
-			setPassword={setPassword}
-		/>
-	)
+	return <Login method="signInOauthAndPassword" setConfirm={setConfirm} setPassword={setPassword} />
 }
 
 export default SignInOauthAndPassword

@@ -21,13 +21,11 @@ const SignUp = ({ sessionUser }: { sessionUser: SessionUser }) => {
 	const [privateKey, setPrivateKey] = useState<string>('')
 	const [confirm, setConfirm] = useState<boolean>(false)
 	const [networkFactor, setNetworkFactor] = useState<Point | undefined>()
-	const signUpSteps: SignUpSteps = useSelector(
-		(state: RootState) => state.signUpReducer
-	).data
+	const signUpSteps: SignUpSteps = useSelector((state: RootState) => state.signUpReducer).data
 
 	// Stage 1: Derive Network Factor
 	useEffect(() => {
-		if (networkFactor || signUpSteps.step1.state.length !== 0) return
+		if (networkFactor || signUpSteps[0].state.length !== 0) return
 		;(async () => {
 			const factor: Point = (await deriveNetworkFactor(
 				sessionUser.jwt.id_token,
@@ -50,10 +48,7 @@ const SignUp = ({ sessionUser }: { sessionUser: SessionUser }) => {
 
 			await dispatch(signUpActions.emitStep1(privateFactor.y.toString()))
 
-			const deviceFactor = await constructDeviceFactor(
-				privateFactor,
-				networkFactor
-			)
+			const deviceFactor = await constructDeviceFactor(privateFactor, networkFactor)
 
 			await dispatch(signUpActions.emitStep2(deviceFactor.y.toString()))
 
@@ -75,13 +70,7 @@ const SignUp = ({ sessionUser }: { sessionUser: SessionUser }) => {
 		})()
 	}, [networkFactor, confirm])
 
-	return (
-		<Login
-			method="signUp"
-			setConfirm={setConfirm}
-			setPrivateKey={setPrivateKey}
-		/>
-	)
+	return <Login method="signUp" setConfirm={setConfirm} setPrivateKey={setPrivateKey} />
 }
 
 export default SignUp

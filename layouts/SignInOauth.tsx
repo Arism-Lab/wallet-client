@@ -5,10 +5,7 @@ import { useEffect } from 'react'
 
 import Login from '@components/Login'
 import { deriveNetworkFactor } from '@helpers/networkFactor'
-import {
-	constructPrivateFactor,
-	verifyPrivateKey,
-} from '@helpers/privateFactor'
+import { constructPrivateFactor, verifyPrivateKey } from '@helpers/privateFactor'
 import { storeUser } from '@helpers/wallet'
 import { useAppDispatch } from '@store'
 import * as networkFactorActions from '@store/networkFactor/actions'
@@ -40,17 +37,11 @@ const SignInOauth = ({
 
 				await dispatch(signInOauthActions.emitStep1(deviceFactor.y))
 
-				const privateFactor: Point = constructPrivateFactor(
-					networkFactor,
-					deviceFactor
-				)
+				const privateFactor: Point = constructPrivateFactor(networkFactor, deviceFactor)
 
 				await dispatch(signInOauthActions.emitStep2(privateFactor.y))
 
-				const verifiedPrivateKey = await verifyPrivateKey(
-					sessionUser.info.email,
-					privateFactor.y
-				)
+				const verifiedPrivateKey = await verifyPrivateKey(sessionUser.info.email, privateFactor.y)
 				if (verifiedPrivateKey) {
 					const lastLogin = new Date().toISOString()
 

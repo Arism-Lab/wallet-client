@@ -16,7 +16,7 @@ const nodesProduction: ArismNode[] = [
 const nodesDevelopment: ArismNode[] = [
     {
         id: 1,
-        url: 'http://127.0.0.1:3002',
+        url: 'http://127.0.0.1:3001',
     },
     {
         id: 2,
@@ -24,12 +24,11 @@ const nodesDevelopment: ArismNode[] = [
     },
     {
         id: 3,
-        url: 'http://127.0.0.1:3002',
+        url: 'http://127.0.0.1:3003',
     },
 ]
 
-export const NODES =
-    process.env.NODE_ENV === 'production' ? nodesProduction : nodesDevelopment
+export const NODES = process.env.NODE_ENV === 'production' ? nodesProduction : nodesDevelopment
 
 export const NODES_LENGTH = NODES.length
 

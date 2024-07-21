@@ -9,12 +9,7 @@ import {
     PiNewspaperClipping,
     PiNewspaperClippingFill,
 } from 'react-icons/pi'
-import {
-    RiHomeFill,
-    RiHomeLine,
-    RiSettingsFill,
-    RiSettingsLine,
-} from 'react-icons/ri'
+import { RiHomeFill, RiHomeLine, RiSettingsFill, RiSettingsLine } from 'react-icons/ri'
 
 const icon = (ActiveIcon: IconType, DefaultIcon: IconType) => {
     function Icon(props: { active: boolean; className: string }): JSX.Element {

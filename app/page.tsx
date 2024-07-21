@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { Session } from 'next-auth'
+import { redirect } from 'next/navigation'
 import { HiOutlinePlus } from 'react-icons/hi2'
 
 import { N } from '@common'
@@ -47,16 +47,14 @@ const Home = async () => {
 					<div className="my-auto grid w-5/6 place-items-center items-center gap-10">
 						<h1 className="text-5xl font-extralight leading-snug text-gray-800">
 							A Distributed Key and Identifier Management Protocol powered by{' '}
-							<span className="bg-primary-800 px-3 text-white">
-								Zero Knowledge
-							</span>
+							<span className="bg-primary-800 px-3 text-white">Zero Knowledge</span>
 						</h1>
 						{session ? (
-							<Link href="/dashboard">
+							<button onClick={redirect('/dashboard')}>
 								<Card className="relative px-8 py-6 text-xl font-light group-hover:text-primary-800">
 									<p>Open dashboard</p>
 								</Card>
-							</Link>
+							</button>
 						) : (
 							<div className="flex w-full flex-col gap-10 text-2xl">
 								<LoginButton />

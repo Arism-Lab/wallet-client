@@ -1,8 +1,4 @@
-import {
-    GetServerSidePropsContext,
-    NextApiRequest,
-    NextApiResponse,
-} from 'next'
+import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next'
 import {
     Account,
     AuthOptions,

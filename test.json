@@ -1,0 +1,54 @@
+[
+    {
+        "decryptedMasterShares": [
+            [2, "bc44b13cc61c4d649693a559671b4026e54670eb69edc024b64a5187b103e3e8"],
+            [1, "2fa25e8862d71e8e39c2386e8da4ec9f8e3003ab7a5b97ac81f34c9c6979eecd"],
+            [3, "ee0e010449a43a31560373272d5d46949f8ea795f310f31f3edc77237c8e6b8a"]
+        ]
+    },
+    {
+        "thresholdPublicKey": "04d535c61a3b0ef3314eb418e0b02cff598903f5f0dfa4ee0ff988519fa6e7559abdffc7020455258764da6070fd54878a50f0434862dae5a3507fea1e5f8458b5"
+    },
+    {
+        "derivedPrivateKey": "a3000bd3ff91efb7dcf0cb83b42e9916f1c873523a120f700d6ea63df2263af3",
+        "publicKey": "04173cbaf8c941bfe51cc31110eb6ad95d7b42a272e49d0d103069d89aa18e7fe773cee6c706a2c1e35d3a71aa5d0a43bce110c15d392b9c6772f3df28d225c383",
+        "equal": false
+    },
+    {
+        "derivedPrivateKey": "58b211adbf0c73cb17b409bdda97334b70b6039657a75a2fa526065019eed4a4",
+        "publicKey": "0431d9b09dae71a95deb84d98a086c041755b3680fd2b9a4b24eb6a92f061744c464fc90ea8a9feb3f51d977d7276e0145f45fc1a651ab96ae0a0d655222a3891a",
+        "equal": false
+    },
+    {
+        "derivedPrivateKey": "506c8d4a6f7090bcaba19b123dc8bfa462d8202995a53a110367e69f480ad10f",
+        "publicKey": "044b0b9be61cbdd756e9c3419911a07f2f6b3df33da4160a6efe7398676f2f6f99bea288bd2b4f8c43791004d3aefe6e68663d5237733bca35cb06ad3e0ff5469c",
+        "equal": false
+    },
+    {
+        "publicKeys": [
+            "041dd5804f6bf3220361554e90053717267351773397bea22714ce013822f28c69fa0c1a9324bef536ca184f458b6504ae285354560270d0764b5cd82957307146",
+            "04d9038b88c27a3d9f5fa1359bb4475e8ad73bbaafc6fddad87f8a13f7fd2a735e9cd0ee7bd5e118a8d4b30dee5793fa4dfb044ba93b3e2d5ed131e7fb7aa1c11a",
+            "0458d4c0008ddd78805ddf11d554426a9a7a310c6cf7f4d74ab193560a376d4d46313ac018d15d54d1e7f002f6b0b4681a97373fd29e09b1a91c56a34fe73fb304"
+        ],
+        "masterPublicKey": "04cecdf05c942b3a6435b0e4a3f158821f9c1d3fad363f1ea928237640edeb1e023dbd505e6e7db899dbf8de24c7951b15b6ee13ca091a05113febbbac26c03bf1",
+        "url": "http://127.0.0.1:3003"
+    },
+    {
+        "publicKeys": [
+            "046de5584ad20271a21463c79fd588de1cd2e9b3694a7150bb0ee957cd32bf62c917ca1593770b13662c2a4fb45269f8497a2708f690ccf741d383446964c01302",
+            "04a6ec32106e771a9ee835e7a801813095dffcc2fb2f9ce0bf11da07ac6775a7521f2d11a244335c3f3b2038d7917d4ecd38bde7cd37b4459d5379601ed5716fdb",
+            "04fb826bd534d78e06bc10e4c0e44ea4b8edbb7f5258128efdfef380aae5e32480be24aadd4087feeebd532cd091a9ab2e91b29d7d8422b6bc5a5c306770fc9867"
+        ],
+        "masterPublicKey": "04d535c61a3b0ef3314eb418e0b02cff598903f5f0dfa4ee0ff988519fa6e7559abdffc7020455258764da6070fd54878a50f0434862dae5a3507fea1e5f8458b5",
+        "url": "http://127.0.0.1:3001"
+    },
+    {
+        "publicKeys": [
+            "04ebd69262d2e53a640a16774d8d16b91f0c5fd1f82385c5704c8b45a7f272993832b1c0e1191299c12fccf81f17920f13dcedccc8fe293f6a86f51194dba2837b",
+            "0470a0afe4fb097561c5dfb00d5bf0c0fc57a80c8bb3c7b95db38e906ce82fc1cf7b445f1d038bc3d174894dfee9ee943c3a65a4e0691b24bdd9c44eb61b6d5f72",
+            "04db0fcf5aef732af0175d713cbaf0177271515afb34cd693350ab94d546db53bdbd219fc1d1350a724f81bd46efe379bc3a75f2ef758b9139bd395e0106f0f744"
+        ],
+        "masterPublicKey": "048e9bbb06c75d1400448e1d7fab6a712ec7de4d4032dfa7faa6da8a0fba3cfffdb7ecfab71a27f9115b8c8cbbd9589244b1a3bb51fd7bdb62d12fa146a1105db3",
+        "url": "http://127.0.0.1:3002"
+    }
+]

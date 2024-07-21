@@ -1,12 +1,7 @@
 'use client'
 
 import { C } from '@common'
-import {
-    addDevice,
-    addPrivateIndex,
-    getRecoveryKey,
-    getUser,
-} from '@helpers/metadata'
+import { addDevice, addPrivateIndex, getRecoveryKey, getUser } from '@helpers/metadata'
 import { constructPrivateFactor } from '@helpers/privateFactor'
 import { getDeviceInfo } from '@libs/device'
 import { storeLocalUser } from '@libs/local'
@@ -26,11 +21,7 @@ export const storeUser = async (localUser: LocalUser) => {
 
 export const createNewKey = async (session: SessionUser): Promise<boolean> => {
     const index: string = C.generatePrivateKey()
-    const privateFactor = constructPrivateFactor(
-        session.factor1!,
-        session.factor2!,
-        index
-    )
+    const privateFactor = constructPrivateFactor(session.factor1!, session.factor2!, index)
     const address = C.getAddressFromPrivateKey(privateFactor.y)
 
     return await addPrivateIndex(session.info.email, { address, index })

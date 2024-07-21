@@ -2,9 +2,7 @@ import { Metadata } from 'next'
 
 import siteMetadata from '@data/siteMetadata.json'
 
-const metadata = siteMetadata.internalLinks.find(
-	(link) => link.title === 'Transactions'
-)!
+const metadata = siteMetadata.internalLinks.find((link) => link.title === 'Transactions')!
 
 export const generateMetadata = (): Metadata => {
 	return {

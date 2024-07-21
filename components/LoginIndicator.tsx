@@ -7,11 +7,11 @@ import { Provider } from 'react-redux'
 import Loading from '@components/Loading'
 import { initializeUser } from '@helpers/metadata'
 import { checkMfa } from '@helpers/wallet'
-import LostAccount from '@layout/LostAccount'
-import SignInOauth from '@layout/SignInOauth'
-import SignInOauthAndPassword from '@layout/SignInOauthAndPassword'
-import SignInPassword from '@layout/SignInPassword'
-import SignUp from '@layout/SignUp'
+import LostAccount from '@layouts/LostAccount'
+import SignInOauth from '@layouts/SignInOauth'
+import SignInOauthAndPassword from '@layouts/SignInOauthAndPassword'
+import SignInPassword from '@layouts/SignInPassword'
+import SignUp from '@layouts/SignUp'
 import { getLocalUsers } from '@libs/local'
 import { store } from '@store'
 
@@ -27,8 +27,7 @@ const LoginIndicator = ({ keys, password, sessionUser }) => {
 				)?.deviceFactor
 
 				if (verifiedDevice) setMethod('signInOauth')
-				else if (await checkMfa(sessionUser.info.email))
-					setMethod('signInOauthAndPassword')
+				else if (await checkMfa(sessionUser.info.email)) setMethod('signInOauthAndPassword')
 				else setMethod('lost')
 			} else {
 				await initializeUser(sessionUser.info.email)
@@ -43,11 +42,7 @@ const LoginIndicator = ({ keys, password, sessionUser }) => {
 				return <SignInOauth sessionUser={sessionUser} localUsers={localUsers} />
 			case 'signInPassword':
 				return (
-					<SignInPassword
-						password={password!}
-						info={sessionUser.info}
-						localUsers={localUsers}
-					/>
+					<SignInPassword password={password!} info={sessionUser.info} localUsers={localUsers} />
 				)
 			case 'signInOauthAndPassword':
 				return <SignInOauthAndPassword sessionUser={sessionUser} />

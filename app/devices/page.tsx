@@ -3,12 +3,11 @@ import { AiOutlineEdit } from 'react-icons/ai'
 import { MdDeleteOutline } from 'react-icons/md'
 
 import siteMetadata from '@data/siteMetadata.json'
+import { auth } from '@libs/auth'
 import { formatDate } from '@libs/date'
-import { useAppSelector } from '@store'
+import { findDevices } from '@services/metadata'
 
-const metadata = siteMetadata.internalLinks.find(
-	(link) => link.title === 'Devices'
-)!
+const metadata = siteMetadata.internalLinks.find((link) => link.title === 'Devices')!
 
 export const generateMetadata = (): Metadata => {
 	return {
@@ -22,10 +21,8 @@ export const generateMetadata = (): Metadata => {
 }
 
 const Devices = async () => {
-	const sessionUserReducer: SessionUser = useAppSelector(
-		(state) => state.sessionUserReducer
-	).data!
-	const devices = await getDevices(sessionUserReducer.info.email)
+	const sessionUserReducer: SessionUser = (await auth())!
+	const devices = await findDevices(sessionUserReducer.info.email)
 
 	return (
 		<>
@@ -43,8 +40,7 @@ const Devices = async () => {
 									</p>
 									<div className="grid">
 										<p className="dashboard-subtitle font-base text-xl">
-											Default Device ({device.browser?.name} on{' '}
-											{device.os?.name})
+											Default Device ({device.browser?.name} on {device.os?.name})
 										</p>
 										<p className="text-sm font-light text-zinc-500">
 											Last sign in since {formatDate(device.lastLogin!, true)}

@@ -15,10 +15,7 @@ export const POST = async (req: NextRequest) => {
     const body = await req.json()
 
     try {
-        const res = await service.initialize(
-            body,
-            req.headers.get('Authorization')!
-        )
+        const res = await service.initialize(body, req.headers.get('Authorization')!)
         return NextResponse.json(res)
     } catch {
         return NextResponse.error()

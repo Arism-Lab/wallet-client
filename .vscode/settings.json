@@ -15,5 +15,10 @@
     "tailwind-class-sorter.classRegex": {
         "typescript": "className\\w*?=\\w*(\"[\\s\\S]+?\")|className\\w*?=\\w*?\\{([\\s\\S]+?)\\}"
     },
-    "eslint.validate": ["typescript, typescriptreact"]
+    "eslint.validate": [
+        "typescript, typescriptreact"
+    ],
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }

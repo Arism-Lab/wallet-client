@@ -36,3 +36,9 @@ type Metadata = {
     recoveryKey: string
     privateIndices: PrivateIndex[]
 }
+type Ecies = {
+    iv: string
+    ephemPublicKey: string
+    ciphertext: string
+    mac: string
+}

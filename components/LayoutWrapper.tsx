@@ -20,9 +20,7 @@ const LayoutWrapper = async ({ children }) => {
 		redirect('/')
 	}
 
-	const pageTitle = siteMetadata.internalLinks.find(
-		(item) => item.path === pathname
-	)?.title
+	const pageTitle = siteMetadata.internalLinks.find((item) => item.path === pathname)?.title
 
 	if (isHome) {
 		return <>{children}</>
@@ -31,21 +29,11 @@ const LayoutWrapper = async ({ children }) => {
 	return (
 		<div className="bg-global flex h-screen w-screen">
 			<div className="flex w-1/5 flex-col text-zinc-800">
-				<Link
-					className="mx-auto flex place-items-center items-center py-10"
-					href="/"
-				>
-					<Image
-						alt="Arism logo"
-						src="/static/logo.png"
-						width={65}
-						height={65}
-					/>
+				<Link className="mx-auto flex place-items-center items-center py-10" href="/">
+					<Image alt="Arism logo" src="/static/logo.png" width={65} height={65} />
 					<div className="flex flex-col">
 						<h1 className="text-4xl font-extralight">Arism Wallet</h1>
-						<p className="text-center text-xs font-light tracking-widest">
-							THE NEXT-GEN WALLET
-						</p>
+						<p className="text-center text-xs font-light tracking-widest">THE NEXT-GEN WALLET</p>
 					</div>
 				</Link>
 				<div className="flex flex-col items-center justify-center space-y-2 transition duration-150 ease-in-out">
@@ -53,11 +41,7 @@ const LayoutWrapper = async ({ children }) => {
 						<Link
 							href={item.path}
 							key={index}
-							className={`${
-								pathname === item.path
-									? 'pointer-events-none rounded-full bg-zinc-900 text-white'
-									: 'text-zinc-500'
-							} mx-auto flex h-14 w-5/6 items-center justify-items-start py-3 transition-all duration-200 ease-in-out hover:rounded-full hover:bg-black hover:bg-opacity-10`}
+							className={`${pathname === item.path ? 'pointer-events-none rounded-full bg-zinc-900 text-white' : 'text-zinc-500'} mx-auto flex h-14 w-5/6 items-center justify-items-start py-3 transition-all duration-200 ease-in-out hover:rounded-full hover:bg-black hover:bg-opacity-10`}
 						>
 							{/* {item.icon({
 								active: pathname === item.path,
@@ -88,9 +72,7 @@ const LayoutWrapper = async ({ children }) => {
 							<div className="flex items-center space-x-2 ">
 								<button className="group flex h-12 place-items-center rounded-full bg-white py-2 pl-3 pr-2 text-sm transition-all duration-200 ease-in-out hover:bg-yellow-600">
 									<IoIosWarning className="h-5 w-5 text-yellow-600 group-hover:text-white " />
-									<p className="px-2 text-black group-hover:text-white">
-										Turn on MFA
-									</p>
+									<p className="px-2 text-black group-hover:text-white">Turn on MFA</p>
 								</button>
 							</div>
 							<hr className="h-full w-[0.75px] bg-black bg-opacity-10" />

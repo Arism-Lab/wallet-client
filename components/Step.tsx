@@ -68,15 +68,11 @@ const StepWrapper = ({
 
 	return (
 		<div className="flex h-[100px] w-full place-items-center justify-items-center">
-			<span
-				className={`w-[235px] text-right text-lg font-light text-${theme[process]}`}
-			>
+			<span className={`w-[235px] text-right text-lg font-light text-${theme[process]}`}>
 				{step.instruction.name}
 			</span>
 			<div className="w-[100px]">{children}</div>
-			<div
-				className={`grid w-[650px] items-center gap-1 text-${theme[process]}`}
-			>
+			<div className={`grid w-[650px] items-center gap-1 text-${theme[process]}`}>
 				{process === 'current' && step.passwordInput && (
 					<div className="flex place-items-center justify-items-center gap-2">
 						<div className="w-[50px]">Pass</div>
@@ -120,10 +116,7 @@ const StepWrapper = ({
 					step.state.map((state, index) => {
 						if (typeof state === 'string') {
 							return (
-								<div
-									key={index}
-									className="flex place-items-center justify-items-center gap-2"
-								>
+								<div key={index} className="flex place-items-center justify-items-center gap-2">
 									<div className="w-[50px]">Key {index + 1} </div>
 									<span className="font-mono  cursor-pointer rounded-md border border-zinc-300 px-3 py-[2px] text-sm font-medium opacity-80 hover:bg-zinc-200">
 										{formatKey(state, true)}
@@ -132,10 +125,7 @@ const StepWrapper = ({
 							)
 						}
 						return (
-							<div
-								key={index}
-								className="flex place-items-center justify-items-center gap-2"
-							>
+							<div key={index} className="flex place-items-center justify-items-center gap-2">
 								<div className="w-[50px]">Node {state.node} </div>
 								<span className="font-mono  cursor-pointer rounded-md border border-zinc-300 px-2 py-[2px] text-sm font-medium opacity-80 hover:bg-zinc-200">
 									{formatKey(state.value, true)}

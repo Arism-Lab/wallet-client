@@ -90,12 +90,8 @@ const RecentTransactionCard = () => {
 											<BsArrowLeftCircle className="h-7 w-7 text-green-600"></BsArrowLeftCircle>
 										)}
 										<div className="grid">
-											<p className="text-base font-medium text-zinc-900">
-												{tx.type}
-											</p>
-											<p className="text-sm font-light text-zinc-500">
-												{tx.address}
-											</p>
+											<p className="text-base font-medium text-zinc-900">{tx.type}</p>
+											<p className="text-sm font-light text-zinc-500">{tx.address}</p>
 										</div>
 									</div>
 									<div className="grid text-right">
@@ -105,9 +101,7 @@ const RecentTransactionCard = () => {
 											{tx.type === 'Outgoing' ? '-' : '+'}
 											{tx.amount} {tx.token}
 										</p>
-										<p className="text-sm font-extralight text-zinc-500">
-											{tx.usd}
-										</p>
+										<p className="text-sm font-extralight text-zinc-500">{tx.usd}</p>
 									</div>
 								</div>
 							))}

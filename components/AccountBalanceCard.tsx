@@ -1,9 +1,5 @@
 import React from 'react'
-import {
-	BsArrowCounterclockwise,
-	BsArrowUpRightCircle,
-	BsClockHistory,
-} from 'react-icons/bs'
+import { BsArrowCounterclockwise, BsArrowUpRightCircle, BsClockHistory } from 'react-icons/bs'
 import { PiArrowLineUpRightLight } from 'react-icons/pi'
 
 const AccountBalanceCard = () => {
@@ -22,15 +18,11 @@ const AccountBalanceCard = () => {
 					</div>
 					<div className="grid gap-1">
 						<BsClockHistory className="h-16 w-16 rounded-full bg-zinc-800 p-5 text-white"></BsClockHistory>
-						<p className="text-center text-sm font-light text-zinc-800">
-							Inspect
-						</p>
+						<p className="text-center text-sm font-light text-zinc-800">Inspect</p>
 					</div>
 					<div className="grid gap-1">
 						<BsArrowCounterclockwise className="h-16 w-16 rounded-full bg-zinc-800 p-5 text-white"></BsArrowCounterclockwise>
-						<p className="text-center text-sm font-light text-zinc-800">
-							Stake
-						</p>
+						<p className="text-center text-sm font-light text-zinc-800">Stake</p>
 					</div>
 				</div>
 			</div>
@@ -39,9 +31,7 @@ const AccountBalanceCard = () => {
 					<p className="my-auto h-full">+1,25%</p>
 					<PiArrowLineUpRightLight className="h-5 w-5 " />
 				</div>
-				<div className="text-sm font-medium text-zinc-900 underline underline-offset-4">
-					1 day
-				</div>
+				<div className="text-sm font-medium text-zinc-900 underline underline-offset-4">1 day</div>
 				<div className="text-sm font-light text-zinc-500">1 week</div>
 				<div className="text-sm font-light text-zinc-500">1 month</div>
 			</div>

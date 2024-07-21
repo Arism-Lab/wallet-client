@@ -13,26 +13,17 @@ export const constructPrivateFactor = (
     return privateFactor
 }
 
-export const verifyPrivateKey = async (
-    user: string,
-    privateKey: string
-): Promise<boolean> => {
+export const verifyPrivateKey = async (user: string, privateKey: string): Promise<boolean> => {
     const computedAddress: string = C.getAddressFromPrivateKey(privateKey)
-    const keys: Key[] = await getPrivateIndices(user)
+    const privateIndices: PrivateIndex[] = await getPrivateIndices(user)
 
-    return keys.some((key) => key.address === computedAddress)
+    return privateIndices.some(({ address }) => address === computedAddress)
 }
 
-export const derivePrivateFactors = async (
-    session: SessionUser
-): Promise<Point[]> => {
-    const keys: Key[] = await getPrivateIndices(session.info.email)
+export const derivePrivateFactors = async (session: SessionUser): Promise<Point[]> => {
+    const privateIndices: PrivateIndex[] = await getPrivateIndices(session.info.email)
 
-    return keys.map((key) =>
-        constructPrivateFactor(
-            session.factor1,
-            session.factor2,
-            key.privateIndex
-        )
+    return privateIndices.map(({ index }) =>
+        constructPrivateFactor(session.factor1!, session.factor2!, index)
     )
 }

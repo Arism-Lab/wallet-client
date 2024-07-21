@@ -5,10 +5,7 @@ export const constructDeviceFactor = async (
     privateFactor: Point,
     networkFactor: Point
 ): Promise<Point> => {
-    const deviceKey: string = lagrangeInterpolation(
-        [networkFactor, privateFactor],
-        F.DEVICE_INDEX
-    )
+    const deviceKey: string = lagrangeInterpolation([networkFactor, privateFactor], F.DEVICE_INDEX)
     const deviceFactor: Point = { x: F.DEVICE_INDEX, y: deviceKey }
 
     return deviceFactor
@@ -18,10 +15,7 @@ export const constructDeviceFactorNewDevice = async (
     networkFactor: Point,
     recoveryFactor: Point
 ): Promise<{ privateFactor: Point; deviceFactor: Point }> => {
-    const deviceKey: string = lagrangeInterpolation(
-        [networkFactor, recoveryFactor],
-        F.DEVICE_INDEX
-    )
+    const deviceKey: string = lagrangeInterpolation([networkFactor, recoveryFactor], F.DEVICE_INDEX)
     const deviceFactor: Point = { x: F.DEVICE_INDEX, y: deviceKey }
 
     const privateKey: string = lagrangeInterpolation(

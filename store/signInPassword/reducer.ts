@@ -7,8 +7,8 @@ const initialState: {
     loading: boolean
     error: any
 } = {
-    data: {
-        step1: {
+    data: [
+        {
             instruction: {
                 name: 'Reconstructing Recovery Key',
                 description:
@@ -17,7 +17,7 @@ const initialState: {
             state: '',
             passwordInput: true,
         },
-        step2: {
+        {
             instruction: {
                 name: 'Deriving Private Key',
                 description:
@@ -25,7 +25,7 @@ const initialState: {
             },
             state: [],
         },
-        step3: {
+        {
             instruction: {
                 name: 'Verifying & Storing Metadata',
                 description:
@@ -33,7 +33,7 @@ const initialState: {
             },
             state: '',
         },
-    },
+    ],
     loading: false,
     error: undefined,
 }
@@ -48,7 +48,7 @@ export const signInPassword = createSlice({
             state.loading = true
         })
         builder.addCase(actions.emitStep1.fulfilled, (state, action) => {
-            state.data.step1.state = action.payload
+            state.data[0].state = action.payload
             state.loading = false
             state.error = undefined
         })
@@ -62,7 +62,7 @@ export const signInPassword = createSlice({
             state.loading = true
         })
         builder.addCase(actions.emitStep2.fulfilled, (state, action) => {
-            state.data.step2.state = action.payload
+            state.data[1].state = action.payload
             state.loading = false
             state.error = undefined
         })
@@ -76,7 +76,7 @@ export const signInPassword = createSlice({
             state.loading = true
         })
         builder.addCase(actions.emitStep3.fulfilled, (state, action) => {
-            state.data.step3.state = action.payload
+            state.data[2].state = action.payload
             state.loading = false
             state.error = undefined
         })

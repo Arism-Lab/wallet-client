@@ -68,10 +68,9 @@ const AccountCard = ({ localUser, click, hidden, focus }: AccountCardProps) => {
 				aria-expanded={removeConfirm}
 			>
 				<p className="font-light">
-					Are you sure to remove{' '}
-					<span className="font-medium">{localUser.info.name}</span> account?
-					Since you have turned on MFA, you will need to enter your password
-					manually when logging in via Google next time.
+					Are you sure to remove <span className="font-medium">{localUser.info.name}</span> account?
+					Since you have turned on MFA, you will need to enter your password manually when logging
+					in via Google next time.
 				</p>
 				<button
 					className="text-medium mx-auto flex w-min gap-5 rounded-lg border-2 border-red-600  bg-red-600 px-20 pb-1 text-white hover:border-red-800 hover:bg-red-800"
@@ -114,8 +113,8 @@ const AccountCard = ({ localUser, click, hidden, focus }: AccountCardProps) => {
 						<hr className="h-full w-[0.5px] bg-zinc-300" />
 						<div className="flex flex-col text-center">
 							<p className="font-medium">
-								{privateIndices.length} key{privateIndices.length > 1 && 's'}{' '}
-								associated to this account
+								{privateIndices.length} key{privateIndices.length > 1 && 's'} associated to this
+								account
 							</p>
 							<p className="font-light text-zinc-500">
 								last login since {formatDate(localUser.lastLogin)}

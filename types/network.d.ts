@@ -1,7 +1,7 @@
 type CommitmentRequest = {
     commitment: string
     timestamp: string
-    tempPublicKey: string
+    clientPublicKey: string
     verifier: string
 }
 
@@ -14,11 +14,10 @@ type SecretRequest = {
     commitments: CommitmentResponse[]
     user: string
     idToken: string
-    tempPublicKey?: string
+    clientPublicKey?: string
 }
 
 type SecretResponse = {
-    ciphertext: string
-    threshold: number
     publicKey: string
+    ecies: Ecies
 }

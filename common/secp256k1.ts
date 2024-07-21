@@ -1,7 +1,7 @@
 import elliptic from 'elliptic'
 import { toChecksumAddress } from 'web3-utils'
 
-import { BN, H } from '@common'
+import { H } from '@common'
 
 export const secp256k1 = new elliptic.ec('secp256k1')
 
@@ -27,25 +27,21 @@ export const encodePublicKey = (point: Point): string => {
 }
 
 export const getPublicKeyFromPrivateKey = (privateKey: string): string => {
-    const key = secp256k1.keyFromPrivate(privateKey, 'hex')
-
-    return encodePublicKey({
-        x: key.getPublic().getX().toString('hex'),
-        y: key.getPublic().getY().toString('hex'),
-    })
+    const keypair = secp256k1.keyFromPrivate(privateKey, 'hex')
+    return keypair.getPublic().encode('hex', false)
 }
 
 export const getAddressFromPrivateKey = (privateKey: string): string => {
-    const key = secp256k1.keyFromPrivate(privateKey, 'hex')
-    const publicKey: string = key.getPublic().encode('hex', false).slice(2)
+    const keypair = secp256k1.keyFromPrivate(privateKey, 'hex')
+    const publicKey: string = keypair.getPublic().encode('hex', false).slice(2)
     const lowercaseAddress = `0x${H.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38)}`
 
     return toChecksumAddress(lowercaseAddress)
 }
 
 export const getAddressFromPublicKey = (publicKey: string): string => {
-    const formatedPublicKey = publicKey.slice(2)
-    const publicKeyBytes = Buffer.from(formatedPublicKey, 'hex')
+    const formattedPublicKey = publicKey.slice(2)
+    const publicKeyBytes = Buffer.from(formattedPublicKey, 'hex')
 
     const hash = H.keccak256(publicKeyBytes)
     const address = hash.slice(-40)
@@ -65,13 +61,13 @@ export const getAddressFromPublicKey = (publicKey: string): string => {
     return checksumAddress
 }
 
-// export const ellipticAddition = (p1: Point, p2: Point): Point => {
-//     const p1CurvePoint = secp256k1.curve.point(p1.x, p1.y)
-//     const p2CurvePoint = secp256k1.curve.point(p2.x, p2.y)
-//     const p3CurvePoint = p1CurvePoint.add(p2CurvePoint)
+export const ellipticAddition = (p1: Point, p2: Point): Point => {
+    const p1CurvePoint = secp256k1.curve.point(p1.x, p1.y)
+    const p2CurvePoint = secp256k1.curve.point(p2.x, p2.y)
+    const p3CurvePoint = p1CurvePoint.add(p2CurvePoint)
 
-//     return {
-//         x: p3CurvePoint.getX(),
-//         y: p3CurvePoint.getY(),
-//     }
-// }
+    return {
+        x: p3CurvePoint.getX().toString(16),
+        y: p3CurvePoint.getY().toString(16),
+    }
+}

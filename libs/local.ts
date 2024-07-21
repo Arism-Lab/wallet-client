@@ -2,8 +2,7 @@ export const getLocalUsers = (): LocalUser[] => {
     try {
         return JSON.parse(window.localStorage.getItem('localUsers')!).sort(
             (a: LocalUser, b: LocalUser) =>
-                new Date(b.lastLogin).getTime() -
-                new Date(a.lastLogin).getTime()
+                new Date(b.lastLogin).getTime() - new Date(a.lastLogin).getTime()
         )
     } catch {
         return []
@@ -13,9 +12,7 @@ export const getLocalUsers = (): LocalUser[] => {
 export const storeLocalUser = (localUser: LocalUser): void => {
     const localUsers: LocalUser[] = getLocalUsers()
 
-    const index = localUsers.findIndex(
-        (e) => e.info.email === localUser.info.email
-    )
+    const index = localUsers.findIndex((e) => e.info.email === localUser.info.email)
 
     if (index !== -1) localUsers[index] = localUser
     else localUsers.push(localUser)

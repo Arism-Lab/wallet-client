@@ -17,9 +17,7 @@ export const serializeParams = (params: any): string => {
     return searchParams.toString()
 }
 
-export const deserializeParams = (
-    searchParams: URLSearchParams
-): Record<string, string> => {
+export const deserializeParams = (searchParams: URLSearchParams): Record<string, string> => {
     const params: Record<string, string> = {}
     const entries: [string, string][] = Array.from(searchParams.entries())
     for (const [key, value] of entries) {
@@ -62,10 +60,7 @@ export const fetcher = async <T>(
     return deserialized as T
 }
 
-export const verify = async (
-    auth: string | null,
-    email: string
-): Promise<boolean> => {
+export const verify = async (auth: string | null, email: string): Promise<boolean> => {
     const res = await fetcher<any>(
         'GET',
         makeUrl(TOKEN_INFO_GOOGLE_API, {

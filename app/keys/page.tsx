@@ -15,9 +15,7 @@ import { createNewKey } from '@helpers/wallet'
 import { formatKey } from '@libs/key'
 import { useAppSelector } from '@store'
 
-const metadata = siteMetadata.internalLinks.find(
-	(link) => link.title === 'Keys'
-)!
+const metadata = siteMetadata.internalLinks.find((link) => link.title === 'Keys')!
 
 export const generateMetadata = (): Metadata => {
 	return {
@@ -30,12 +28,8 @@ export const generateMetadata = (): Metadata => {
 	}
 }
 const ManageKeys = () => {
-	const keys: Key[] = await getPrivateIndices(
-		sessionUserReducer.data!.info.email
-	)
-	const privateFactors: Point[] = await derivePrivateFactors(
-		sessionUserReducer.data!
-	)
+	const keys: Key[] = await getPrivateIndices(sessionUserReducer.data!.info.email)
+	const privateFactors: Point[] = await derivePrivateFactors(sessionUserReducer.data!)
 
 	const [keys, setKeys] = useState<FullKey[] | undefined>(undefined)
 	const sessionUserReducer = useAppSelector((state) => state.sessionUserReducer)
@@ -82,9 +76,7 @@ const ManageKeys = () => {
 										{i + 1}
 									</p>
 									<div className="grid">
-										<p className="dashboard-subtitle font-base text-xl">
-											Default Key
-										</p>
+										<p className="dashboard-subtitle font-base text-xl">Default Key</p>
 										<p className="text-sm font-light text-zinc-500">
 											{formatKey(key.address, false)}
 										</p>

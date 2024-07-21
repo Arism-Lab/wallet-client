@@ -1,30 +1,56 @@
-import * as Ecies from 'eciesjs'
+import * as Crypto from '@toruslabs/eccrypto'
 
-// TODO: removed HMAC in ECIES vulnerabilities
+export const decrypt = async (privateKey: string, opts: Ecies): Promise<string> => {
+    const deserializedPrivateKey: Buffer = Buffer.from(privateKey, 'hex')
+    const deserializeOpts: Crypto.Ecies = {
+        iv: Buffer.from(opts.iv, 'hex'),
+        ephemPublicKey: Buffer.from(opts.ephemPublicKey, 'hex'),
+        ciphertext: Buffer.from(opts.ciphertext, 'hex'),
+        mac: Buffer.from(opts.mac, 'hex'),
+    }
 
-export const decrypt = (privateKey: string, ciphertext: string): string => {
-    const data = Uint8Array.from(Buffer.from(ciphertext, 'hex'))
-    return Ecies.decrypt(privateKey, data).toString('hex')
+    const decrypted: Buffer = await Crypto.decrypt(deserializedPrivateKey, deserializeOpts)
+    const serializedDecrypted: string = decrypted.toString('hex')
+
+    return serializedDecrypted
 }
 
-export const encrypt = (toPublicKey: string, plaintext: string): string => {
-    const data = Uint8Array.from(Buffer.from(plaintext, 'hex'))
-    return Ecies.encrypt(toPublicKey, data).toString('hex')
-}
+export const encrypt = async (publicKeyTo: string, msg: string): Promise<Ecies> => {
+    const deserializedPublicKeyTo: Buffer = Buffer.from(publicKeyTo, 'hex')
+    const deserializedMsg: Buffer = Buffer.from(msg, 'hex')
 
-export const generatePrivateKey = (): string => {
-    const privateKey: Ecies.PrivateKey = new Ecies.PrivateKey()
-    return privateKey.toHex()
+    const encrypted: Crypto.Ecies = await Crypto.encrypt(deserializedPublicKeyTo, deserializedMsg)
+    const serializedEncrypted: Ecies = {
+        iv: encrypted.iv.toString('hex'),
+        ephemPublicKey: encrypted.ephemPublicKey.toString('hex'),
+        ciphertext: encrypted.ciphertext.toString('hex'),
+        mac: encrypted.mac.toString('hex'),
+    }
+
+    return serializedEncrypted
 }
 
 export const getPublicKey = (privateKey: string): string => {
-    const publicKey: Ecies.PublicKey = Ecies.PublicKey.fromHex(privateKey)
-    return publicKey.toHex()
+    const deserializedPrivateKey: Buffer = Buffer.from(privateKey, 'hex')
+
+    const publicKey: Buffer = Crypto.getPublic(deserializedPrivateKey)
+    const serializedPublicKey: string = publicKey.toString('hex')
+
+    return serializedPublicKey
+}
+
+export const generatePrivateKey = (): string => {
+    const privateKey: Buffer = Crypto.generatePrivate()
+    const serializedPrivateKey: string = privateKey.toString('hex')
+    return serializedPrivateKey
 }
 
 export const generateKeyPair = (): [string, string] => {
-    const privateKey: Ecies.PrivateKey = new Ecies.PrivateKey()
-    const publicKey: Ecies.PublicKey = privateKey.publicKey
+    const privateKey: Buffer = Crypto.generatePrivate()
+    const publicKey: Buffer = Crypto.getPublic(privateKey)
 
-    return [privateKey.toHex(), publicKey.toHex()]
+    const serializedPrivateKey: string = privateKey.toString('hex')
+    const serializedPublicKey: string = publicKey.toString('hex')
+
+    return [serializedPrivateKey, serializedPublicKey]
 }

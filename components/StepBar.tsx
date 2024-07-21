@@ -33,9 +33,7 @@ const StepBar = ({
 	}
 
 	return (
-		<div
-			className={`grid w-full place-items-center transition-all duration-150 ease-in-out`}
-		>
+		<div className={`grid w-full place-items-center transition-all duration-150 ease-in-out`}>
 			{Object.values(data).map((step: LoginStep, index) => (
 				<div className="grid w-full justify-items-center" key={index}>
 					{index < currentIndex ? (

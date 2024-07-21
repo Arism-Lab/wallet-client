@@ -24,18 +24,12 @@ type SignInOauthAndPasswordSteps = [Step<string>, Step<string[]>, Step<string>]
 type SignInPasswordSteps = [Step<string>, Step<string[]>, Step<string>]
 type SignUpSteps = [Step<string>, Step<string>, Step<string>]
 
-type LoginMethod =
-    | 'signInOauth'
-    | 'signInPassword'
-    | 'signInOauthAndPassword'
-    | 'signUp'
+type LoginMethod = 'signInOauth' | 'signInPassword' | 'signInOauthAndPassword' | 'signUp'
 
 type LoginStepsForAllMethods = ExactKeys<
     {
         signInOauth: Concat<[NetworkFactorSteps, SignInOauthSteps]>
-        signInOauthAndPassword: Concat<
-            [NetworkFactorSteps, SignInOauthAndPasswordSteps]
-        >
+        signInOauthAndPassword: Concat<[NetworkFactorSteps, SignInOauthAndPasswordSteps]>
         signInPassword: Concat<[SignInPasswordSteps]>
         signUp: Concat<[NetworkFactorSteps, SignUpSteps]>
     },

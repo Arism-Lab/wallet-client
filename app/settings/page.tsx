@@ -5,9 +5,7 @@ import siteMetadata from '@data/siteMetadata.json'
 import { constructRecoveryFactor } from '@helpers/recoveryFactor'
 import { useAppSelector } from '@store'
 
-const metadata = siteMetadata.internalLinks.find(
-	(link) => link.title === 'Dashboard'
-)!
+const metadata = siteMetadata.internalLinks.find((link) => link.title === 'Dashboard')!
 
 export const generateMetadata = (): Metadata => {
 	return {
@@ -45,10 +43,7 @@ const Settings = () => {
 						onChange={(e) => setPassword(e.target.value)}
 						className="rounded-md border border-zinc-300 p-2"
 					/>
-					<button
-						onClick={handleSubmit}
-						className="mt-4 rounded-md bg-blue-500 p-2 text-white"
-					>
+					<button onClick={handleSubmit} className="mt-4 rounded-md bg-blue-500 p-2 text-white">
 						Submit
 					</button>
 				</div>

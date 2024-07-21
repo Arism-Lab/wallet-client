@@ -15,25 +15,17 @@ export const getDevices = async (user: string): Promise<Device[]> => {
     return res
 }
 
-export const addDevice = async (
-    user: string,
-    device: Device
-): Promise<void> => {
-    await POST<void>('/metadata/devices', { user, device }, true)
+export const addDevice = async (user: string, device: Device): Promise<void> => {
+    await POST('/metadata/devices', { user, device }, true)
 }
 
-export const getPrivateIndices = async (
-    user: string
-): Promise<PrivateIndex[]> => {
+export const getPrivateIndices = async (user: string): Promise<PrivateIndex[]> => {
     const res = await GET<PrivateIndex[]>('/metadata/privateIndices', { user })
     return res
 }
 
-export const addPrivateIndex = async (
-    user: string,
-    index: PrivateIndex
-): Promise<void> => {
-    await POST<void>('/metadata/privateIndices', { user, index }, true)
+export const addPrivateIndex = async (user: string, privateIndex: PrivateIndex): Promise<void> => {
+    await POST('/metadata/privateIndices', { user, privateIndex }, true)
 }
 
 export const getRecoveryKey = async (user: string): Promise<string> => {
@@ -41,9 +33,6 @@ export const getRecoveryKey = async (user: string): Promise<string> => {
     return res
 }
 
-export const setRecoveryKey = async (
-    user: string,
-    recoveryKey: string
-): Promise<void> => {
-    await POST<void>('/metadata/recoveryKey', { user, recoveryKey }, true)
+export const setRecoveryKey = async (user: string, recoveryKey: string): Promise<void> => {
+    await POST('/metadata/recoveryKey', { user, recoveryKey }, true)
 }

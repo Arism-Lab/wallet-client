@@ -32,10 +32,7 @@ const Login = ({
 			...useAppSelector((state) => state.signInOauthAndPasswordReducer).data,
 		],
 		signInPassword: useAppSelector((state) => state.signInPasswordReducer).data,
-		signUp: [
-			...networkFactorData,
-			...useAppSelector((state) => state.signUpReducer).data,
-		],
+		signUp: [...networkFactorData, ...useAppSelector((state) => state.signUpReducer).data],
 	}
 	const title = {
 		signInOauth: 'Signing in via Google ...',

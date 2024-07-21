@@ -6,9 +6,7 @@ const Login = async ({ password }: { password: string | undefined }) => {
 	const sessionUser: SessionUser = (await auth())!
 	const keys = await findPrivateIndices(sessionUser.info.email).catch(() => [])
 
-	return (
-		<LoginIndicator keys={keys} password={password} sessionUser={sessionUser} />
-	)
+	return <LoginIndicator keys={keys} password={password} sessionUser={sessionUser} />
 }
 
 export default Login

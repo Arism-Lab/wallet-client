@@ -8,9 +8,7 @@ export const generateMnemonic = () => {
     const entropy = web3.utils.randomHex(32)
 
     // Convert the entropy to a 24-word mnemonic phrase using BIP39
-    const mnemonic = bip39.entropyToMnemonic(
-        Buffer.from(entropy.substring(2), 'hex')
-    )
+    const mnemonic = bip39.entropyToMnemonic(Buffer.from(entropy.substring(2), 'hex'))
     return mnemonic
 }
 
