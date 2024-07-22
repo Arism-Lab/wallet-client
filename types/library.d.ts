@@ -25,13 +25,18 @@ type PrivateIndex = {
     address: string
     index: string
 }
-type Wallet = {
+type PublicWallet = {
+    user: string
     address: string
     publicKey: string
+}
+type Wallet = PublicWallet & {
     privateKey: string
 }
 type Metadata = {
     user: string
+    masterAddress: string
+    masterPublicKey: string
     devices: Device[]
     recoveryKey: string
     privateIndices: PrivateIndex[]

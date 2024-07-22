@@ -11,13 +11,7 @@ import { useAppDispatch } from '@store'
 import * as networkFactorActions from '@store/networkFactor/actions'
 import * as signInOauthActions from '@store/signInOauth/actions'
 
-const SignInOauth = ({
-	sessionUser,
-	localUsers,
-}: {
-	sessionUser: SessionUser
-	localUsers: LocalUser[]
-}) => {
+const SignInOauth = ({ sessionUser, localUsers }: { sessionUser: SessionUser; localUsers: LocalUser[] }) => {
 	const dispatch = useAppDispatch()
 	const { update } = useSession()
 
@@ -31,9 +25,7 @@ const SignInOauth = ({
 					networkFactorActions
 				))!
 
-				const deviceFactor: Point = localUsers.find(
-					(e) => e.info.email === sessionUser.info.email
-				)!.deviceFactor
+				const deviceFactor: Point = localUsers.find((e) => e.info.email === sessionUser.info.email)!.deviceFactor
 
 				await dispatch(signInOauthActions.emitStep1(deviceFactor.y))
 

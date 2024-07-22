@@ -29,10 +29,7 @@ const Devices = async () => {
 			<div className="mx-auto h-full py-4">
 				<div className="grid">
 					{devices.map((device, i) => (
-						<div
-							key={device.id}
-							className="m-2 flex flex-col rounded-[3rem] border-none bg-white p-5"
-						>
+						<div key={device.id} className="m-2 flex flex-col rounded-[3rem] border-none bg-white p-5">
 							<div className="flex place-items-center justify-between">
 								<div className="flex place-items-center gap-4">
 									<p className="flex h-8 w-8 place-items-center justify-center rounded-full bg-zinc-900 text-lg font-medium text-white">

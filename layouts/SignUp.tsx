@@ -7,9 +7,11 @@ import { useSelector } from 'react-redux'
 import { C, F } from '@common'
 import Login from '@components/Login'
 import { constructDeviceFactor } from '@helpers/deviceFactor'
-import { addPrivateIndex } from '@helpers/metadata'
+import { initializeUser } from '@helpers/metadata'
 import { deriveNetworkFactor } from '@helpers/networkFactor'
-import { storeUser } from '@helpers/wallet'
+import { auth } from '@libs/auth'
+import { getDeviceInfo } from '@libs/device'
+import { storeLocalUser } from '@libs/local'
 import { RootState, useAppDispatch } from '@store'
 import * as networkFactorActions from '@store/networkFactor/actions'
 import * as signUpActions from '@store/signUp/actions'
@@ -30,6 +32,7 @@ const SignUp = ({ sessionUser }: { sessionUser: SessionUser }) => {
 			const factor: Point = (await deriveNetworkFactor(
 				sessionUser.jwt.id_token,
 				sessionUser.info.email,
+				true,
 				dispatch,
 				networkFactorActions
 			))!
@@ -45,26 +48,36 @@ const SignUp = ({ sessionUser }: { sessionUser: SessionUser }) => {
 				x: F.PRIVATE_INDEX,
 				y: privateKey ?? C.generatePrivateKey(),
 			}
-
 			await dispatch(signUpActions.emitStep1(privateFactor.y.toString()))
 
 			const deviceFactor = await constructDeviceFactor(privateFactor, networkFactor)
-
 			await dispatch(signUpActions.emitStep2(deviceFactor.y.toString()))
 
 			const lastLogin = new Date().toISOString()
-
-			await addPrivateIndex(sessionUser.info.email, {
+			const device: Device = getDeviceInfo(lastLogin)
+			const privateIndex: PrivateIndex = {
 				address: C.getAddressFromPrivateKey(privateFactor.y),
 				index: privateFactor.x,
-			})
+			}
 
-			await update({
-				...sessionUser,
-				factor1: networkFactor,
-				factor2: deviceFactor,
-			})
-			await storeUser({ deviceFactor, info: sessionUser.info, lastLogin })
+			const userMetadata: Metadata = {
+				user: sessionUser.info.email,
+				masterAddress: C.getAddressFromPrivateKey(privateFactor.y),
+				masterPublicKey: C.getPublicKeyFromPrivateKey(privateFactor.y),
+				devices: [device],
+				privateIndices: [privateIndex],
+				recoveryKey: '0',
+			}
+			await initializeUser(userMetadata)
+
+			const localUser: LocalUser = {
+				info: sessionUser.info,
+				deviceFactor,
+				lastLogin,
+			}
+			storeLocalUser(localUser)
+
+			await update({ ...sessionUser, factor1: networkFactor, factor2: deviceFactor })
 
 			await dispatch(signUpActions.emitStep3('success'))
 		})()

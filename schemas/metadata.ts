@@ -5,6 +5,8 @@ export interface IMetadata extends Document, Metadata {}
 const MetadataSchema = new Schema<IMetadata>(
     {
         user: { type: String, required: true },
+        masterAddress: { type: String, required: true },
+        masterPublicKey: { type: String, required: true },
         devices: {
             type: Array<Device>(),
             required: true,
@@ -20,6 +22,6 @@ const MetadataSchema = new Schema<IMetadata>(
     { timestamps: true }
 )
 
-const Metadata = models.Metadata || model<IMetadata>('Metadata', MetadataSchema)
+const MetadataModel = models.Metadata || model<IMetadata>('Metadata', MetadataSchema)
 
-export default Metadata
+export default MetadataModel

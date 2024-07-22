@@ -12,8 +12,7 @@ const initialState: {
         {
             instruction: {
                 name: 'Creating Private Key',
-                description:
-                    "Randomly generating a Private Key or using user's existed Private Key on the Application",
+                description: "Randomly generating a Private Key or using user's existed Private Key on the Application",
             },
             state: '',
             privateKeyInput: true,

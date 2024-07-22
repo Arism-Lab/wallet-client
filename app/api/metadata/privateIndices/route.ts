@@ -15,11 +15,7 @@ export const POST = async (req: NextRequest) => {
     const { user, privateIndex } = await req.json()
 
     try {
-        const res = await service.addPrivateIndex(
-            user,
-            privateIndex,
-            req.headers.get('Authorization')!
-        )
+        const res = await service.addPrivateIndex(user, privateIndex, req.headers.get('Authorization')!)
         return NextResponse.json(res)
     } catch {
         return NextResponse.error()

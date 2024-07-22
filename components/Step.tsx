@@ -7,20 +7,8 @@ import { formatKey, validatePrivateKey } from '@libs/key'
 
 const Loading = (): JSX.Element => {
 	return (
-		<svg
-			className="animate-spin p-1 text-white"
-			xmlns="http://www.w3.org/2000/svg"
-			fill="none"
-			viewBox="0 0 24 24"
-		>
-			<circle
-				className="opacity-20"
-				cx="12"
-				cy="12"
-				r="10"
-				stroke="currentColor"
-				stroke-width="4"
-			></circle>
+		<svg className="animate-spin p-1 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+			<circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
 			<path
 				className="opacity-80"
 				fill="currentColor"
@@ -68,9 +56,7 @@ const StepWrapper = ({
 
 	return (
 		<div className="flex h-[100px] w-full place-items-center justify-items-center">
-			<span className={`w-[235px] text-right text-lg font-light text-${theme[process]}`}>
-				{step.instruction.name}
-			</span>
+			<span className={`w-[235px] text-right text-lg font-light text-${theme[process]}`}>{step.instruction.name}</span>
 			<div className="w-[100px]">{children}</div>
 			<div className={`grid w-[650px] items-center gap-1 text-${theme[process]}`}>
 				{process === 'current' && step.passwordInput && (
@@ -135,9 +121,7 @@ const StepWrapper = ({
 					})
 				) : (
 					<div className="flex place-items-center justify-items-center gap-2">
-						<div className="w-[50px]">
-							{step.state && (step.state === 'success' ? 'Result' : 'Key')}
-						</div>
+						<div className="w-[50px]">{step.state && (step.state === 'success' ? 'Result' : 'Key')}</div>
 						<span className="font-mono  cursor-pointer rounded-md border border-zinc-300 px-2 py-[2px] text-sm font-medium opacity-80 hover:bg-zinc-200">
 							{formatKey(step.state || '', true)}
 						</span>

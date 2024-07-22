@@ -4,10 +4,7 @@ import siteMetadata from '@data/siteMetadata.json'
 
 const TOKEN_INFO_GOOGLE_API = 'https://www.googleapis.com/oauth2/v3/tokeninfo'
 const TOKEN_GOOGLE_API = 'https://oauth2.googleapis.com/token'
-const BASE_URL =
-    process.env.NODE_ENV === 'development'
-        ? 'http://localhost:3000/api'
-        : siteMetadata.siteUrl + '/api'
+const BASE_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:3000/api' : siteMetadata.siteUrl + '/api'
 
 export const serializeParams = (params: any): string => {
     const searchParams = new URLSearchParams()
@@ -81,7 +78,7 @@ export const deriveIdToken = async (): Promise<string> => {
     } else {
         const newJwt = await fetcher<any>(
             'POST',
-            url(TOKEN_GOOGLE_API, {
+            makeUrl(TOKEN_GOOGLE_API, {
                 client_id: process.env.GOOGLE_CLIENT_ID!,
                 client_secret: process.env.GOOGLE_CLIENT_SECRET!,
                 grant_type: 'refresh_token',
@@ -92,34 +89,18 @@ export const deriveIdToken = async (): Promise<string> => {
     }
 }
 
-export const GET = async <T>(
-    path: string,
-    params?: Record<string, any>,
-    auth?: boolean
-): Promise<T> => {
+export const GET = async <T>(path: string, params?: Record<string, any>, auth?: boolean): Promise<T> => {
     return fetcher<T>('GET', `${BASE_URL}${path}`, params, auth)
 }
 
-export const POST = async <T>(
-    path: string,
-    params?: Record<string, any>,
-    auth?: boolean
-): Promise<T> => {
+export const POST = async <T>(path: string, params?: Record<string, any>, auth?: boolean): Promise<T> => {
     return fetcher<T>('POST', `${BASE_URL}${path}`, params, auth)
 }
 
-export const PUT = async <T>(
-    path: string,
-    params?: Record<string, any>,
-    auth?: boolean
-): Promise<T> => {
+export const PUT = async <T>(path: string, params?: Record<string, any>, auth?: boolean): Promise<T> => {
     return fetcher<T>('PUT', `${BASE_URL}${path}`, params, auth)
 }
 
-export const DELETE = async <T>(
-    path: string,
-    params?: Record<string, any>,
-    auth?: boolean
-): Promise<T> => {
+export const DELETE = async <T>(path: string, params?: Record<string, any>, auth?: boolean): Promise<T> => {
     return fetcher<T>('DELETE', `${BASE_URL}${path}`, params, auth)
 }

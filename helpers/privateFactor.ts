@@ -23,7 +23,5 @@ export const verifyPrivateKey = async (user: string, privateKey: string): Promis
 export const derivePrivateFactors = async (session: SessionUser): Promise<Point[]> => {
     const privateIndices: PrivateIndex[] = await getPrivateIndices(session.info.email)
 
-    return privateIndices.map(({ index }) =>
-        constructPrivateFactor(session.factor1!, session.factor2!, index)
-    )
+    return privateIndices.map(({ index }) => constructPrivateFactor(session.factor1!, session.factor2!, index))
 }

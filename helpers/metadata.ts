@@ -5,9 +5,8 @@ export const getUser = async (user: string): Promise<Metadata> => {
     return res
 }
 
-export const initializeUser = async (user: string): Promise<Metadata> => {
-    const res = await POST<Metadata>('/metadata', { user }, true)
-    return res
+export const initializeUser = async (user: Metadata): Promise<void> => {
+    await POST<Metadata>('/metadata', user, true)
 }
 
 export const getDevices = async (user: string): Promise<Device[]> => {

@@ -1,12 +1,22 @@
 import LoginIndicator from '@components/LoginIndicator'
 import { auth } from '@libs/auth'
-import { findPrivateIndices } from '@services/metadata'
+import { find } from '@services/metadata'
 
-const Login = async ({ password }: { password: string | undefined }) => {
-	const sessionUser: SessionUser = (await auth())!
-	const keys = await findPrivateIndices(sessionUser.info.email).catch(() => [])
+interface LoginProps {
+	info: Info
+	password: string
+}
+const Login = async ({ params }: { params: LoginProps }) => {
+	if (params.info && params.password) {
+		const userMetadata: Metadata = (await find(params.info.email))!
 
-	return <LoginIndicator keys={keys} password={password} sessionUser={sessionUser} />
+		return <LoginIndicator userMetadata={userMetadata} sessionUser={null} localLoginProps={params} />
+	} else {
+		const sessionUser: SessionUser = (await auth())!
+		const userMetadata: Metadata | null = await find(sessionUser.info.email)
+
+		return <LoginIndicator userMetadata={userMetadata} sessionUser={sessionUser} localLoginProps={null} />
+	}
 }
 
 export default Login

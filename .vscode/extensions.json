@@ -1,6 +1,3 @@
 {
-    "recommendations": [
-        "dbaeumer.vscode-eslint",
-        "vdanchenkov.tailwind-class-sorter"
-    ]
+    "recommendations": ["dbaeumer.vscode-eslint", "vdanchenkov.tailwind-class-sorter"]
 }

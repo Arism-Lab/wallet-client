@@ -10,15 +10,9 @@ export const deriveRecoveryFactor = async (user: string, password: string): Prom
     return recoveryFactor
 }
 
-export const constructRecoveryFactor = async (
-    session: SessionUser,
-    password: string
-): Promise<Point> => {
+export const constructRecoveryFactor = async (session: SessionUser, password: string): Promise<Point> => {
     const recoveryIndex: string = H.keccak256(password).slice(2)
-    const recoveryKey: string = lagrangeInterpolation(
-        [session.factor1!, session.factor2!],
-        recoveryIndex
-    )
+    const recoveryKey: string = lagrangeInterpolation([session.factor1!, session.factor2!], recoveryIndex)
     const recoveryFactor: Point = { x: recoveryIndex, y: recoveryKey }
 
     await setRecoveryKey(session.info.email, recoveryKey)

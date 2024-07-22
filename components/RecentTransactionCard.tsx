@@ -95,9 +95,7 @@ const RecentTransactionCard = () => {
 										</div>
 									</div>
 									<div className="grid text-right">
-										<p
-											className={`text-base font-light ${tx.type === 'Outgoing' ? 'text-red-700' : 'text-green-700'}`}
-										>
+										<p className={`text-base font-light ${tx.type === 'Outgoing' ? 'text-red-700' : 'text-green-700'}`}>
 											{tx.type === 'Outgoing' ? '-' : '+'}
 											{tx.amount} {tx.token}
 										</p>

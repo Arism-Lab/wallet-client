@@ -19,14 +19,9 @@ const Login = ({
 }) => {
 	const router = useRouter()
 
-	const networkFactorData: NetworkFactorSteps = useAppSelector(
-		(state) => state.networkFactorReducer
-	).data
+	const networkFactorData: NetworkFactorSteps = useAppSelector((state) => state.networkFactorReducer).data
 	const data: LoginStepsForAllMethods = {
-		signInOauth: [
-			...networkFactorData,
-			...useAppSelector((state) => state.signInOauthReducer).data,
-		],
+		signInOauth: [...networkFactorData, ...useAppSelector((state) => state.signInOauthReducer).data],
 		signInOauthAndPassword: [
 			...networkFactorData,
 			...useAppSelector((state) => state.signInOauthAndPasswordReducer).data,
@@ -50,12 +45,7 @@ const Login = ({
 	return (
 		<main className="bg-global relative flex h-screen w-screen">
 			<div className="mx-auto my-auto flex w-full p-10">
-				<StepBar
-					data={currentData}
-					setConfirm={setConfirm}
-					setPassword={setPassword}
-					setPrivateKey={setPrivateKey}
-				/>
+				<StepBar data={currentData} setConfirm={setConfirm} setPassword={setPassword} setPrivateKey={setPrivateKey} />
 				{currentData[currentData.length - 1].state === 'success' ? (
 					<h1 className="my-auto h-full w-full text-center text-6xl font-extralight leading-snug text-primary-800">
 						You are all set!

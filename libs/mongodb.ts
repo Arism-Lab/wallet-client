@@ -16,11 +16,9 @@ export const connectDB = async () => {
             bufferCommands: false,
         }
 
-        cached.promise = mongoose
-            .connect(process.env.MONGO_URI as string, opts)
-            .then((mongoose) => {
-                return mongoose
-            })
+        cached.promise = mongoose.connect(process.env.MONGO_URI as string, opts).then((mongoose) => {
+            return mongoose
+        })
     }
     cached.conn = await cached.promise
     return cached.conn

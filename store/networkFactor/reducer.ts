@@ -12,37 +12,36 @@ const initialState: {
         {
             instruction: {
                 name: 'Checking Mainnet Status',
-                description: 'Pinging to Validation Nodes to check the Mainnet',
+                description: `Checking Validation Nodes' health on the Mainnet`,
             },
             state: [],
         },
         {
             instruction: {
-                name: 'Making Commitments',
+                name: 'Initializing Secrets',
+                description: 'Initializing Secrets for Validation Nodes on the Mainnet',
+            },
+            state: [],
+        },
+        {
+            instruction: {
+                name: 'Exchanging Commitments',
                 description:
-                    'Making Application Commitments from the Application to the Mainnet to encrypt their Master Shares',
+                    'Exchanging Commitments between the Application and the Validation Nodes for communication security',
             },
             state: [],
         },
         {
             instruction: {
-                name: 'Deriving Master Shares',
-                description: 'Deriving encrypted Master Shares from the Mainnet to the Application',
+                name: 'Constructing Master Shares',
+                description: 'Constructing encrypted Master Shares from the Mainnet to the Application',
             },
             state: [],
         },
         {
             instruction: {
-                name: 'Decrypting Master Shares',
-                description: 'Decrypting derived Master Shares on the Application',
-            },
-            state: [],
-        },
-        {
-            instruction: {
-                name: 'Reconstructing Network Key',
-                description:
-                    'Reconstructing Network Factor by the decrypted Master Shares on the Application',
+                name: 'Constructing Network Key',
+                description: 'Constructing Network Factor by the decrypted Master Shares on the Application',
             },
             state: '',
         },

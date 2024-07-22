@@ -42,10 +42,7 @@ const SignInOauthAndPassword = ({ sessionUser }: { sessionUser: SessionUser }) =
 
 				await dispatch(signInOauthAndPasswordActions.emitStep1(recoveryFactor.y))
 
-				const { privateFactor, deviceFactor } = await constructDeviceFactorNewDevice(
-					recoveryFactor,
-					networkFactor
-				)
+				const { privateFactor, deviceFactor } = await constructDeviceFactorNewDevice(recoveryFactor, networkFactor)
 
 				await dispatch(signInOauthAndPasswordActions.emitStep2([privateFactor.y, deviceFactor.y]))
 

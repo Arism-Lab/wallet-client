@@ -11,8 +11,7 @@ const initialState: {
         {
             instruction: {
                 name: 'Reconstructing Recovery Key',
-                description:
-                    "Reconstructing the Recovery Factor by user's password on the Application",
+                description: "Reconstructing the Recovery Factor by user's password on the Application",
             },
             state: '',
             passwordInput: true,
@@ -20,8 +19,7 @@ const initialState: {
         {
             instruction: {
                 name: 'Deriving Private Key',
-                description:
-                    'Deriving Private Factor from Device Factor and Recovery Factor on the Application',
+                description: 'Deriving Private Factor from Device Factor and Recovery Factor on the Application',
             },
             state: [],
         },

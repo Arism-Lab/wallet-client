@@ -1,8 +1,7 @@
 export const getLocalUsers = (): LocalUser[] => {
     try {
         return JSON.parse(window.localStorage.getItem('localUsers')!).sort(
-            (a: LocalUser, b: LocalUser) =>
-                new Date(b.lastLogin).getTime() - new Date(a.lastLogin).getTime()
+            (a: LocalUser, b: LocalUser) => new Date(b.lastLogin).getTime() - new Date(a.lastLogin).getTime()
         )
     } catch {
         return []

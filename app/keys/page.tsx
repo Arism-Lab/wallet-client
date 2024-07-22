@@ -66,10 +66,7 @@ const ManageKeys = () => {
 			<div className="mx-auto h-full py-4">
 				<div className="grid">
 					{keys.map((key, i) => (
-						<div
-							key={key.address}
-							className="m-2 flex flex-col rounded-[3rem] border-none bg-white p-5"
-						>
+						<div key={key.address} className="m-2 flex flex-col rounded-[3rem] border-none bg-white p-5">
 							<div className="flex place-items-center justify-between">
 								<div className="flex place-items-center gap-4">
 									<p className="flex h-8 w-8 place-items-center justify-center rounded-full bg-zinc-900 text-lg font-medium text-white">
@@ -77,9 +74,7 @@ const ManageKeys = () => {
 									</p>
 									<div className="grid">
 										<p className="dashboard-subtitle font-base text-xl">Default Key</p>
-										<p className="text-sm font-light text-zinc-500">
-											{formatKey(key.address, false)}
-										</p>
+										<p className="text-sm font-light text-zinc-500">{formatKey(key.address, false)}</p>
 									</div>
 								</div>
 								<div className="flex gap-2">
@@ -107,11 +102,7 @@ const ManageKeys = () => {
 					className="flex place-items-center rounded-full bg-zinc-900 px-10 py-4 hover:bg-zinc-700"
 				>
 					Generate new key
-					{createKeyLoading ? (
-						<Spinner className="ml-6 h-6 w-6" />
-					) : (
-						<BsDice5 className="ml-6 h-6 w-6"></BsDice5>
-					)}
+					{createKeyLoading ? <Spinner className="ml-6 h-6 w-6" /> : <BsDice5 className="ml-6 h-6 w-6"></BsDice5>}
 				</button>
 				<button
 					onClick={async () => createKey()}

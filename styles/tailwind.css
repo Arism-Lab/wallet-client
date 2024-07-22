@@ -69,10 +69,10 @@
         @apply transform overflow-hidden rounded-md border-2 border-solid border-zinc-200 bg-transparent bg-opacity-20 transition duration-200 hover:scale-105 hover:rounded-md hover:border-tertiary-400 hover:bg-zinc-200;
     }
     .card {
-        @apply mx-auto flex w-full select-none place-items-center gap-5 rounded-full bg-zinc-900 text-white px-8 py-4 transition-all duration-200 ease-in-out hover:bg-zinc-500;
+        @apply mx-auto flex w-full select-none place-items-center gap-5 rounded-full bg-zinc-900 px-8 py-4 text-white transition-all duration-200 ease-in-out hover:bg-zinc-500;
     }
     .card-secondary {
-        @apply mx-auto flex w-full select-none place-items-center gap-5 rounded-full bg-white text-black px-8 py-4 transition-all duration-200 ease-in-out hover:bg-zinc-200;
+        @apply mx-auto flex w-full select-none place-items-center gap-5 rounded-full bg-white px-8 py-4 text-black transition-all duration-200 ease-in-out hover:bg-zinc-200;
     }
 
     .dashboard-title {
@@ -84,6 +84,6 @@
     }
 
     .button-text {
-        @apply text-base font-normal text-primary-600 hover:text-primary-900 hover:underline underline-offset-2 cursor-pointer;
+        @apply cursor-pointer text-base font-normal text-primary-600 underline-offset-2 hover:text-primary-900 hover:underline;
     }
 }

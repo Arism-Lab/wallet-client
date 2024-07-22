@@ -68,8 +68,7 @@ html {
     display: block;
     margin-top: 5px;
     right: 0;
-    background: linear-gradient(transparent, transparent),
-        linear-gradient(to right, #d946ef, #ec4899);
+    background: linear-gradient(transparent, transparent), linear-gradient(to right, #d946ef, #ec4899);
     transition: width 0.25s ease;
     -webkit-transition: width 0.25s ease;
 }
@@ -77,8 +76,7 @@ html {
 .link-underline:hover:after {
     width: 100%;
     left: 0;
-    background: linear-gradient(transparent, transparent),
-        linear-gradient(to right, #d946ef, #ec4899);
+    background: linear-gradient(transparent, transparent), linear-gradient(to right, #d946ef, #ec4899);
 }
 
 @keyframes pulsate {

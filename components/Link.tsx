@@ -24,12 +24,7 @@ const Link: FC<LinkProps & HTMLProps<HTMLAnchorElement>> = ({
 	}
 
 	return (
-		<a
-			className="magic-link-no-underline group flex w-min"
-			target="_blank"
-			rel="noopener noreferrer"
-			href={href}
-		>
+		<a className="magic-link-no-underline group flex w-min" target="_blank" rel="noopener noreferrer" href={href}>
 			{rest.children}
 			<LuArrowUpRight className="ml-1 mt-1" />
 		</a>

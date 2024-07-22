@@ -1,15 +1,7 @@
 import React from 'react'
 import { HiArrowRight } from 'react-icons/hi2'
 
-const TitleButton = ({
-	title,
-	linkName,
-	href,
-}: {
-	title: string
-	linkName: string
-	href?: string
-}) => {
+const TitleButton = ({ title, linkName, href }: { title: string; linkName: string; href?: string }) => {
 	return (
 		<div className="flex place-items-center justify-between">
 			<p className="dashboard-subtitle">{title}</p>

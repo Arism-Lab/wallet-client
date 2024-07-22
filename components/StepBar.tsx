@@ -14,9 +14,7 @@ const StepBar = ({
 	setPassword?: Dispatch<SetStateAction<string>>
 }): JSX.Element => {
 	const stepLength: number = data.length
-	let currentIndex: number = data.findIndex(
-		(step: LoginStep) => step.state === '' || step.state?.length === 0
-	)
+	let currentIndex: number = data.findIndex((step: LoginStep) => step.state === '' || step.state?.length === 0)
 
 	if (currentIndex === -1) {
 		currentIndex = stepLength
@@ -37,12 +35,7 @@ const StepBar = ({
 			{Object.values(data).map((step: LoginStep, index) => (
 				<div className="grid w-full justify-items-center" key={index}>
 					{index < currentIndex ? (
-						<PreviousStep
-							step={step}
-							index={index}
-							currentIndex={currentIndex}
-							stepLength={stepLength}
-						/>
+						<PreviousStep step={step} index={index} currentIndex={currentIndex} stepLength={stepLength} />
 					) : index == currentIndex ? (
 						<CurrentStep
 							step={step}
@@ -53,12 +46,7 @@ const StepBar = ({
 							setPassword={setPassword}
 						/>
 					) : (
-						<NextStep
-							step={step}
-							index={index}
-							currentIndex={currentIndex}
-							stepLength={stepLength}
-						/>
+						<NextStep step={step} index={index} currentIndex={currentIndex} stepLength={stepLength} />
 					)}
 				</div>
 			))}

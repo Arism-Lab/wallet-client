@@ -11,8 +11,7 @@ const initialState: {
         {
             instruction: {
                 name: 'Reconstructing Recovery Key',
-                description:
-                    "Reconstructing the Recovery Factor by user's password on the Application",
+                description: "Reconstructing the Recovery Factor by user's password on the Application",
             },
             state: '',
             passwordInput: true,

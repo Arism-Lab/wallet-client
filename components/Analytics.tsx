@@ -15,10 +15,7 @@ export const logEvent = (action: any, category: any, label: any, value: any) => 
 const GoogleScript = (): JSX.Element => {
 	return (
 		<>
-			<Script
-				async
-				src={`https://www.googletagmanager.com/gtag/js?id=${siteMetadata.analytics.googleAnalyticsId}`}
-			/>
+			<Script async src={`https://www.googletagmanager.com/gtag/js?id=${siteMetadata.analytics.googleAnalyticsId}`} />
 
 			<Script strategy="lazyOnload" id="ga-script">
 				{`

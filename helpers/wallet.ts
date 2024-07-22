@@ -10,7 +10,9 @@ export const checkExistence = async (user: string): Promise<boolean> => {
     return await getUser(user).then((data) => data !== undefined)
 }
 export const checkMfa = async (user: string): Promise<boolean> => {
-    return await getRecoveryKey(user).then((data) => data != '0')
+    return await getRecoveryKey(user)
+        .then((data) => data != '0')
+        .catch(() => false)
 }
 
 export const storeUser = async (localUser: LocalUser) => {

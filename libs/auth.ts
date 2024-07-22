@@ -1,39 +1,6 @@
 import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next'
-import {
-    Account,
-    AuthOptions,
-    User as AuthUser,
-    Profile,
-    Session,
-    getServerSession,
-} from 'next-auth'
-import { AdapterUser } from 'next-auth/adapters'
-import { JWT } from 'next-auth/jwt'
+import { AuthOptions, getServerSession } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
-
-type JWTParams = {
-    token: JWT
-    user: AuthUser | AdapterUser
-    account: Account | null
-    profile?: Profile
-    trigger?: 'signIn' | 'signUp' | 'update'
-    isNewUser?: boolean
-    session?: any
-}
-
-type SessionParams = {
-    session: Session
-    token: JWT
-    user: AdapterUser
-    newSession: any
-    trigger: 'update'
-}
-
-type SignInParams = {
-    user: AuthUser | AdapterUser
-    account: Account | null
-    profile?: Profile
-}
 
 export const authOptions: AuthOptions = {
     providers: [
@@ -50,26 +17,36 @@ export const authOptions: AuthOptions = {
     },
     secret: process.env.SECRET as string,
     callbacks: {
-        async jwt({ token, account, trigger, session }: JWTParams) {
+        async jwt({ token, account, trigger, session }) {
             if (trigger === 'update') {
                 token = session
             } else if (account) {
-                token.account = account
+                token = {
+                    jwt: account,
+                    info: {
+                        email: token.email,
+                        name: token.name,
+                        image: token.picture,
+                    },
+                    factor1: session?.factor1,
+                    factor2: session?.factor2,
+                    factor3: session?.factor3,
+                }
             }
             return token
         },
-        async session({ session, token }: SessionParams) {
+        async session({ session, token }) {
             if (token) {
                 session['jwt'] = token.account
                 session['info'] = session.user
-                session['factor1'] = undefined
-                session['factor2'] = undefined
-                session['factor3'] = undefined
+                session['factor1'] = token?.factor1
+                session['factor2'] = token?.factor2
+                session['factor3'] = token?.factor3
                 delete session.user
             }
-            return session
+            return token
         },
-        async signIn({ profile }: SignInParams) {
+        async signIn() {
             return true
         },
     },
