@@ -1,13 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-import { append } from '@libs/array'
 import * as actions from '@store/signUp/actions'
 
-const initialState: {
-    data: SignUpSteps
-    loading: boolean
-    error: any
-} = {
+const initialState: { data: SignUpSteps; loading: boolean; error: any } = {
     data: [
         {
             instruction: {

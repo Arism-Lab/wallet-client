@@ -11,7 +11,7 @@ export const GET = async (req: NextRequest) => {
     return NextResponse.json(res)
 }
 
-export const POST = async (req: NextRequest) => {
+export const PUT = async (req: NextRequest) => {
     const { user, recoveryKey } = await req.json()
 
     try {

@@ -21,3 +21,25 @@ export const POST = async (req: NextRequest) => {
         return NextResponse.error()
     }
 }
+
+export const PUT = async (req: NextRequest) => {
+    const { user, device } = await req.json()
+
+    try {
+        const res = await service.editDevice(user, device, req.headers.get('Authorization')!)
+        return NextResponse.json(res)
+    } catch {
+        return NextResponse.error()
+    }
+}
+
+export const DELETE = async (req: NextRequest) => {
+    const { user, device } = await req.json()
+
+    try {
+        const res = await service.removeDevice(user, device, req.headers.get('Authorization')!)
+        return NextResponse.json(res)
+    } catch {
+        return NextResponse.error()
+    }
+}

@@ -3,6 +3,7 @@ import { CiCircleChevRight } from 'react-icons/ci'
 import { FaDiceFive } from 'react-icons/fa'
 
 import { C } from '@common'
+import cn from '@libs/class'
 import { formatKey, validatePrivateKey } from '@libs/key'
 
 const Loading = (): JSX.Element => {
@@ -56,9 +57,11 @@ const StepWrapper = ({
 
 	return (
 		<div className="flex h-[100px] w-full place-items-center justify-items-center">
-			<span className={`w-[235px] text-right text-lg font-light text-${theme[process]}`}>{step.instruction.name}</span>
+			<span className={cn('w-[235px] text-right text-lg font-light', `text-${theme[process]}`)}>
+				{step.instruction.name}
+			</span>
 			<div className="w-[100px]">{children}</div>
-			<div className={`grid w-[650px] items-center gap-1 text-${theme[process]}`}>
+			<div className={cn('grid w-[650px] items-center gap-1', `text-${theme[process]}`)}>
 				{process === 'current' && step.passwordInput && (
 					<div className="flex place-items-center justify-items-center gap-2">
 						<div className="w-[50px]">Pass</div>
@@ -80,22 +83,19 @@ const StepWrapper = ({
 						<div className="w-[50px]">Key</div>
 						<div className="w-[300px] rounded-md border border-zinc-300 px-2 py-[2px] text-sm font-medium">
 							<input
-								className="h-full w-full appearance-none border-none bg-transparent focus:outline-none"
+								className="size-full appearance-none border-none bg-transparent focus:outline-none"
 								type="text"
 								value={pri}
 								onChange={(e) => onSetPrivateKey(e.target.value)}
 							/>
 						</div>
 						<CiCircleChevRight
-							className="h-7 w-7 cursor-pointer text-primary-500 aria-disabled:pointer-events-none aria-disabled:text-zinc-500/50"
+							className="size-7 cursor-pointer text-primary-500 aria-disabled:pointer-events-none aria-disabled:text-zinc-500/50"
 							onClick={() => setConfirm!(true)}
 							aria-disabled={!validatePrivateKey(pri)}
 						/>
 						<p className="text-xs text-zinc-500">or</p>
-						<FaDiceFive
-							className="h-6 w-6 cursor-pointer text-primary-500"
-							onClick={() => onSetPrivateKey(randomKey)}
-						/>
+						<FaDiceFive className="size-6 cursor-pointer text-primary-500" onClick={() => onSetPrivateKey(randomKey)} />
 					</div>
 				)}
 				{Array.isArray(step.state) ? (
@@ -104,7 +104,7 @@ const StepWrapper = ({
 							return (
 								<div key={index} className="flex place-items-center justify-items-center gap-2">
 									<div className="w-[50px]">Key {index + 1} </div>
-									<span className="font-mono  cursor-pointer rounded-md border border-zinc-300 px-3 py-[2px] text-sm font-medium opacity-80 hover:bg-zinc-200">
+									<span className="font-mono cursor-pointer rounded-md border border-zinc-300 px-3 py-[2px] text-sm font-medium opacity-80 hover:bg-zinc-200">
 										{formatKey(state, true)}
 									</span>
 								</div>
@@ -113,7 +113,7 @@ const StepWrapper = ({
 						return (
 							<div key={index} className="flex place-items-center justify-items-center gap-2">
 								<div className="w-[50px]">Node {state.node} </div>
-								<span className="font-mono  cursor-pointer rounded-md border border-zinc-300 px-2 py-[2px] text-sm font-medium opacity-80 hover:bg-zinc-200">
+								<span className="font-mono cursor-pointer rounded-md border border-zinc-300 px-2 py-[2px] text-sm font-medium opacity-80 hover:bg-zinc-200">
 									{formatKey(state.value, true)}
 								</span>
 							</div>
@@ -122,7 +122,7 @@ const StepWrapper = ({
 				) : (
 					<div className="flex place-items-center justify-items-center gap-2">
 						<div className="w-[50px]">{step.state && (step.state === 'success' ? 'Result' : 'Key')}</div>
-						<span className="font-mono  cursor-pointer rounded-md border border-zinc-300 px-2 py-[2px] text-sm font-medium opacity-80 hover:bg-zinc-200">
+						<span className="font-mono cursor-pointer rounded-md border border-zinc-300 px-2 py-[2px] text-sm font-medium opacity-80 hover:bg-zinc-200">
 							{formatKey(step.state || '', true)}
 						</span>
 					</div>
@@ -160,7 +160,7 @@ export const PreviousStep = ({
 					<div className="absolute inset-x-0 bottom-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-zinc-800"></div>
 				)}
 				<div className="z-0 mx-auto flex w-full items-center justify-center">
-					<span className="flex h-[30px] w-[30px] place-items-center justify-center rounded-full bg-zinc-800 text-white">
+					<span className="flex size-[30px] place-items-center justify-center rounded-full bg-zinc-800 text-white">
 						{index + 1}
 					</span>
 				</div>
@@ -203,7 +203,7 @@ export const CurrentStep = ({
 					<div className="absolute inset-x-0 top-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-gradient-to-b from-primary-800 to-primary-500"></div>
 				)}
 				<div className="z-0 mx-auto flex w-full items-center justify-center">
-					<span className="flex h-[30px] w-[30px] place-items-center justify-center rounded-full bg-primary-800 text-white">
+					<span className="flex size-[30px] place-items-center justify-center rounded-full bg-primary-800 text-white">
 						<Loading />
 					</span>
 				</div>
@@ -238,7 +238,7 @@ export const NextStep = ({
 					<div className="absolute inset-x-0 top-[30px] z-0 ml-[48px] h-[36px] w-[4px] bg-zinc-500"></div>
 				)}
 				<div className="z-0 mx-auto flex w-full items-center justify-center">
-					<span className="flex h-[30px] w-[30px] place-items-center justify-center rounded-full bg-zinc-500 text-white">
+					<span className="flex size-[30px] place-items-center justify-center rounded-full bg-zinc-500 text-white">
 						{index + 1}
 					</span>
 				</div>

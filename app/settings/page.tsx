@@ -1,11 +1,11 @@
 import { Metadata } from 'next'
-import { useState } from 'react'
 
+import MFASetting from '@components/MFASetting'
 import siteMetadata from '@data/siteMetadata.json'
-import { constructRecoveryFactor } from '@helpers/recoveryFactor'
-import { useAppSelector } from '@store'
+import { auth } from '@libs/auth'
+import { findRecoveryKey } from '@services/metadata'
 
-const metadata = siteMetadata.internalLinks.find((link) => link.title === 'Dashboard')!
+const metadata = siteMetadata.internalLinks.find((link) => link.title === 'Settings')!
 
 export const generateMetadata = (): Metadata => {
 	return {
@@ -18,34 +18,18 @@ export const generateMetadata = (): Metadata => {
 	}
 }
 
-const Settings = () => {
-	const [password, setPassword] = useState('')
-
-	const sessionUserReducer = useAppSelector((state) => state.sessionUserReducer)
-
-	const handleSubmit = async () => {
-		await constructRecoveryFactor(sessionUserReducer.data!, password)
-	}
+const Settings = async () => {
+	const userSession: SessionUser = (await auth())!
+	const enabledMfa: boolean = await findRecoveryKey(userSession.info.email)
+		.then((recoveryKey) => recoveryKey !== '0')
+		.catch(() => false)
 
 	return (
 		<>
 			<div className="container mx-auto px-4">
 				<h1 className="my-8 text-3xl font-bold">Settings</h1>
 				<div className="flex flex-col">
-					<label htmlFor="password" className="text-lg font-semibold">
-						Password
-					</label>
-					<input
-						type="password"
-						id="password"
-						name="password"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-						className="rounded-md border border-zinc-300 p-2"
-					/>
-					<button onClick={handleSubmit} className="mt-4 rounded-md bg-blue-500 p-2 text-white">
-						Submit
-					</button>
+					<MFASetting userSession={userSession} enabledMfa={enabledMfa} />
 				</div>
 			</div>
 		</>

@@ -3,6 +3,7 @@
 import { SessionProvider } from 'next-auth/react'
 import { Provider } from 'react-redux'
 
+import { C } from '@common'
 import LostAccount from '@layouts/LostAccount'
 import SignInOauth from '@layouts/SignInOauth'
 import SignInOauthAndPassword from '@layouts/SignInOauthAndPassword'
@@ -17,30 +18,14 @@ interface LoginIndicatorProps {
 	localLoginProps: { info: Info; password: string } | null
 }
 const LoginIndicator = ({ userMetadata, sessionUser, localLoginProps }: LoginIndicatorProps) => {
-	const localUsers: LocalUser[] = getLocalUsers()
+	const user: string = localLoginProps?.info.email ?? sessionUser?.info.email ?? ''
+	const localUser: LocalUser | null = getLocalUsers().find(({ info }) => info.email === user)!
+	const devicePublicKey: string | null = !localUser ? null : C.getPublicKeyFromPrivateKey(localUser.deviceFactor.y)
 
-	const isFirstLogin: boolean = userMetadata === null
-	const isLocalLogin: boolean = localLoginProps !== null
-	const isRemoteLogin: boolean = sessionUser !== null
-	const isVerifiedDevice: boolean =
-		localUsers.find((e) => e.info.email === sessionUser?.info.email)?.deviceFactor !== undefined
+	const isFirstLogin: boolean = !userMetadata
+	const isLocalLogin: boolean = !!localLoginProps && !!localUser
+	const isVerifiedDevice: boolean = !!userMetadata?.devices?.some(({ publicKey }) => publicKey === devicePublicKey)
 	const enabledMfa: boolean = userMetadata?.recoveryKey !== '0'
-
-	const LoginMethod = () => {
-		if (isFirstLogin) {
-			return <SignUp sessionUser={sessionUser!} />
-		}
-		if (isLocalLogin) {
-			return <SignInPassword localUsers={localUsers} {...localLoginProps!} />
-		}
-		if (isVerifiedDevice) {
-			return <SignInOauth sessionUser={sessionUser!} localUsers={localUsers} />
-		}
-		if (enabledMfa) {
-			return <SignInOauthAndPassword sessionUser={sessionUser!} />
-		}
-		return <LostAccount />
-	}
 
 	const LoginProvider = ({ children }) => {
 		if (isLocalLogin) {
@@ -48,10 +33,27 @@ const LoginIndicator = ({ userMetadata, sessionUser, localLoginProps }: LoginInd
 		}
 
 		return (
-			<SessionProvider session={sessionUser}>
+			<SessionProvider session={sessionUser as any}>
 				<Provider store={store}>{children}</Provider>
 			</SessionProvider>
 		)
+	}
+
+	const LoginMethod = () => {
+		if (isFirstLogin) {
+			return <SignUp sessionUser={sessionUser!} />
+		}
+		if (isLocalLogin) {
+			return <SignInPassword localUser={localUser} {...localLoginProps!} />
+		}
+		if (isVerifiedDevice) {
+			return <SignInOauth sessionUser={sessionUser!} localUser={localUser} />
+		}
+		if (enabledMfa) {
+			return <SignInOauthAndPassword sessionUser={sessionUser!} />
+		} else {
+			return <LostAccount />
+		}
 	}
 
 	return (

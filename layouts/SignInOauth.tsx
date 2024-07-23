@@ -4,14 +4,16 @@ import { useSession } from 'next-auth/react'
 import { useEffect } from 'react'
 
 import Login from '@components/Login'
+import { storeNewLogin } from '@helpers/deviceFactor'
 import { deriveNetworkFactor } from '@helpers/networkFactor'
-import { constructPrivateFactor, verifyPrivateKey } from '@helpers/privateFactor'
-import { storeUser } from '@helpers/wallet'
+import { derivePrivateFactor } from '@helpers/privateFactor'
+import { verifyUser } from '@helpers/userMetadata'
+import { storeLocalUser } from '@libs/local'
 import { useAppDispatch } from '@store'
 import * as networkFactorActions from '@store/networkFactor/actions'
 import * as signInOauthActions from '@store/signInOauth/actions'
 
-const SignInOauth = ({ sessionUser, localUsers }: { sessionUser: SessionUser; localUsers: LocalUser[] }) => {
+const SignInOauth = ({ sessionUser, localUser }: { sessionUser: SessionUser; localUser: LocalUser }) => {
 	const dispatch = useAppDispatch()
 	const { update } = useSession()
 
@@ -21,30 +23,28 @@ const SignInOauth = ({ sessionUser, localUsers }: { sessionUser: SessionUser; lo
 				const networkFactor: Point = (await deriveNetworkFactor(
 					sessionUser.jwt.id_token,
 					sessionUser.info.email,
+					false,
 					dispatch,
 					networkFactorActions
 				))!
 
-				const deviceFactor: Point = localUsers.find((e) => e.info.email === sessionUser.info.email)!.deviceFactor
+				const deviceFactor: Point = localUser.deviceFactor
+				dispatch(signInOauthActions.emitStep1(deviceFactor.y))
 
-				await dispatch(signInOauthActions.emitStep1(deviceFactor.y))
+				const privateFactor: Point = derivePrivateFactor([networkFactor, deviceFactor])
+				dispatch(signInOauthActions.emitStep2(privateFactor.y))
 
-				const privateFactor: Point = constructPrivateFactor(networkFactor, deviceFactor)
-
-				await dispatch(signInOauthActions.emitStep2(privateFactor.y))
-
-				const verifiedPrivateKey = await verifyPrivateKey(sessionUser.info.email, privateFactor.y)
-				if (verifiedPrivateKey) {
+				const verifiedUser = await verifyUser(sessionUser.info.email, privateFactor.y)
+				if (verifiedUser) {
 					const lastLogin = new Date().toISOString()
 
-					await update({
-						...sessionUser,
-						factor1: networkFactor,
-						factor2: deviceFactor,
-					})
-					await storeUser({ deviceFactor, info: sessionUser.info, lastLogin })
+					await storeNewLogin(sessionUser, deviceFactor.y, lastLogin)
 
-					await dispatch(signInOauthActions.emitStep3('success'))
+					const localUser: LocalUser = { info: sessionUser.info, deviceFactor, lastLogin }
+					storeLocalUser(localUser)
+
+					await update({ ...sessionUser, networkFactor, deviceFactor })
+					dispatch(signInOauthActions.emitStep3('success'))
 				}
 			} catch (error) {}
 		})()

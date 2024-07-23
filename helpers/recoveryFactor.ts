@@ -1,21 +1,40 @@
 import { H } from '@common'
-import { getRecoveryKey, setRecoveryKey } from '@helpers/metadata'
+import * as clientMetadata from '@endpoints/metadata'
 import { lagrangeInterpolation } from '@libs/arithmetic'
+import { deriveThresholdFactors } from '@libs/session'
+import * as serverMetadata from '@services/metadata'
 
-export const deriveRecoveryFactor = async (user: string, password: string): Promise<Point> => {
+export const deriveRecoveryFactor = async (
+    user: string,
+    password: string,
+    fromClient: boolean = true
+): Promise<Point | null> => {
+    const req = fromClient ? clientMetadata.find(user) : serverMetadata.find(user)
+    const metadata: Metadata | undefined = await req.then((data) => data).catch(() => undefined)
+    if (!metadata) {
+        return null
+    }
     const recoveryIndex: string = H.keccak256(password).slice(2)
-    const recoveryKey: string = await getRecoveryKey(user)
+    const recoveryKey: string = metadata.recoveryKey
     const recoveryFactor: Point = { x: recoveryIndex, y: recoveryKey }
-
     return recoveryFactor
 }
 
-export const constructRecoveryFactor = async (session: SessionUser, password: string): Promise<Point> => {
+export const enableMfa = async (
+    session: SessionUser,
+    password: string,
+    fromClient: boolean = true
+): Promise<boolean> => {
     const recoveryIndex: string = H.keccak256(password).slice(2)
-    const recoveryKey: string = lagrangeInterpolation([session.factor1!, session.factor2!], recoveryIndex)
-    const recoveryFactor: Point = { x: recoveryIndex, y: recoveryKey }
+    const factors: Point[] = deriveThresholdFactors(session)
+    const recoveryKey: string = lagrangeInterpolation(factors, recoveryIndex)
+    const req = fromClient
+        ? clientMetadata.setRecoveryKey(session.info.email, recoveryKey)
+        : serverMetadata.setRecoveryKey(session.info.email, recoveryKey, session.jwt.id_token)
+    return await req.then(() => true).catch(() => false)
+}
 
-    await setRecoveryKey(session.info.email, recoveryKey)
-
-    return recoveryFactor
+export const checkMfa = async (user: string, fromClient: boolean = true): Promise<boolean> => {
+    const req = fromClient ? clientMetadata.findRecoveryKey(user) : serverMetadata.findRecoveryKey(user)
+    return await req.then((data) => data !== '0').catch(() => false)
 }

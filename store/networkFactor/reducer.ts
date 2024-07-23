@@ -3,11 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import { append } from '@libs/array'
 import * as actions from '@store/networkFactor/actions'
 
-const initialState: {
-    data: NetworkFactorSteps
-    loading: boolean
-    error: any
-} = {
+const initialState: { data: NetworkFactorSteps; loading: boolean; error: any } = {
     data: [
         {
             instruction: {

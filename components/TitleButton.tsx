@@ -7,7 +7,7 @@ const TitleButton = ({ title, linkName, href }: { title: string; linkName: strin
 			<p className="dashboard-subtitle">{title}</p>
 			<button className="flex place-items-center rounded-full bg-zinc-900 px-5 py-2 text-white hover:bg-zinc-700">
 				{linkName}
-				<HiArrowRight className="ml-2 h-4 w-4"></HiArrowRight>
+				<HiArrowRight className="ml-2 size-4"></HiArrowRight>
 			</button>
 		</div>
 	)

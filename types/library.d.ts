@@ -10,24 +10,28 @@ type Agent = {
     name: string
     version: string
 }
-type Device = {
-    id: string
-    lastLogin: string
+type ExtractedAgent = {
     browser: Agent
     os: Agent
 }
+type Device = {
+    agent: string
+    name: string
+    lastLogin: string
+    publicKey: string
+}
+type ExtractDevice = ExtractedAgent & Device
 type LocalUser = {
     info: Info
     deviceFactor: Point
     lastLogin: string
 }
 type PrivateIndex = {
+    name: string
     address: string
     index: string
 }
-type PublicWallet = {
-    user: string
-    address: string
+type PublicWallet = PrivateIndex & {
     publicKey: string
 }
 type Wallet = PublicWallet & {

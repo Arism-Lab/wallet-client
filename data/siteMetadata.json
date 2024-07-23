@@ -16,14 +16,9 @@
             "description": "View your wallet general information"
         },
         {
-            "title": "DIDs",
-            "path": "/dids",
-            "description": "Manage your Decentralized Identifiers"
-        },
-        {
-            "title": "Keys",
-            "path": "/keys",
-            "description": "Manage keys associated with your account"
+            "title": "Wallets",
+            "path": "/wallets",
+            "description": "Manage wallets associated with your account"
         },
         {
             "title": "Devices",
@@ -34,6 +29,11 @@
             "title": "Transactions",
             "path": "/transactions",
             "description": "View your transaction history"
+        },
+        {
+            "title": "DIDs",
+            "path": "/dids",
+            "description": "Manage your Decentralized Identifiers"
         },
         {
             "title": "Settings",
