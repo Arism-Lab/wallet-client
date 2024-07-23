@@ -85,9 +85,9 @@ const RecentTransactionCard = () => {
 								>
 									<div className="flex items-center gap-3">
 										{tx.type === 'Outgoing' ? (
-											<BsArrowRightCircle className="h-7 w-7 text-red-600"></BsArrowRightCircle>
+											<BsArrowRightCircle className="size-7 text-red-600"></BsArrowRightCircle>
 										) : (
-											<BsArrowLeftCircle className="h-7 w-7 text-green-600"></BsArrowLeftCircle>
+											<BsArrowLeftCircle className="size-7 text-green-600"></BsArrowLeftCircle>
 										)}
 										<div className="grid">
 											<p className="text-base font-medium text-zinc-900">{tx.type}</p>

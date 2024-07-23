@@ -39,10 +39,11 @@ export const fetcher = async <T>(
         headers['Authorization'] = 'Bearer ' + id_token
     }
 
-    const options = { method, headers }
-
-    if (method === 'GET') {
+    const options = { method: method === 'HTTPSGET' ? 'GET' : method, headers }
+    if (method === 'GET' || method === 'HTTPSGET') {
         options['next'] = { revalidate: 0 }
+    }
+    if (method === 'GET') {
         url = makeUrl(url, params)
     } else {
         options['body'] = JSON.stringify(params)

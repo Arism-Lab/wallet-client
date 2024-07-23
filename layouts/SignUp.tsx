@@ -6,11 +6,9 @@ import { useSelector } from 'react-redux'
 
 import { C, F } from '@common'
 import Login from '@components/Login'
-import { constructDeviceFactor } from '@helpers/deviceFactor'
-import { initializeUser } from '@helpers/metadata'
+import { deriveDeviceFactor } from '@helpers/deviceFactor'
 import { deriveNetworkFactor } from '@helpers/networkFactor'
-import { auth } from '@libs/auth'
-import { getDeviceInfo } from '@libs/device'
+import { createNewUser } from '@helpers/userMetadata'
 import { storeLocalUser } from '@libs/local'
 import { RootState, useAppDispatch } from '@store'
 import * as networkFactorActions from '@store/networkFactor/actions'
@@ -25,7 +23,6 @@ const SignUp = ({ sessionUser }: { sessionUser: SessionUser }) => {
 	const [networkFactor, setNetworkFactor] = useState<Point | undefined>()
 	const signUpSteps: SignUpSteps = useSelector((state: RootState) => state.signUpReducer).data
 
-	// Stage 1: Derive Network Factor
 	useEffect(() => {
 		if (networkFactor || signUpSteps[0].state.length !== 0) return
 		;(async () => {
@@ -40,46 +37,23 @@ const SignUp = ({ sessionUser }: { sessionUser: SessionUser }) => {
 		})()
 	}, [])
 
-	// Stage 2: Derive other Factors
 	useEffect(() => {
 		if (!networkFactor || !confirm) return
 		;(async () => {
-			const privateFactor: Point = {
-				x: F.PRIVATE_INDEX,
-				y: privateKey ?? C.generatePrivateKey(),
-			}
-			await dispatch(signUpActions.emitStep1(privateFactor.y.toString()))
+			const privateFactor: Point = { x: F.PRIVATE_INDEX, y: privateKey ?? C.generatePrivateKey() }
+			dispatch(signUpActions.emitStep1(privateFactor.y.toString()))
 
-			const deviceFactor = await constructDeviceFactor(privateFactor, networkFactor)
-			await dispatch(signUpActions.emitStep2(deviceFactor.y.toString()))
+			const deviceFactor = deriveDeviceFactor([privateFactor, networkFactor])
+			dispatch(signUpActions.emitStep2(deviceFactor.y.toString()))
 
 			const lastLogin = new Date().toISOString()
-			const device: Device = getDeviceInfo(lastLogin)
-			const privateIndex: PrivateIndex = {
-				address: C.getAddressFromPrivateKey(privateFactor.y),
-				index: privateFactor.x,
-			}
+			await createNewUser(sessionUser.info.email, privateFactor.y, deviceFactor.y, lastLogin)
 
-			const userMetadata: Metadata = {
-				user: sessionUser.info.email,
-				masterAddress: C.getAddressFromPrivateKey(privateFactor.y),
-				masterPublicKey: C.getPublicKeyFromPrivateKey(privateFactor.y),
-				devices: [device],
-				privateIndices: [privateIndex],
-				recoveryKey: '0',
-			}
-			await initializeUser(userMetadata)
-
-			const localUser: LocalUser = {
-				info: sessionUser.info,
-				deviceFactor,
-				lastLogin,
-			}
+			const localUser: LocalUser = { info: sessionUser.info, deviceFactor, lastLogin }
 			storeLocalUser(localUser)
 
-			await update({ ...sessionUser, factor1: networkFactor, factor2: deviceFactor })
-
-			await dispatch(signUpActions.emitStep3('success'))
+			await update({ ...sessionUser, networkFactor, deviceFactor })
+			dispatch(signUpActions.emitStep3('success'))
 		})()
 	}, [networkFactor, confirm])
 

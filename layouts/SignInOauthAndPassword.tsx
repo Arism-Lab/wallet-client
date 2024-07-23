@@ -4,11 +4,11 @@ import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 
 import Login from '@components/Login'
-import { constructDeviceFactorNewDevice } from '@helpers/deviceFactor'
+import { constructDeviceFactor, storeNewDevice } from '@helpers/deviceFactor'
 import { deriveNetworkFactor } from '@helpers/networkFactor'
-import { verifyPrivateKey } from '@helpers/privateFactor'
 import { deriveRecoveryFactor } from '@helpers/recoveryFactor'
-import { storeUser } from '@helpers/wallet'
+import { verifyUser } from '@helpers/userMetadata'
+import { storeLocalUser } from '@libs/local'
 import { useAppDispatch } from '@store'
 import * as networkFactorActions from '@store/networkFactor/actions'
 import * as signInOauthAndPasswordActions from '@store/signInOauthAndPassword/actions'
@@ -27,6 +27,7 @@ const SignInOauthAndPassword = ({ sessionUser }: { sessionUser: SessionUser }) =
 			const networkFactor: Point = (await deriveNetworkFactor(
 				sessionUser.jwt.id_token,
 				sessionUser.info.email,
+				false,
 				dispatch,
 				networkFactorActions
 			))!
@@ -38,27 +39,27 @@ const SignInOauthAndPassword = ({ sessionUser }: { sessionUser: SessionUser }) =
 	useEffect(() => {
 		if (networkFactor && confirm) {
 			;(async () => {
-				const recoveryFactor: Point = await deriveRecoveryFactor(sessionUser.info.email, password)
+				const recoveryFactor: Point | null = (await deriveRecoveryFactor(sessionUser.info.email, password))!
+				dispatch(signInOauthAndPasswordActions.emitStep1(recoveryFactor.y))
 
-				await dispatch(signInOauthAndPasswordActions.emitStep1(recoveryFactor.y))
+				const { privateFactor, deviceFactor } = constructDeviceFactor([recoveryFactor, networkFactor])
+				dispatch(signInOauthAndPasswordActions.emitStep2([privateFactor.y, deviceFactor.y]))
 
-				const { privateFactor, deviceFactor } = await constructDeviceFactorNewDevice(recoveryFactor, networkFactor)
-
-				await dispatch(signInOauthAndPasswordActions.emitStep2([privateFactor.y, deviceFactor.y]))
-
-				const verifiedPrivateKey = await verifyPrivateKey(sessionUser.info.email, privateFactor.y)
-				if (verifiedPrivateKey) {
+				const verifiedUser = await verifyUser(sessionUser.info.email, privateFactor.y)
+				if (verifiedUser) {
 					const lastLogin = new Date().toISOString()
 
-					await update({
-						...sessionUser,
-						factor1: networkFactor,
-						factor2: deviceFactor,
-						factor3: recoveryFactor,
-					})
-					await storeUser({ deviceFactor, info: sessionUser.info, lastLogin })
+					await storeNewDevice(sessionUser, deviceFactor.y, lastLogin)
 
-					await dispatch(signInOauthAndPasswordActions.emitStep3('success'))
+					const localUser: LocalUser = {
+						info: sessionUser.info,
+						deviceFactor,
+						lastLogin: new Date().toISOString(),
+					}
+					storeLocalUser(localUser)
+
+					await update({ ...sessionUser, networkFactor, deviceFactor, recoveryFactor })
+					dispatch(signInOauthAndPasswordActions.emitStep3('success'))
 				}
 			})()
 		}

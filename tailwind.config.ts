@@ -58,6 +58,9 @@ const config: Config = {
             },
         },
     },
-    plugins: [require('tailwindcss/nesting'), require('postcss-nesting')],
+    daisyui: {
+        themes: ['light'],
+    },
+    plugins: [require('tailwindcss/nesting'), require('daisyui'), require('postcss-nesting')],
 }
 export default config

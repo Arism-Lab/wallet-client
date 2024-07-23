@@ -13,15 +13,15 @@ const AccountBalanceCard = () => {
 				</p>
 				<div className="flex gap-5">
 					<div className="grid gap-1">
-						<BsArrowUpRightCircle className="h-16 w-16 rounded-full bg-zinc-800 p-5 text-white"></BsArrowUpRightCircle>
+						<BsArrowUpRightCircle className="size-16 rounded-full bg-zinc-800 p-5 text-white"></BsArrowUpRightCircle>
 						<p className="text-center text-sm font-light text-zinc-800">Send</p>
 					</div>
 					<div className="grid gap-1">
-						<BsClockHistory className="h-16 w-16 rounded-full bg-zinc-800 p-5 text-white"></BsClockHistory>
+						<BsClockHistory className="size-16 rounded-full bg-zinc-800 p-5 text-white"></BsClockHistory>
 						<p className="text-center text-sm font-light text-zinc-800">Inspect</p>
 					</div>
 					<div className="grid gap-1">
-						<BsArrowCounterclockwise className="h-16 w-16 rounded-full bg-zinc-800 p-5 text-white"></BsArrowCounterclockwise>
+						<BsArrowCounterclockwise className="size-16 rounded-full bg-zinc-800 p-5 text-white"></BsArrowCounterclockwise>
 						<p className="text-center text-sm font-light text-zinc-800">Stake</p>
 					</div>
 				</div>
@@ -29,7 +29,7 @@ const AccountBalanceCard = () => {
 			<div className="flex items-center justify-start gap-5">
 				<div className="flex place-items-center items-center gap-1 rounded-full bg-white px-4 py-2 text-sm font-light text-green-600">
 					<p className="my-auto h-full">+1,25%</p>
-					<PiArrowLineUpRightLight className="h-5 w-5 " />
+					<PiArrowLineUpRightLight className="size-5 " />
 				</div>
 				<div className="text-sm font-medium text-zinc-900 underline underline-offset-4">1 day</div>
 				<div className="text-sm font-light text-zinc-500">1 week</div>

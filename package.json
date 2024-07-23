@@ -10,7 +10,8 @@
         "dev:node1": "cd ../arism-node && yarn start:dev:node1",
         "dev:node2": "cd ../arism-node && yarn start:dev:node2",
         "dev:node3": "cd ../arism-node && yarn start:dev:node3",
-        "dev:backend": "concurrently \"yarn dev:node1\" \"yarn dev:node2\" \"yarn dev:node3\""
+        "dev:backend": "concurrently \"yarn dev:node1\" \"yarn dev:node2\" \"yarn dev:node3\"",
+        "dev:backend:derivation": "concurrently \"yarn dev:node1\" \"yarn dev:node2\""
     },
     "dependencies": {
         "@reduxjs/toolkit": "^2.2.1",
@@ -19,7 +20,9 @@
         "@vercel/analytics": "^1.1.2",
         "arism-sdk": "^1.0.15",
         "bip39": "^3.1.0",
+        "clsx": "^2.1.1",
         "device-detector-js": "^3.0.3",
+        "eslint-plugin-tailwindcss": "^3.17.4",
         "framer-motion": "^10.18.0",
         "json-stable-stringify": "^1.1.1",
         "keccak": "^3.0.4",
@@ -41,18 +44,19 @@
         "redux-logger": "^3.0.6",
         "secp256k1": "^5.0.0",
         "slick-carousel": "^1.8.1",
+        "tailwind-merge": "^2.4.0",
         "timeago.js": "^4.0.2",
         "usehooks-ts": "^3.0.1",
         "uuid": "^9.0.1",
         "web3": "^4.4.0"
     },
     "devDependencies": {
-        "@types/nprogress": "^0.2.3",
         "@types/bn.js": "^5.1.5",
         "@types/elliptic": "^6.4.18",
         "@types/json-stable-stringify": "^1.0.36",
         "@types/keccak": "^3.0.4",
         "@types/node": "^20",
+        "@types/nprogress": "^0.2.3",
         "@types/react": "^18",
         "@types/react-dom": "^18",
         "@types/redux-logger": "^3.0.13",
@@ -61,6 +65,7 @@
         "@typescript-eslint/parser": "^7.2.0",
         "autoprefixer": "^10.0.1",
         "concurrently": "^8.2.2",
+        "daisyui": "^4.12.10",
         "eslint": "^8",
         "eslint-config-next": "14.1.0",
         "eslint-config-prettier": "^9.1.0",

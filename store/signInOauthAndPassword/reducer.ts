@@ -2,11 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 
 import * as actions from '@store/signInOauthAndPassword/actions'
 
-const initialState: {
-    data: SignInOauthAndPasswordSteps
-    loading: boolean
-    error: any
-} = {
+const initialState: { data: SignInOauthAndPasswordSteps; loading: boolean; error: any } = {
     data: [
         {
             instruction: {

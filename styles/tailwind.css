@@ -78,12 +78,31 @@
     .dashboard-title {
         @apply text-xl font-medium text-black;
     }
-
     .dashboard-subtitle {
         @apply text-lg font-medium text-zinc-800;
     }
 
-    .button-text {
-        @apply cursor-pointer text-base font-normal text-primary-600 underline-offset-2 hover:text-primary-900 hover:underline;
+    .button {
+        @apply tracking-wide transition-all duration-200 ease-in-out;
     }
+    .primary-button {
+        @apply button rounded-xl bg-zinc-900 px-6 py-2 text-white hover:bg-zinc-600 hover:text-white xl:font-normal;
+    }
+    .secondary-button {
+        @apply button rounded-xl bg-zinc-200/70 px-6 py-2 text-black ring-inset ring-zinc-500 hover:bg-zinc-300/70 hover:ring-1 hover:ring-zinc-500;
+    }
+    .filled-button {
+        @apply button rounded-xl bg-zinc-900 px-6 py-2 text-white hover:bg-zinc-700;
+    }
+    .text-button {
+        @apply button font-light text-zinc-500 transition-all duration-200 ease-in-out hover:text-zinc-900;
+    }
+    .text-input {
+        @apply rounded-xl py-3 px-6 text-lg text-base focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-zinc-900 focus:bg-zinc-50 bg-zinc-200/70 border border-solid border-zinc-800/30 focus:border-opacity-0;
+    }
+
+    .border-box {
+        @apply hover:border-tertiary-400 transform overflow-hidden rounded-md border-2 border-solid border-gray-200 bg-transparent bg-opacity-20 transition duration-200 hover:scale-105 hover:rounded-md hover:bg-gray-200;
+    }
+
 }

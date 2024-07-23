@@ -3,7 +3,6 @@ import { Metadata } from 'next'
 import AccountBalanceCard from '@components/AccountBalanceCard'
 import RecentTransactionCard from '@components/RecentTransactionCard'
 import siteMetadata from '@data/siteMetadata.json'
-import { auth } from '@libs/auth'
 
 const metadata = siteMetadata.internalLinks.find((link) => link.title === 'Dashboard')!
 
@@ -19,19 +18,16 @@ export const generateMetadata = (): Metadata => {
 }
 
 const Dashboard = async () => {
-	const session = await auth()
-
-	console.log(session)
 	return (
 		<>
-			<div className="grid h-full w-full grid-cols-2 gap-5 pt-10">
+			<div className="grid size-full grid-cols-2 gap-5 pt-10">
 				<div className="grid grid-rows-3 rounded-[3rem] bg-white p-4 ">
 					<AccountBalanceCard />
 					<div className="row-span-2">
 						<RecentTransactionCard />
 					</div>
 				</div>
-				<div className="grid h-full w-full grid-rows-3 gap-5 rounded-[3rem]">
+				<div className="grid size-full grid-rows-3 gap-5 rounded-[3rem]">
 					<div className="row-span-2 rounded-[2rem] bg-white p-5">
 						<p className="dashboard-title">Your Assets</p>
 					</div>

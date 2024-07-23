@@ -6,9 +6,9 @@ type Info = {
 type SessionUser = {
     jwt: JWT
     info: Info
-    factor1: Point | undefined
-    factor2: Point | undefined
-    factor3: Point | undefined
+    networkFactor: Point | undefined
+    deviceFactor: Point | undefined
+    recoveryFactor: Point | undefined
 }
 type JWT = {
     access_token: string

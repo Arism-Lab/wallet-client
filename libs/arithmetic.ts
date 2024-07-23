@@ -50,7 +50,7 @@ export const kCombinations = (s: number | number[], k: number): number[][] => {
 
 export const lagrangeInterpolation = (points: Point[], x: string): string => {
     let result: BN = BN.ZERO
-    const correspondingX: BN = BN.from(x, 16)
+    const correspondingX: BN = BN.from(x, 16).umod(C.ORDER)
 
     for (const currentPoint of points) {
         let upper = BN.ONE

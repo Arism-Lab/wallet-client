@@ -1,15 +1,17 @@
 import { Metadata } from 'next'
+import dynamic from 'next/dynamic'
 import { redirect } from 'next/navigation'
 import { HiOutlinePlus } from 'react-icons/hi2'
 
 import { N } from '@common'
-import AccountCardSlider from '@components/AccountCardSlider'
 import Card from '@components/Card'
 import LoginButton from '@components/Home/LoginButton'
 import NodeCard from '@components/NodeCard'
 import { ping } from '@helpers/networkFactor'
 import { auth } from '@libs/auth'
 import siteMetadata from 'data/siteMetadata.json'
+
+const AccountCardSlider = dynamic(() => import('@components/AccountCardSlider'), { ssr: false })
 
 export const generateMetadata = (): Metadata => {
 	return {
@@ -38,7 +40,7 @@ const Home = async () => {
 							<NodeCard key={index} node={node} />
 						))}
 						<button className="flex select-none place-items-center rounded-2xl p-5 hover:bg-primary-100">
-							<HiOutlinePlus className="h-5 w-5 rounded-full text-xl text-black" />
+							<HiOutlinePlus className="size-5 rounded-full text-xl text-black" />
 							<p className="ml-5 text-sm font-medium">Register an Arism Node</p>
 						</button>
 					</div>

@@ -8,8 +8,8 @@ import { BsTrash3 } from 'react-icons/bs'
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu'
 
 import Image from '@components/Image'
-import { getPrivateIndices } from '@helpers/metadata'
-import { checkMfa } from '@helpers/wallet'
+import { getPrivateIndices } from '@helpers/privateFactor'
+import { checkMfa } from '@helpers/recoveryFactor'
 import { formatDate } from '@libs/date'
 import { removeLocalUser } from '@libs/local'
 
@@ -50,11 +50,7 @@ const AccountCard = ({ localUser, click, hidden, focus }: AccountCardProps) => {
 
 	const handleGoogleSignIn = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault()
-		signIn('google', {
-			callbackUrl: '/login',
-			login_hint: localUser.info.email,
-			prompt: 'select_account+consent',
-		})
+		signIn('google', { callbackUrl: '/login' }, { login_hint: localUser.info.email })
 	}
 
 	const handlePasswordSignIn = async () => {
@@ -64,7 +60,7 @@ const AccountCard = ({ localUser, click, hidden, focus }: AccountCardProps) => {
 	return (
 		<div className="relative mx-auto">
 			<div
-				className="absolute inset-x-0 -top-0 z-10 h-0 w-full transform select-none items-center justify-center gap-2 truncate rounded-2xl border-2 border-red-600 bg-white px-5 pb-3 pt-2 text-lg opacity-0 duration-300 ease-in-out aria-expanded:grid aria-expanded:h-max aria-expanded:-translate-y-28 aria-expanded:opacity-100"
+				className="absolute inset-x-0 -top-0 z-10 h-0 w-full select-none items-center justify-center gap-2 truncate rounded-2xl border-2 border-red-600 bg-white px-5 pb-3 pt-2 text-lg opacity-0 duration-300 ease-in-out aria-expanded:grid aria-expanded:h-max aria-expanded:-translate-y-28 aria-expanded:opacity-100"
 				aria-expanded={removeConfirm}
 			>
 				<p className="font-light">
@@ -79,13 +75,13 @@ const AccountCard = ({ localUser, click, hidden, focus }: AccountCardProps) => {
 				</button>
 			</div>
 			<button
-				className="card-secondary mx-auto flex w-full cursor-default justify-between overflow-hidden truncate transition-all duration-300 ease-in-out disabled:w-[0px] disabled:p-0 disabled:opacity-0 aria-expanded:w-[90vw]"
+				className="card-secondary mx-auto flex w-full cursor-default justify-between overflow-hidden truncate transition-all duration-300 ease-in-out disabled:w-0 disabled:p-0 disabled:opacity-0 aria-expanded:w-[90vw]"
 				disabled={hidden}
 				aria-expanded={expanded}
 			>
 				{expanded ? (
 					<button
-						className="grid h-12 w-12 place-items-center justify-items-center rounded-full border-2 border-primary-600 p-2 text-2xl text-primary-600 hover:bg-primary-100"
+						className="grid size-12 place-items-center justify-items-center rounded-full border-2 border-primary-600 p-2 text-2xl text-primary-600 hover:bg-primary-100"
 						onClick={click}
 					>
 						<LuChevronLeft />
@@ -100,12 +96,10 @@ const AccountCard = ({ localUser, click, hidden, focus }: AccountCardProps) => {
 					/>
 				)}
 				<div className="grid  text-left">
-					<p className="truncate-1 w-min overflow-hidden truncate text-ellipsis font-medium">
+					<p className="truncate-1 w-min overflow-hidden truncate font-medium">
 						{localUser.info.name} ({formatDate(localUser.lastLogin, true)})
 					</p>
-					<p className="truncate-1 w-min overflow-hidden truncate text-ellipsis font-light text-zinc-500">
-						{localUser.info.email}
-					</p>
+					<p className="truncate-1 w-min overflow-hidden truncate font-light text-zinc-500">{localUser.info.email}</p>
 				</div>
 				{expanded ? (
 					<>
@@ -117,7 +111,7 @@ const AccountCard = ({ localUser, click, hidden, focus }: AccountCardProps) => {
 							<p className="font-light text-zinc-500">last login since {formatDate(localUser.lastLogin)}</p>
 						</div>
 						<button
-							className="grid h-12 w-12 transform place-items-center justify-items-center rounded-full border-2 border-red-600 p-2 text-xl text-red-600 transition-all duration-300 ease-in-out hover:bg-red-100 aria-disabled:rotate-180 aria-disabled:border-primary-600 aria-disabled:text-primary-600 aria-disabled:hover:bg-primary-100"
+							className="grid size-12 place-items-center justify-items-center rounded-full border-2 border-red-600 p-2 text-xl text-red-600 transition-all duration-300 ease-in-out hover:bg-red-100 aria-disabled:rotate-180 aria-disabled:border-primary-600 aria-disabled:text-primary-600 aria-disabled:hover:bg-primary-100"
 							onClick={() => setRemoveConfirm(!removeConfirm)}
 							aria-disabled={removeConfirm}
 						>
@@ -141,7 +135,7 @@ const AccountCard = ({ localUser, click, hidden, focus }: AccountCardProps) => {
 							onChange={(e) => setPassword(e.target.value)}
 						/>
 						<button
-							className="grid h-12 w-12 cursor-pointer place-items-center justify-items-center rounded-full border-2 border-primary-600 text-2xl text-primary-600 hover:bg-primary-100 disabled:pointer-events-none disabled:border-zinc-400 disabled:text-zinc-400 disabled:opacity-50"
+							className="grid size-12 cursor-pointer place-items-center justify-items-center rounded-full border-2 border-primary-600 text-2xl text-primary-600 hover:bg-primary-100 disabled:pointer-events-none disabled:border-zinc-400 disabled:text-zinc-400 disabled:opacity-50"
 							disabled={password === ''}
 							onClick={() => handlePasswordSignIn()}
 						>
@@ -150,7 +144,7 @@ const AccountCard = ({ localUser, click, hidden, focus }: AccountCardProps) => {
 					</>
 				) : enabledMfa ? (
 					<LuChevronRight
-						className="h-12 w-12 cursor-pointer rounded-full border-2 border-primary-600 p-2 text-xl text-primary-600 hover:bg-primary-100"
+						className="size-12 cursor-pointer rounded-full border-2 border-primary-600 p-2 text-xl text-primary-600 hover:bg-primary-100"
 						onClick={click}
 					/>
 				) : (
