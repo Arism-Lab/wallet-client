@@ -1,24 +1,22 @@
+'use client'
+
 import { configureStore } from '@reduxjs/toolkit'
-import signInPasswordReducer from '@store/signInPassword/reducer'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import logger from 'redux-logger'
 
-import localUsersReducer from '@store/localUsers/reducer'
-import sessionUserReducer from '@store/sessionUser/reducer'
+import networkFactorReducer from '@store/networkFactor/reducer'
 import signInOauthReducer from '@store/signInOauth/reducer'
 import signInOauthAndPasswordReducer from '@store/signInOauthAndPassword/reducer'
+import signInPasswordReducer from '@store/signInPassword/reducer'
 import signUpReducer from '@store/signUp/reducer'
-import tokenReducer from '@store/token/reducer'
 
 export const store = configureStore({
     reducer: {
-        localUsersReducer,
-        sessionUserReducer,
-        tokenReducer,
         signInOauthReducer,
         signInOauthAndPasswordReducer,
         signInPasswordReducer,
         signUpReducer,
+        networkFactorReducer,
     },
     middleware: (getDefaultMiddleware) => {
         const middleware = getDefaultMiddleware()

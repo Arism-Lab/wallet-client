@@ -1,65 +1,32 @@
-import { Account } from 'next-auth'
+'use client'
 
-import { BN, EC, F } from '@common'
-import {
-    constructDeviceFactor,
-    constructDeviceFactorNewDevice,
-} from '@helpers/deviceFactor'
-import {
-    addDevice,
-    addKey,
-    getRecoveryKey,
-    getUser,
-    initializeUser,
-} from '@helpers/metadata'
-import { deriveNetworkFactor } from '@helpers/networkFactor'
-import {
-    constructPrivateFactor,
-    verifyPrivateKey,
-} from '@helpers/privateFactor'
-import { deriveRecoveryFactor } from '@helpers/recoveryFactor'
+import { C } from '@common'
+import { addDevice, addPrivateIndex, getRecoveryKey, getUser } from '@helpers/metadata'
+import { constructPrivateFactor } from '@helpers/privateFactor'
 import { getDeviceInfo } from '@libs/device'
-import { AppDispatch, store, useAppDispatch } from '@store'
-import { storeLocalUser } from '@store/localUsers/actions'
-import { storeSessionUser } from '@store/sessionUser/actions'
-import * as actions from '@store/signInOauth/actions'
-import { TA } from '@types'
+import { storeLocalUser } from '@libs/local'
 
 export const checkExistence = async (user: string): Promise<boolean> => {
     return await getUser(user).then((data) => data !== undefined)
 }
 export const checkMfa = async (user: string): Promise<boolean> => {
-    return await getRecoveryKey(user).then((data) => data != '0')
+    return await getRecoveryKey(user)
+        .then((data) => data != '0')
+        .catch(() => false)
 }
 
-export const storeUser = async (
-    localUser: TA.LocalUser,
-    sessionUser: TA.SessionUser,
-    dispatch: AppDispatch
-) => {
-    const device: TA.Device = getDeviceInfo(localUser.lastLogin)
-
-    await addDevice({ device, user: sessionUser.info.email })
-
-    dispatch(storeLocalUser(localUser))
-    dispatch(storeSessionUser(sessionUser))
+export const storeUser = async (localUser: LocalUser) => {
+    const device: Device = getDeviceInfo(localUser.lastLogin)
+    await addDevice(localUser.info.email, device)
+    storeLocalUser(localUser)
 }
 
-export const createNewKey = async (
-    session: TA.SessionUser
-): Promise<boolean> => {
-    const privateFactorX: string = EC.generatePrivateKey()
-    const privateFactor = constructPrivateFactor(
-        session.factor1,
-        session.factor2,
-        BN.from(privateFactorX, 16)
-    )
-    const address = EC.getAddressFromPrivateKey(privateFactor.y)
+export const createNewKey = async (session: SessionUser): Promise<boolean> => {
+    const index: string = C.generatePrivateKey()
+    const privateFactor = constructPrivateFactor(session.factor1!, session.factor2!, index)
+    const address = C.getAddressFromPrivateKey(privateFactor.y)
 
-    return await addKey({
-        user: session.info.email,
-        key: { address, privateFactorX },
-    })
+    return await addPrivateIndex(session.info.email, { address, index })
         .then((data) => data !== undefined)
         .catch(() => false)
 }

@@ -1,0 +1,83 @@
+[
+    {
+        "thisUrl": "http://127.0.0.1:3003",
+        "share": "77256d357de8c0d04d3e330d65edfa31a61c8c1eacbca40e2c26713ea8406722",
+        "existed": {
+            "user": "nguyenhuuthuan25112003@gmail.com",
+            "secret": "28d4ea5a55805d09129c7fc17c0767a52128a5c356e974bee1d1b982e93ea1a2",
+            "claimedShares": []
+        }
+    },
+    {
+        "thisUrl": "http://127.0.0.1:3002",
+        "share": "41196afd88b95125bb8906d6ad3af4aef702441ed1b8dfaaa63ee65dd565b112",
+        "existed": {
+            "user": "nguyenhuuthuan25112003@gmail.com",
+            "secret": "46a97637c36b743ee93aa9666a8cd09766cc902e06ac275c9b21c29d16418bee",
+            "claimedShares": []
+        }
+    },
+    {
+        "thisUrl": "http://127.0.0.1:3001",
+        "share": "933f31399ee2140e8b7d222ac38877cc31f87c1773ff0a73c5513f19748e9f19",
+        "existed": {
+            "user": "nguyenhuuthuan25112003@gmail.com",
+            "secret": "6c30159fd1279541d02daede5a2fc1677e08dcfe777f7ccd130e17b215c5a7a5",
+            "claimedShares": []
+        }
+    },
+    {
+        "thisUrl": "http://127.0.0.1:3002",
+        "share": "7b541971b1b4a388f084c9ec2a11eade63ba05e005e098a7e1969d1232dba37",
+        "existed": {
+            "user": "nguyenhuuthuan25112003@gmail.com",
+            "secret": "46a97637c36b743ee93aa9666a8cd09766cc902e06ac275c9b21c29d16418bee",
+            "claimedShares": []
+        }
+    },
+    {
+        "thisUrl": "http://127.0.0.1:3003",
+        "share": "3e5165606b603f9924b0358ece9206babf1d1e17373f3bd1abcd783e34f7c3a4",
+        "existed": {
+            "user": "nguyenhuuthuan25112003@gmail.com",
+            "secret": "28d4ea5a55805d09129c7fc17c0767a52128a5c356e974bee1d1b982e93ea1a2",
+            "claimedShares": []
+        }
+    },
+    {
+        "thisUrl": "http://127.0.0.1:3001",
+        "share": "984515f8b84dd3a0d0d266301f544328e109918403480f428fdec0f06e514e8d",
+        "existed": {
+            "user": "nguyenhuuthuan25112003@gmail.com",
+            "secret": "6c30159fd1279541d02daede5a2fc1677e08dcfe777f7ccd130e17b215c5a7a5",
+            "claimedShares": []
+        }
+    },
+    {
+        "thisUrl": "http://127.0.0.1:3001",
+        "share": "43e1709aa61262b25261d81e8be3e2a32ee76a266c328383a0b0547d75d39e80",
+        "existed": {
+            "user": "nguyenhuuthuan25112003@gmail.com",
+            "secret": "6c30159fd1279541d02daede5a2fc1677e08dcfe777f7ccd130e17b215c5a7a5",
+            "claimedShares": ["984515f8b84dd3a0d0d266301f544328e109918403480f428fdec0f06e514e8d"]
+        }
+    },
+    {
+        "thisUrl": "http://127.0.0.1:3003",
+        "share": "e15d686d3a5711a8021c08c39639e49599d7ba496cfe25c129d78de832208e01",
+        "existed": {
+            "user": "nguyenhuuthuan25112003@gmail.com",
+            "secret": "28d4ea5a55805d09129c7fc17c0767a52128a5c356e974bee1d1b982e93ea1a2",
+            "claimedShares": ["3e5165606b603f9924b0358ece9206babf1d1e17373f3bd1abcd783e34f7c3a4"]
+        }
+    },
+    {
+        "thisUrl": "http://127.0.0.1:3002",
+        "share": "ba4e4cd36c9c92db46cc95772ce12e30e5e81b30707e981a77946680d357968d",
+        "existed": {
+            "user": "nguyenhuuthuan25112003@gmail.com",
+            "secret": "46a97637c36b743ee93aa9666a8cd09766cc902e06ac275c9b21c29d16418bee",
+            "claimedShares": ["7b541971b1b4a388f084c9ec2a11eade63ba05e005e098a7e1969d1232dba37"]
+        }
+    }
+]

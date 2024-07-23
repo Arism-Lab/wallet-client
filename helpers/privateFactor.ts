@@ -1,43 +1,27 @@
-import { BN, EC, F } from '@common'
-import { getKeys } from '@helpers/metadata'
+import { C, F } from '@common'
+import { getPrivateIndices } from '@helpers/metadata'
 import { lagrangeInterpolation } from '@libs/arithmetic'
-import { TA } from '@types'
 
 export const constructPrivateFactor = (
-    factor1: TA.Factor,
-    factor2: TA.Factor,
-    privateFactorX: BN = F.PRIVATE_FACTOR_X
-): TA.Factor => {
-    const privateKey = lagrangeInterpolation([factor1, factor2], privateFactorX)
-    const privateFactor: TA.Factor = {
-        x: privateFactorX,
-        y: privateKey,
-    }
+    factor1: Point,
+    factor2: Point,
+    privateIndex: string = F.PRIVATE_INDEX
+): Point => {
+    const privateKey = lagrangeInterpolation([factor1, factor2], privateIndex)
+    const privateFactor: Point = { x: privateIndex, y: privateKey }
 
     return privateFactor
 }
 
-export const verifyPrivateKey = async (
-    user: string,
-    privateKey: BN
-): Promise<boolean> => {
-    const computedAddress: string = EC.getAddressFromPrivateKey(privateKey)
+export const verifyPrivateKey = async (user: string, privateKey: string): Promise<boolean> => {
+    const computedAddress: string = C.getAddressFromPrivateKey(privateKey)
+    const privateIndices: PrivateIndex[] = await getPrivateIndices(user)
 
-    const keys: TA.Key[] = await getKeys(user)
-
-    return keys.some((key) => key.address === computedAddress)
+    return privateIndices.some(({ address }) => address === computedAddress)
 }
 
-export const derivePrivateFactors = async (
-    session: TA.SessionUser
-): Promise<TA.Factor[]> => {
-    const keys: TA.Key[] = await getKeys(session.info.email)
+export const derivePrivateFactors = async (session: SessionUser): Promise<Point[]> => {
+    const privateIndices: PrivateIndex[] = await getPrivateIndices(session.info.email)
 
-    return keys.map((key) =>
-        constructPrivateFactor(
-            session.factor1,
-            session.factor2,
-            BN.from(key.privateFactorX, 16)
-        )
-    )
+    return privateIndices.map(({ index }) => constructPrivateFactor(session.factor1!, session.factor2!, index))
 }

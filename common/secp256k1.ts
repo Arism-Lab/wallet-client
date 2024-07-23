@@ -1,7 +1,7 @@
 import elliptic from 'elliptic'
 import { toChecksumAddress } from 'web3-utils'
-import { BN, H } from '@common'
-import { TA } from '@types'
+
+import { H } from '@common'
 
 export const secp256k1 = new elliptic.ec('secp256k1')
 
@@ -15,42 +15,59 @@ export const generatePrivateKey = (): string => {
     return generateKeyPar().getPrivate('hex')
 }
 
-export const decodePublicKey = (publicKey: string): TA.Point => {
-    const x = BN.from(publicKey.slice(2, 66), 16)
-    const y = BN.from(publicKey.slice(66), 16)
+export const decodePublicKey = (publicKey: string): Point => {
+    const x: string = publicKey.slice(2, 66)
+    const y: string = publicKey.slice(66)
 
     return { x, y }
 }
 
-export const encodePublicKey = (point: TA.Point): string => {
-    return `04${point.x.toString(16, 64)}${point.y.toString(16, 64)}`
+export const encodePublicKey = (point: Point): string => {
+    return `04${point.x}${point.y}`
 }
 
-export const getPublicKeyFromPrivateKey = (privateKey: BN): string => {
-    const key = secp256k1.keyFromPrivate(privateKey.toString(16, 64), 'hex')
-
-    return encodePublicKey({
-        x: key.getPublic().getX(),
-        y: key.getPublic().getY(),
-    })
+export const getPublicKeyFromPrivateKey = (privateKey: string): string => {
+    const keypair = secp256k1.keyFromPrivate(privateKey, 'hex')
+    return keypair.getPublic().encode('hex', false)
 }
 
-export const getAddressFromPrivateKey = (privateKey: BN): string => {
-    const key = secp256k1.keyFromPrivate(privateKey.toString(16, 64), 'hex')
-    const publicKey = key.getPublic().encode('hex', false).slice(2)
-    const lowercaseAddress = `0x${H.keccak256(
-        Buffer.from(publicKey, 'hex')
-    ).slice(64 - 38)}`
+export const getAddressFromPrivateKey = (privateKey: string): string => {
+    const keypair = secp256k1.keyFromPrivate(privateKey, 'hex')
+    const publicKey: string = keypair.getPublic().encode('hex', false).slice(2)
+    const lowercaseAddress = `0x${H.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38)}`
+
     return toChecksumAddress(lowercaseAddress)
 }
 
-export const ellipticAddition = (p1: TA.Point, p2: TA.Point): TA.Point => {
+export const getAddressFromPublicKey = (publicKey: string): string => {
+    const formattedPublicKey = publicKey.slice(2)
+    const publicKeyBytes = Buffer.from(formattedPublicKey, 'hex')
+
+    const hash = H.keccak256(publicKeyBytes)
+    const address = hash.slice(-40)
+
+    const hashAddress = H.keccak256(address).slice(2)
+
+    let checksumAddress = '0x'
+
+    for (let i = 0; i < address.length; i++) {
+        if (parseInt(hashAddress[i], 16) >= 8) {
+            checksumAddress += address[i].toUpperCase()
+        } else {
+            checksumAddress += address[i]
+        }
+    }
+
+    return checksumAddress
+}
+
+export const ellipticAddition = (p1: Point, p2: Point): Point => {
     const p1CurvePoint = secp256k1.curve.point(p1.x, p1.y)
     const p2CurvePoint = secp256k1.curve.point(p2.x, p2.y)
     const p3CurvePoint = p1CurvePoint.add(p2CurvePoint)
 
     return {
-        x: p3CurvePoint.getX(),
-        y: p3CurvePoint.getY(),
+        x: p3CurvePoint.getX().toString(16),
+        y: p3CurvePoint.getY().toString(16),
     }
 }

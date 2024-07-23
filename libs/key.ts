@@ -12,6 +12,6 @@ export const formatKey = (key: string, long: boolean) => {
     return key
 }
 
-export const validPrivateKey = (key: string) => {
+export const validatePrivateKey = (key: string) => {
     return key.length === 64
 }

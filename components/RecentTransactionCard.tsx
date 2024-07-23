@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react'
+'use client'
+
+import { useEffect, useState } from 'react'
 import { BsArrowLeftCircle, BsArrowRightCircle } from 'react-icons/bs'
 
 import TitleButton from '@components/TitleButton'
@@ -88,24 +90,16 @@ const RecentTransactionCard = () => {
 											<BsArrowLeftCircle className="h-7 w-7 text-green-600"></BsArrowLeftCircle>
 										)}
 										<div className="grid">
-											<p className="text-base font-medium text-zinc-900">
-												{tx.type}
-											</p>
-											<p className="text-sm font-light text-zinc-500">
-												{tx.address}
-											</p>
+											<p className="text-base font-medium text-zinc-900">{tx.type}</p>
+											<p className="text-sm font-light text-zinc-500">{tx.address}</p>
 										</div>
 									</div>
 									<div className="grid text-right">
-										<p
-											className={`text-base font-light ${tx.type === 'Outgoing' ? 'text-red-700' : 'text-green-700'}`}
-										>
+										<p className={`text-base font-light ${tx.type === 'Outgoing' ? 'text-red-700' : 'text-green-700'}`}>
 											{tx.type === 'Outgoing' ? '-' : '+'}
 											{tx.amount} {tx.token}
 										</p>
-										<p className="text-sm font-extralight text-zinc-500">
-											{tx.usd}
-										</p>
+										<p className="text-sm font-extralight text-zinc-500">{tx.usd}</p>
 									</div>
 								</div>
 							))}

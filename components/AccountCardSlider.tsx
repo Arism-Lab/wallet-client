@@ -1,13 +1,14 @@
+'use client'
+
 import { useState } from 'react'
 
 import AccountCard from '@components/AccountCard'
-import { useAppSelector } from '@store'
-import { TA } from '@types'
+import { getLocalUsers } from '@libs/local'
 
 const AccountCardSlider = () => {
 	const [click, setClick] = useState<number | null>(null)
 
-	const localUsersReducer = useAppSelector((state) => state.localUsersReducer)
+	const localUsers: LocalUser[] = getLocalUsers()
 
 	const handleClick = (index: number) => {
 		if (click === null) {
@@ -17,7 +18,7 @@ const AccountCardSlider = () => {
 		}
 	}
 
-	if (localUsersReducer.data.length === 0 || !localUsersReducer.data) {
+	if (localUsers.length === 0) {
 		return null
 	}
 
@@ -27,7 +28,7 @@ const AccountCardSlider = () => {
 				className="flex w-[90vw] gap-5 text-base transition-all duration-300 ease-in-out aria-expanded:gap-0"
 				aria-expanded={click !== null}
 			>
-				{localUsersReducer.data
+				{localUsers
 					// .sort(
 					// 	(a, b) =>
 					// 		new Date(b.lastLogin).getTime() - new Date(a.lastLogin).getTime()

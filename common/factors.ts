@@ -1,7 +1,5 @@
-import { BN } from '@common'
+export const PRIVATE_INDEX: string = '0'
 
-export const PRIVATE_FACTOR_X: BN = BN.ZERO
+export const NETWORK_INDEX: string = '1'
 
-export const NETWORK_FACTOR_X: BN = BN.ONE
-
-export const DEVICE_FACTOR_X: BN = BN.TWO
+export const DEVICE_INDEX: string = '2'

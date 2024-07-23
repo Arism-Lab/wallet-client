@@ -1,82 +1,37 @@
-import axios from 'axios'
+import { GET, POST } from '@libs/api'
 
-import { store } from '@store'
-import { TA, TM } from '@types'
-
-const getIdToken = (): string => {
-    const token = store.getState().tokenReducer
-
-    return token.data!.id_token!
+export const getUser = async (user: string): Promise<Metadata> => {
+    const res = await GET<Metadata>('/metadata', { user })
+    return res
 }
 
-export const initializeUser = async (user: string): Promise<void> => {
-    await axios.post(`${process.env.NEXT_PUBLIC_METADATA_URL}`, { user })
+export const initializeUser = async (user: Metadata): Promise<void> => {
+    await POST<Metadata>('/metadata', user, true)
 }
 
-export const addDevice = async (data: TM.AddDeviceRequest): Promise<void> => {
-    const idToken = getIdToken()
-    const headers = {
-        Authorization: `Bearer ${idToken}`,
-    }
-
-    await axios.post(
-        `${process.env.NEXT_PUBLIC_METADATA_URL}/add-device`,
-        data,
-        { headers }
-    )
-}
-export const addKey = async (data: TM.AddKeyRequest): Promise<void> => {
-    const idToken = getIdToken()
-    const headers = {
-        Authorization: `Bearer ${idToken}`,
-    }
-
-    await axios.post(`${process.env.NEXT_PUBLIC_METADATA_URL}/add-key`, data, {
-        headers,
-    })
-}
-export const setRecoveryKey = async (
-    data: TM.SetRecoveryKeyRequest
-): Promise<void> => {
-    const idToken = getIdToken()
-    const headers = {
-        Authorization: `Bearer ${idToken}`,
-    }
-
-    await axios.post(
-        `${process.env.NEXT_PUBLIC_METADATA_URL}/set-recovery-key`,
-        data,
-        { headers }
-    )
+export const getDevices = async (user: string): Promise<Device[]> => {
+    const res = await GET<Device[]>('/metadata/devices', { user })
+    return res
 }
 
-export const getUser = async (
-    user: string
-): Promise<TA.Metadata | undefined> => {
-    const { data } = await axios
-        .get(`${process.env.NEXT_PUBLIC_METADATA_URL}/${user}`)
-        .catch(() => ({ data: undefined }))
-
-    return data
+export const addDevice = async (user: string, device: Device): Promise<void> => {
+    await POST('/metadata/devices', { user, device }, true)
 }
-export const getDevices = async (user: string): Promise<TA.Device[]> => {
-    const { data } = await axios
-        .get(`${process.env.NEXT_PUBLIC_METADATA_URL}/${user}/devices`)
-        .catch(() => ({ data: [] }))
 
-    return data
+export const getPrivateIndices = async (user: string): Promise<PrivateIndex[]> => {
+    const res = await GET<PrivateIndex[]>('/metadata/privateIndices', { user })
+    return res
 }
-export const getKeys = async (user: string): Promise<TA.Key[]> => {
-    const { data } = await axios
-        .get(`${process.env.NEXT_PUBLIC_METADATA_URL}/${user}/keys`)
-        .catch(() => ({ data: [] }))
 
-    return data
+export const addPrivateIndex = async (user: string, privateIndex: PrivateIndex): Promise<void> => {
+    await POST('/metadata/privateIndices', { user, privateIndex }, true)
 }
+
 export const getRecoveryKey = async (user: string): Promise<string> => {
-    const { data } = await axios
-        .get(`${process.env.NEXT_PUBLIC_METADATA_URL}/${user}/recovery-key`)
-        .catch(() => ({ data: '' }))
+    const res = await GET<string>('/metadata/recoveryKey', { user })
+    return res
+}
 
-    return data
+export const setRecoveryKey = async (user: string, recoveryKey: string): Promise<void> => {
+    await POST('/metadata/recoveryKey', { user, recoveryKey }, true)
 }

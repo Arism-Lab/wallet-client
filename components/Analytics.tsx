@@ -4,12 +4,7 @@ import Script from 'next/script'
 import siteMetadata from '@/data/siteMetadata.json'
 
 // https://developers.google.com/analytics/devguides/collection/gtagjs/events
-export const logEvent = (
-	action: any,
-	category: any,
-	label: any,
-	value: any
-) => {
+export const logEvent = (action: any, category: any, label: any, value: any) => {
 	;(window as any)?.gtag('event', action, {
 		event_category: category,
 		event_label: label,
@@ -20,10 +15,7 @@ export const logEvent = (
 const GoogleScript = (): JSX.Element => {
 	return (
 		<>
-			<Script
-				async
-				src={`https://www.googletagmanager.com/gtag/js?id=${siteMetadata.analytics.googleAnalyticsId}`}
-			/>
+			<Script async src={`https://www.googletagmanager.com/gtag/js?id=${siteMetadata.analytics.googleAnalyticsId}`} />
 
 			<Script strategy="lazyOnload" id="ga-script">
 				{`
